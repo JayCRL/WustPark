@@ -4237,3 +4237,41 @@ body.msg-theme {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
   margin-bottom: var(--space-md) !important;
 }
+
+/* Fix navbar: keep horizontal on all sizes */
+.navbar-links {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.navbar-links::-webkit-scrollbar {
+  display: none;
+}
+@media (max-width: 1024px) {
+  .navbar-links a:not(.btn) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.8rem;
+    white-space: nowrap;
+  }
+  .navbar-links {
+    gap: 0.05rem;
+  }
+}
+@media (max-width: 768px) {
+  .navbar-links {
+    position: fixed;
+    top: 70px;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    padding: var(--space-xl);
+    gap: var(--space-lg);
+    overflow-x: visible;
+  }
+  .navbar-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+}
