@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>校园猫 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    body { background: linear-gradient(180deg, #fef8f4 0%, #f5efe8 40%, #efe8e0 100%); min-height: 100vh; }
+    .cats-page { padding-top: calc(64px); padding-bottom: 4rem; }
+
+    /* 瀑布流布局 */
+    .cat-grid { column-count: 2; column-gap: 14px; padding: 0 14px; max-width: 960px; margin: 0 auto; }
+    @media (max-width: 640px) { .cat-grid { column-count: 2; column-gap: 10px; padding: 0 10px; } }
+    @media (max-width: 400px) { .cat-grid { column-count: 1; } }
+
+    /* 玻璃卡片 */
+    .cat-card { break-inside: avoid; margin-bottom: 14px; border-radius: 14px; overflow: hidden; cursor: pointer; transition: transform .25s cubic-bezier(.4,0,.2,1), box-shadow .25s; background: rgba(255,255,255,.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 4px 20px rgba(0,0,0,.04), 0 1px 3px rgba(0,0,0,.03); }
+    .cat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,.08), 0 2px 8px rgba(0,0,0,.04); }
+    .cat-card:active { transform: scale(.97); }
+
+    /* 图片区 */
+    .cat-card-img { position: relative; width: 100%; overflow: hidden; background: rgba(0,0,0,.02); display: flex; align-items: center; justify-content: center; font-size: 3.5rem; border-radius: 14px 14px 0 0; }
+    .cat-card-img img { width: 100%; display: block; object-fit: cover; }
+    .cat-card-img .cat-emoji-bg { padding: 32% 0; }
+    .cat-card-img .img-overlay { position: absolute; bottom: 0; left: 0; right: 0; padding: 2rem .7rem .6rem; background: linear-gradient(transparent, rgba(80,60,50,.35)); color: #fff; }
+    .img-overlay .cat-name { font-size: .82rem; font-weight: 700; display: flex; align-items: center; gap: .2rem; text-shadow: 0 1px 4px rgba(0,0,0,.15); }
+    .img-overlay .cat-location { font-size: .68rem; opacity: .85; margin-top: .1rem; text-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+    /* 底部信息 - 玻璃效果延续 */
+    .cat-card-footer { display: flex; align-items: center; gap: .4rem; padding: .55rem .75rem .6rem; border-top: 1px solid rgba(255,255,255,.5); }
+    .cat-avatar { width: 22px; height: 22px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .55rem; font-weight: 700; flex-shrink: 0; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+    .cat-author { font-size: .72rem; color: #5a4a3a; font-weight: 500; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .cat-card-title { font-size: .74rem; color: #9a8a7a; }
+
+    /* ===== 详情弹窗 - 小红书详情页风格 ===== */
+    .cat-modal { position: fixed; inset: 0; z-index: 3000; display: none; background: rgba(0,0,0,.55); }
+    .cat-modal.open { display: block; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+    .cat-modal-inner { max-width: 600px; margin: 0 auto; min-height: 100vh; display: flex; align-items: center; padding: 16px; box-sizing: border-box; }
+    @media (max-width: 640px) { .cat-modal-inner { padding: 0; align-items: flex-start; } }
+    .cat-modal-content { border-radius: 16px; overflow: hidden; width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.12); background: rgba(255,255,255,.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.7); }
+    @media (max-width: 640px) { .cat-modal-content { border-radius: 0; min-height: 100vh; } }
+
+    /* 大图 */
+    .cat-modal-img { width: 100%; max-height: 60vh; overflow: hidden; background: rgba(0,0,0,.02); display: flex; align-items: center; justify-content: center; font-size: 5rem; position: relative; }
+    .cat-modal-img img { width: 100%; display: block; object-fit: contain; max-height: 60vh; }
+    .cat-modal-img .cat-modal-close { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border-radius: 50%; border: none; background: rgba(0,0,0,.3); color: #fff; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+
+    /* 详情内容 */
+    .cat-modal-body { padding: 1rem 1.2rem 1.2rem; }
+    .cat-modal-body .mm-header { display: flex; align-items: center; gap: .5rem; margin-bottom: .6rem; }
+    .cat-modal-body .mm-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--gradient-primary); display: flex; align-items: center; justify-content: center; color: #fff; font-size: .6rem; font-weight: 700; flex-shrink: 0; }
+    .cat-modal-body .mm-author { font-size: .82rem; font-weight: 600; color: #333; }
+    .cat-modal-body .mm-time { font-size: .68rem; color: #bbb; }
+
+    .cat-modal-body .mm-title { font-size: 1.05rem; font-weight: 700; margin-bottom: .4rem; line-height: 1.4; color: #222; }
+
+    .cat-modal-body .mm-tags { display: flex; gap: .4rem; margin-bottom: .7rem; flex-wrap: wrap; }
+    .cat-modal-body .mm-tag { display: inline-block; padding: .15rem .5rem; border-radius: 20px; font-size: .68rem; font-weight: 500; }
+    .cat-modal-body .mm-tag-name { background: rgba(232,93,58,.08); color: var(--color-primary); }
+
+    .cat-modal-body .mm-text { font-size: .88rem; line-height: 1.8; color: #444; white-space: pre-wrap; }
+
+    /* 底部操作栏 */
+    .cat-modal-actions { display: flex; align-items: center; gap: .3rem; padding: .6rem .8rem; border-top: 1px solid #f0f0f0; margin-top: .6rem; }
+    .cat-modal-actions .act-btn { display: flex; align-items: center; gap: .2rem; padding: .3rem .6rem; border: none; background: transparent; font-size: .75rem; color: #888; cursor: pointer; border-radius: 6px; transition: background .15s; }
+    .cat-modal-actions .act-btn:hover { background: #f5f5f5; }
+    .cat-modal-actions .act-del { margin-left: auto; color: #ccc; }
+    .cat-modal-actions .act-del:hover { color: var(--color-danger); }
+
+    /* 发布弹窗 */
+    .create-wrap { position: fixed; inset: 0; z-index: 3000; display: none; background: rgba(0,0,0,.55); overflow-y: auto; }
+    .create-wrap.open { display: block; }
+    .create-inner { max-width: 480px; margin: 2rem auto; padding: 0 12px; }
+    .create-box { border-radius: 16px; padding: 1.2rem; background: rgba(255,255,255,.75); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,.7); box-shadow: 0 12px 40px rgba(0,0,0,.08); }
+    .create-box h3 { font-size: 1rem; font-weight: 700; margin-bottom: .8rem; display: flex; justify-content: space-between; align-items: center; }
+    .create-box h3 button { border: none; background: transparent; font-size: .82rem; color: var(--color-primary); font-weight: 600; cursor: pointer; }
+    .create-box input, .create-box textarea { width: 100%; padding: .5rem .7rem; border: 1.5px solid #eee; border-radius: 8px; font-size: .85rem; outline: none; transition: border-color .2s; box-sizing: border-box; }
+    .create-box input:focus, .create-box textarea:focus { border-color: var(--color-primary); }
+    .create-box textarea { resize: vertical; min-height: 100px; font-family: inherit; }
+
+    .empty-state { text-align: center; padding: 3rem 1rem; color: #bbb; grid-column: 1/-1; }
+    .empty-state span { font-size: 3.5rem; display: block; margin-bottom: .5rem; }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a><a href="clubs.html">社团</a><a href="activities.html">活动</a><a href="cats.html" class="active">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="cats-page">
+    <div style="text-align:center;padding:1.8rem 1rem 0.5rem;">
+      <h1 style="font-size:1.4rem;font-weight:800;color:#4a3525;">🐱 校园猫</h1>
+      <p style="font-size:.82rem;color:#8a7a6a;margin-top:.2rem;">记录校园里那些可爱的猫学长学姐</p>
+      <button class="btn btn-primary btn-sm" style="margin-top:.6rem;" onclick="showCreateForm()">📝 分享故事</button>
+    </div>
+    <div id="catGrid" class="cat-grid" style="margin-top:12px;">
+      <div class="loading-state" style="grid-column:1/-1;"><div class="loading-spinner"></div></div>
+    </div>
+  </div>
+
+  <!-- 详情弹窗 -->
+  <div class="cat-modal" id="catModal">
+    <div class="cat-modal-inner" onclick="if(event.target===this)closeCatModal()">
+      <div class="cat-modal-content" id="modalContent">
+        <div class="cat-modal-img" id="modalImg">
+          <span id="modalEmoji" style="font-size:4rem;">🐱</span>
+          <img id="modalImgTag" style="display:none;width:100%;" />
+          <button class="cat-modal-close" onclick="closeCatModal()">✕</button>
+        </div>
+        <div class="cat-modal-body">
+          <div class="mm-header">
+            <div class="mm-avatar" id="modalAvatar">?</div>
+            <div>
+              <div class="mm-author" id="modalAuthor"></div>
+              <div class="mm-time" id="modalTime"></div>
+            </div>
+            <span class="cat-modal-actions" style="margin-left:auto;padding:0;border:none;">
+              <button class="act-btn act-del" id="modalDelete" style="display:none;" onclick="deleteMyCatStory()">🗑️</button>
+            </span>
+          </div>
+          <div class="mm-title" id="modalTitle"></div>
+          <div class="mm-tags" id="modalTags"></div>
+          <div class="mm-text" id="modalText"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 发布弹窗 -->
+  <div class="create-wrap" id="createWrap">
+    <div class="create-inner" onclick="if(event.target===this)closeCreateForm()">
+      <div class="create-box">
+        <h3>📝 分享猫故事 <button onclick="closeCreateForm()">取消</button></h3>
+        <div style="display:flex;flex-direction:column;gap:.6rem;">
+          <input id="cTitle" placeholder="标题 *" />
+          <input id="cCatName" placeholder="猫猫名字（选填）" />
+          <textarea id="cContent" placeholder="写下你和猫猫的故事..." rows="5"></textarea>
+          <div style="display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;">
+            <div id="cImagePreview" style="width:56px;height:56px;border-radius:8px;background:#f5f5f5;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#bbb;overflow:hidden;border:1px solid #eee;flex-shrink:0;">
+              <span id="cImagePlaceholder">📷</span>
+              <img id="cImageImg" style="display:none;width:100%;height:100%;object-fit:cover;" />
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('cImageInput').click()">上传照片</button>
+            <input type="file" id="cImageInput" accept="image/*" style="display:none" onchange="uploadCatImage(this)" />
+            <span id="cImageStatus" style="font-size:.7rem;color:#999;"></span>
+          </div>
+          <div id="cError" style="color:var(--color-danger);font-size:.8rem;"></div>
+          <button class="btn btn-primary" style="justify-content:center;width:100%;" onclick="submitCatStory()">发布 🐾</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    var catImages = [], currentCatId = null;
+    var emojis = ['🐱','😺','😸','😻','😽','🙀','😹','😼','😿','😾','🐈','🐾'];
+
+    function ready(fn){if(document.readyState!=='loading')setTimeout(fn,30);else document.addEventListener('DOMContentLoaded',function(){setTimeout(fn,30);});}
+    ready(function(){ loadCats(); });
+
+    function loadCats() {
+      var grid = document.getElementById('catGrid');
+      apiFetch('/cats').then(function(d){
+        if (!d.stories || !d.stories.length) {
+          grid.innerHTML = '<div class="empty-state"><span>🐱</span>还没有猫故事<br>快来分享你和校园猫猫的故事吧</div>';
+          return;
+        }
+        var h = '';
+        d.stories.forEach(function(s, idx){
+          var imgs = s.images;
+          var hasImg = imgs && imgs.length && imgs[0];
+          var emoji = s.cat_name ? '🐱' : emojis[idx % emojis.length];
+          var firstChar = (s.nickname || '?')[0];
+          var nameTag = s.cat_name ? '<div class="cat-name">🐾 ' + esc(s.cat_name) + '</div>' : '';
+
+          h += '<div class="cat-card" onclick="openCatDetail(' + s.id + ')">';
+          h += '<div class="cat-card-img">';
+          if (hasImg) {
+            h += '<img src="' + imgs[0] + '" style="aspect-ratio:' + (idx % 2 === 0 ? '3/4' : '4/3') + ';" />';
+          } else {
+            h += '<div class="cat-emoji-bg" style="aspect-ratio:1;">' + emoji + '</div>';
+          }
+          h += nameTag ? '<div class="img-overlay">' + nameTag + '</div>' : '';
+          h += '</div>';
+          h += '<div class="cat-card-footer">';
+          h += '<div class="cat-avatar">' + firstChar + '</div>';
+          h += '<div class="cat-author">' + esc(s.nickname || '匿名') + '</div>';
+          h += '<div class="cat-card-title">' + esc(s.title.substring(0, 20)) + '</div>';
+          h += '</div></div>';
+        });
+        grid.innerHTML = h;
+      }).catch(function(e){ grid.innerHTML = '<div class="empty-state"><span>⚠️</span>' + e.message + '</div>'; });
+    }
+
+    function openCatDetail(id) {
+      apiFetch('/cats/' + id).then(function(s){
+        currentCatId = s.id;
+        var imgs = s.images;
+        var hasImg = imgs && imgs.length && imgs[0];
+        document.getElementById('modalEmoji').style.display = hasImg ? 'none' : 'flex';
+        document.getElementById('modalImgTag').style.display = hasImg ? 'block' : 'none';
+        if (hasImg) document.getElementById('modalImgTag').src = imgs[0];
+        document.getElementById('modalTitle').textContent = s.title;
+        document.getElementById('modalText').textContent = s.content;
+        document.getElementById('modalAuthor').textContent = s.nickname || '匿名';
+        document.getElementById('modalAvatar').textContent = (s.nickname || '?')[0];
+        var d = new Date(s.created_at);
+        document.getElementById('modalTime').textContent = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日';
+        var tags = '';
+        if (s.cat_name) tags += '<span class="mm-tag mm-tag-name">🐾 ' + esc(s.cat_name) + '</span>';
+        document.getElementById('modalTags').innerHTML = tags;
+        var user = getCurrentUser();
+        document.getElementById('modalDelete').style.display = (user && (user.id === s.user_id || user.is_admin)) ? '' : 'none';
+        document.body.style.overflow = 'hidden';
+        document.getElementById('catModal').classList.add('open');
+      }).catch(function(e){ showToast(e.message,'error'); });
+    }
+
+    function closeCatModal() { document.getElementById('catModal').classList.remove('open'); document.body.style.overflow = ''; currentCatId = null; }
+
+    function deleteMyCatStory() {
+      if (!currentCatId || !confirm('确定删除吗？')) return;
+      apiFetch('/cats/' + currentCatId, { method: 'DELETE' }).then(function(){ showToast('已删除'); closeCatModal(); loadCats(); })
+      .catch(function(e){ showToast(e.message,'error'); });
+    }
+
+    function showCreateForm() {
+      if (!getToken()) { showToast('请先登录','error'); return; }
+      document.getElementById('createWrap').classList.add('open');
+    }
+    function closeCreateForm() { document.getElementById('createWrap').classList.remove('open'); }
+
+    function uploadCatImage(input) {
+      var file = input.files[0]; if (!file) return;
+      if (file.size > 5*1024*1024) { showToast('图片不能超过5MB','error'); return; }
+      document.getElementById('cImageStatus').textContent = '上传中...';
+      var fd = new FormData(); fd.append('file', file); fd.append('type', 'cats');
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/club-api/upload');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (getToken() || ''));
+      xhr.onload = function() {
+        try {
+          var d = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            catImages.push(d.url);
+            document.getElementById('cImageImg').src = d.url;
+            document.getElementById('cImageImg').style.display = 'block';
+            document.getElementById('cImagePlaceholder').style.display = 'none';
+            document.getElementById('cImageStatus').textContent = '✅';
+          } else { document.getElementById('cImageStatus').textContent = '❌'; showToast(d.error||'上传失败','error'); }
+        } catch(e) { document.getElementById('cImageStatus').textContent = '❌'; showToast('上传失败','error'); }
+      };
+      xhr.onerror = function() { document.getElementById('cImageStatus').textContent = '❌'; showToast('网络错误','error'); };
+      xhr.timeout = 30000; xhr.send(fd);
+    }
+
+    async function submitCatStory() {
+      var title = document.getElementById('cTitle').value.trim();
+      var content = document.getElementById('cContent').value.trim();
+      if (!title || !content) { document.getElementById('cError').textContent = '标题和内容为必填项'; return; }
+      document.getElementById('cError').textContent = '';
+      try {
+        await apiFetch('/cats', { method:'POST', body: {
+          title, content, images: catImages,
+          cat_name: document.getElementById('cCatName').value.trim()
+        }});
+        showToast('发布成功 🐾');
+        closeCreateForm();
+        document.getElementById('cTitle').value = '';
+        document.getElementById('cContent').value = '';
+        document.getElementById('cCatName').value = '';
+        document.getElementById('cLocation').value = '';
+        catImages = [];
+        document.getElementById('cImageImg').style.display = 'none';
+        document.getElementById('cImagePlaceholder').style.display = '';
+        loadCats();
+      } catch(e) { document.getElementById('cError').textContent = e.message; }
+    }
+
+    function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  </script>
+</body>
+</html>

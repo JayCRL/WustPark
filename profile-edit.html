@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>编辑资料 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .edit-page { padding-top:80px; }
+    .form-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:var(--radius-lg); padding:1.5rem; max-width:560px; margin:0 auto; }
+    .form-card h2 { font-size:1.1rem; font-weight:700; margin-bottom:1.2rem; }
+    .form-row { display:grid; grid-template-columns:1fr 1fr; gap:0 0.8rem; }
+    .form-group { margin-bottom:0.8rem; }
+    .form-group label { display:block; font-size:0.8rem; font-weight:600; color:var(--text-secondary); margin-bottom:0.3rem; }
+    .form-group input,.form-group textarea,.form-group select { width:100%; padding:0.55rem 0.75rem; border:1.5px solid var(--border-color); border-radius:6px; font-size:0.85rem; }
+    .form-group input:focus,.form-group textarea:focus { border-color:var(--color-primary); outline:none; }
+    .form-group textarea { resize:vertical; min-height:80px; }
+    @media(max-width:480px) { .form-row { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links">
+        <a href="index.html">首页</a><a href="clubs.html">社团</a><a href="activities.html">活动</a><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="edit-page">
+    <div class="container-narrow">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
+        <h1 style="font-size:1.3rem;font-weight:700;flex:1;">编辑个人资料</h1>
+        <a href="profile.html" class="btn btn-ghost btn-sm">← 返回</a>
+      </div>
+
+      <div class="form-card">
+        <!-- 头像上传 -->
+        <div style="text-align:center;margin-bottom:1.2rem;">
+          <div id="avatarPreview" style="width:80px;height:80px;border-radius:50%;background:var(--color-gray-200);margin:0 auto 0.5rem;display:flex;align-items:center;justify-content:center;font-size:2.2rem;color:var(--text-tertiary);overflow:hidden;border:3px solid var(--border-color);">
+            <span id="avatarPlaceholder">📷</span>
+            <img id="avatarImg" style="display:none;width:100%;height:100%;object-fit:cover;" />
+          </div>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('avatarInput').click()">更换头像</button>
+          <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="uploadAvatar(this)" />
+          <div id="avatarStatus" style="font-size:0.75rem;color:var(--text-tertiary);margin-top:0.3rem;"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>昵称</label><input type="text" id="nickname" /></div>
+          <div class="form-group"><label>学院</label><input type="text" id="college" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>年级</label><input type="text" id="grade" placeholder="如: 2023级" /></div>
+          <div class="form-group"><label>专业</label><input type="text" id="major" /></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group"><label>性别</label>
+            <select id="gender"><option value="">保密</option><option value="男">男</option><option value="女">女</option></select>
+          </div>
+          <div class="form-group"><label>学号</label><input type="text" id="studentId" /></div>
+        </div>
+        <div class="form-group"><label>兴趣标签（逗号分隔）</label><input type="text" id="interests" placeholder="如: 音乐,摄影,编程" /></div>
+        <div class="form-group"><label>自我介绍</label><textarea id="bio" rows="4" placeholder="介绍一下自己..."></textarea></div>
+        <div id="editError" style="color:#E85D3A;font-size:0.85rem;margin-bottom:0.5rem;"></div>
+        <div style="display:flex;gap:0.8rem;">
+          <button class="btn btn-primary" style="flex:1;justify-content:center;" onclick="saveEdit()">保存</button>
+          <button class="btn btn-ghost" style="flex:1;justify-content:center;" onclick="window.location='profile.html'">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:3rem;"><div class="container"><div class="footer-bottom"><span>&copy; 2026 Wust Spark</span></div></div></footer>
+
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    function ready(fn) { if (document.readyState !== 'loading') setTimeout(fn,30); else document.addEventListener('DOMContentLoaded',function(){setTimeout(fn,30);}); }
+
+    ready(function() {
+      if (!getToken()) { window.location = 'login.html'; return; }
+      var params = new URLSearchParams(window.location.search);
+      if (params.get('first')) { showToast('欢迎！请先完善个人资料'); }
+      loadProfile();
+      updateNavAuth();
+    });
+
+    function uploadAvatar(input) {
+      var file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { showToast('图片不能超过5MB','error'); return; }
+      // 先本地预览
+      document.getElementById('avatarImg').src = URL.createObjectURL(file);
+      document.getElementById('avatarImg').style.display = 'block';
+      document.getElementById('avatarPlaceholder').style.display = 'none';
+      var status = document.getElementById('avatarStatus');
+      status.textContent = '上传中...';
+      var fd = new FormData();
+      fd.append('file', file);
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/club-api/upload/avatar');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (getToken() || ''));
+      xhr.onload = function() {
+        try {
+          var d = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            status.textContent = '✅ 已提交审核';
+            showToast('头像已提交，等待审核');
+          } else {
+            status.textContent = '❌ ' + (d.error || '上传失败');
+            showToast(d.error || '上传失败', 'error');
+          }
+        } catch(e) {
+          status.textContent = '❌ 服务器返回异常';
+          showToast('服务器返回异常', 'error');
+        }
+      };
+      xhr.onerror = function() { status.textContent = '❌ 网络错误'; showToast('网络错误', 'error'); };
+      xhr.timeout = 30000;
+      xhr.send(fd);
+    }
+
+    function loadProfile() {
+      apiFetch('/users/me/space').then(function(d) {
+        var u = d.user;
+        if (u.avatar) {
+          document.getElementById('avatarImg').src = u.avatar;
+          document.getElementById('avatarImg').style.display = 'block';
+          document.getElementById('avatarPlaceholder').style.display = 'none';
+        }
+        document.getElementById('nickname').value = u.nickname || '';
+        document.getElementById('college').value = u.college || '';
+        document.getElementById('grade').value = u.grade || '';
+        document.getElementById('major').value = u.major || '';
+        document.getElementById('gender').value = u.gender || '';
+        document.getElementById('studentId').value = u.student_id || '';
+        document.getElementById('interests').value = u.interests || '';
+        document.getElementById('bio').value = u.bio || '';
+      }).catch(function(e) { document.getElementById('editError').textContent = e.message; });
+    }
+
+    async function saveEdit() {
+      document.getElementById('editError').textContent = '';
+      try {
+        await apiFetch('/users/profile', { method:'PUT', body: {
+          nickname: document.getElementById('nickname').value,
+          college: document.getElementById('college').value,
+          grade: document.getElementById('grade').value,
+          major: document.getElementById('major').value,
+          gender: document.getElementById('gender').value,
+          student_id: document.getElementById('studentId').value,
+          interests: document.getElementById('interests').value,
+          bio: document.getElementById('bio').value
+        }});
+        showToast('保存成功');
+        setTimeout(function(){ window.location = 'profile.html'; }, 400);
+      } catch(e) { document.getElementById('editError').textContent = e.message; }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="社团详情 - Youth Spark 校园社团风采展示平台">
+  <title>社团详情 · Youth Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+</head>
+<body>
+  <!-- 导航 -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo">
+        <span class="logo-icon">✨</span>
+        Youth Spark
+      </a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html" class="active">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="about.html">关于</a>
+        <a href="about.html#contact" class="btn btn-primary btn-sm">加入我们</a>
+        <a href="login.html" class="btn btn-outline btn-sm">登录</a>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- 社团详情容器（由 JS 渲染） -->
+  <div id="clubDetail">
+    <div class="loading-state" style="padding:8rem 2rem;">
+      <div class="loading-spinner"></div>
+      <p>正在加载社团信息...</p>
+    </div>
+  </div>
+
+  <!-- 页脚 -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3><span>✨</span> Youth Spark</h3>
+          <p>致力于打破校园信息壁垒，让每一个热爱都能找到归属。</p>
+        </div>
+        <div>
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="clubs.html">社团</a></li>
+            <li><a href="activities.html">活动</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>帮助支持</h4>
+          <ul class="footer-links">
+            <li><a href="about.html#contact">联系我们</a></li>
+            <li><a href="about.html">常见问题</a></li>
+            <li><a href="about.html#contact">社团入驻</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>关注我们</h4>
+          <div class="footer-social">
+            <a href="#" aria-label="微信">💬</a>
+            <a href="#" aria-label="微博">📱</a>
+            <a href="#" aria-label="B站">📺</a>
+            <a href="#" aria-label="抖音">🎵</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Youth Spark. All rights reserved.</span>
+        <span>用热爱连接每一个你 ❤️</span>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+
+  <!-- 底部导航（移动端） -->
+  <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/main.js?v=2"></script>
+</body>
+</html>

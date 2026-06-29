@@ -1,0 +1,5 @@
+node_modules/
+deploy-package/
+*.bak
+server/uploads/
+.DS_Store

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="查看校园社团精彩活动 - Wust Spark">
+  <title>活动 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  <section class="page-hero">
+    <h1>📅 校园活动</h1>
+    <p>精彩活动不断，每一天都有新发现</p>
+  </section>
+  <section class="section">
+    <div class="container">
+      <!-- 移动端筛选栏：搜索 + 筛选项 -->
+      <div class="filter-bar-mobile">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="activitySearch" placeholder="搜索活动..." />
+        </div>
+        <div class="filter-chips" id="activeFilterChips"></div>
+        <button class="btn btn-ghost btn-sm filter-toggle-btn" id="filterToggle">
+          <span>☰</span> 筛选
+        </button>
+      </div>
+      <!-- 筛选抽屉 -->
+      <div class="drawer-overlay" id="drawerOverlay"></div>
+      <div class="filter-drawer" id="filterDrawer">
+        <div class="drawer-header">
+          <h3>筛选条件</h3>
+          <button class="drawer-close" id="drawerClose">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-section">
+            <span class="drawer-label">🏷️ 类别</span>
+            <div class="drawer-tags" id="activityCatFilter">
+              <button class="tag-chip active" data-cat="all">全部</button>
+              <button class="tag-chip" data-cat="兴趣">🎨 兴趣</button>
+              <button class="tag-chip" data-cat="学术">📚 学术</button>
+              <button class="tag-chip" data-cat="体育">⚽ 体育</button>
+              <button class="tag-chip" data-cat="公益">💚 公益</button>
+              <button class="tag-chip" data-cat="科技">💻 科技</button>
+            </div>
+          </div>
+          <div class="drawer-section">
+            <span class="drawer-label">🎯 级别</span>
+            <div class="drawer-tags" id="activityLevelFilter">
+              <button class="tag-chip active" data-level="all">全部</button>
+              <button class="tag-chip" data-level="school">🏛️ 校级</button>
+              <button class="tag-chip" data-level="college">🏫 院级</button>
+            </div>
+          </div>
+          <div class="drawer-section" id="activityCollegeSection" style="display:none;">
+            <span class="drawer-label">🏛️ 学院</span>
+            <div class="drawer-tags" id="activityCollegeFilter">
+              <button class="tag-chip active" data-college="all">全部学院</button>
+            </div>
+          </div>
+          <div class="drawer-section">
+            <span class="drawer-label">⏰ 时间</span>
+            <div class="drawer-tags" id="activityTimeFilter">
+              <button class="tag-chip active" data-time="all">全部</button>
+              <button class="tag-chip" data-time="upcoming">即将举办</button>
+              <button class="tag-chip" data-time="past">往期回顾</button>
+            </div>
+          </div>
+          <div class="drawer-section">
+            <span class="drawer-label">📊 排序</span>
+            <div class="drawer-tags" id="activitySort">
+              <button class="tag-chip active" data-sort="date">按日期 ↓</button>
+              <button class="tag-chip" data-sort="club">按社团</button>
+            </div>
+          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-ghost" onclick="resetActivityFilters()">重置</button>
+          <button class="btn btn-primary" id="drawerApply">应用筛选</button>
+        </div>
+      </div>
+      <!-- 结果条 -->
+      <div class="result-strip">
+        <span id="resultCount">全部活动</span>
+        <a href="activity-create.html" class="btn btn-primary btn-sm">＋ 创建活动</a>
+      </div>
+      <!-- 加载 -->
+      <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>正在加载活动数据...</p>
+      </div>
+      <!-- 活动网格 -->
+      <div class="activity-grid" id="allActivityGrid"></div>
+      <!-- 空状态 -->
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <span class="empty-icon">📭</span>
+        <h3>没有找到匹配的活动</h3>
+        <p>试试调整筛选条件或换个关键词搜索吧</p>
+        <button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="resetActivityFilters()">重置筛选</button>
+      </div>
+    </div>
+  </section>
+  <!-- 活动时间线 -->
+  <section class="section section-alt">
+    <div class="container-narrow">
+      <div class="section-header">
+        <span class="section-tag">📜 活动回顾</span>
+        <h2 class="section-title">精彩瞬间</h2>
+        <p class="section-subtitle">回顾我们一起走过的每一个精彩时刻</p>
+      </div>
+      <div class="timeline" id="timeline">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </div>
+  </section>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3><span>✨</span> Wust Spark</h3>
+          <p>致力于打破校园信息壁垒，让每一个热爱都能找到归属。</p>
+        </div>
+        <div>
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="clubs.html">社团</a></li>
+            <li><a href="activities.html">活动</a></li><li><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>帮助支持</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="mailto:wusters@wust.edu.cn">反馈意见</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>关注我们</h4>
+          <div class="footer-social">
+            <a href="#" aria-label="微信">💬</a>
+            <a href="#" aria-label="微博">📱</a>
+            <a href="#" aria-label="B站">📺</a>
+            <a href="#" aria-label="抖音">🎵</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Wust Spark. All rights reserved.</span>
+        <span>用热爱连接每一个你 ❤️</span>
+      </div>
+    </div>
+  </footer>
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+  <!-- 底部导航（移动端） -->
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+  <script src="js/main.js?v=80"></script>
+</body>
+</html>

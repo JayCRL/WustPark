@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>登录 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .auth-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: calc(64px + 1rem) 1rem 2rem; background: var(--bg-warm); }
+    .auth-box { background: #fff; border-radius: var(--radius-xl); padding: 2.5rem 2rem; width: 400px; max-width: 100%; box-shadow: var(--shadow-lg); text-align: center; }
+    .auth-box .logo { margin-bottom: 1.2rem; }
+    .auth-box .logo h1 { font-family: var(--font-heading); font-size: 1.5rem; font-weight: 800; }
+    .auth-desc { font-size: 0.85rem; color: var(--text-tertiary); margin-bottom: 1.5rem; line-height: 1.7; }
+    .auth-error { color: var(--color-danger); font-size: 0.82rem; margin-top: 0.8rem; min-height: 1.2em; }
+    .wust-btn { width: 100%; padding: 0.9rem; border: none; border-radius: var(--radius-md); font-size: 1rem; font-weight: 700; cursor: pointer; transition: all var(--transition-base); background: var(--color-primary); color: #fff; }
+    .wust-btn:hover { background: var(--color-primary-dark); }
+    .wust-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="auth-page">
+    <div class="auth-box">
+      <div class="logo"><h1>✨ Wust Spark</h1></div>
+      <div style="font-size:3rem;margin-bottom:0.5rem;">🎓</div>
+      <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:0.3rem;">武科大统一认证</h2>
+      <p class="auth-desc">使用武科大统一认证登录<br/>首次登录自动创建账号</p>
+      <div id="loginFields">
+        <div style="margin-bottom:0.8rem;text-align:left;">
+          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">学号</label>
+          <input type="text" id="studentId" placeholder="输入学号" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" />
+        </div>
+        <div style="margin-bottom:0.8rem;text-align:left;">
+          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">密码</label>
+          <input type="password" id="password" placeholder="输入统一认证密码" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" />
+        </div>
+      </div>
+      <button class="wust-btn" id="loginBtn" onclick="doWustLogin()">🎓 统一认证登录</button>
+      <div class="auth-error" id="loginError"></div>
+    </div>
+  </div>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    function ready(fn){if(document.readyState!=='loading')setTimeout(fn,30);else document.addEventListener('DOMContentLoaded',function(){setTimeout(fn,30);});}
+
+    async function doWustLogin() {
+      var sid = document.getElementById('studentId').value;
+      var pwd = document.getElementById('password').value;
+      if (!sid || !pwd) { document.getElementById('loginError').textContent = '请输入学号和密码'; return; }
+      var btn = document.getElementById('loginBtn');
+      btn.disabled = true; btn.textContent = '认证中...';
+      document.getElementById('loginError').textContent = '';
+      try {
+        var d = await apiFetch('/auth/wust', { method:'POST', body:{ username: sid, password: pwd } });
+        setToken(d.token);
+        localStorage.setItem('ys_user', JSON.stringify(d.user));
+        showToast('认证成功');
+        if (d.is_new_user) { setTimeout(function(){ window.location='profile-edit.html?first=1'; }, 500); }
+        else { setTimeout(function(){ window.location='profile.html'; }, 500); }
+      } catch(e) {
+        document.getElementById('loginError').textContent = e.message;
+        btn.disabled = false; btn.textContent = '🎓 统一认证登录';
+      }
+    }
+
+    // 回车提交
+    document.getElementById('password').addEventListener('keydown', function(e) { if (e.key === 'Enter') doWustLogin(); });
+    document.getElementById('studentId').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('password').focus(); });
+  </script>
+</body>
+</html>

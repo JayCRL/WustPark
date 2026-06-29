@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Profile Test</title></head>
+<body>
+  <div id="result">Loading...</div>
+  <button onclick="testAPI()">Test API</button>
+  <script src="js/main.js?v=74"></script>
+  <script>
+    document.getElementById('result').textContent = 'JS loaded, testing...';
+    
+    async function testAPI() {
+      try {
+        var d = await apiFetch('/users/me/space');
+        document.getElementById('result').textContent = 'OK: ' + d.user.username;
+      } catch(e) {
+        document.getElementById('result').textContent = 'Error: ' + e.message;
+      }
+    }
+    
+    if (getToken()) {
+      testAPI();
+    } else {
+      document.getElementById('result').textContent = 'Not logged in. Click "Test API"';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>创建活动 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .create-page { padding-top: calc(64px + 1.5rem); padding-bottom: 4rem; }
+    .create-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 640px; margin: 0 auto; }
+    .form-group { margin-bottom: 0.8rem; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 0.3rem; }
+    .emoji-picker { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.4rem; }
+    .emoji-option { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; border-radius: var(--radius-sm); border: 1.5px solid var(--border-color); cursor: pointer; font-size: 1.1rem; transition: all var(--transition-fast); }
+    .emoji-option:hover { border-color: var(--color-primary); }
+    .emoji-option.active { border-color: var(--color-primary); background: var(--color-primary-soft); }
+    .emoji-value { width: 60px; text-align: center; font-size: 1.5rem; border: none; background: transparent; }
+  </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="create-page">
+    <div class="container-narrow">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;">
+        <h1 style="font-size:1.5rem;font-weight:700;flex:1;">创建活动</h1>
+        <a href="activities.html" class="btn btn-ghost btn-sm">← 返回</a>
+      </div>
+
+      <div id="createForm" class="create-card">
+        <div class="form-group"><label>活动标题</label><input type="text" id="actTitle" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" /></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group"><label>日期</label><input type="date" id="actDate" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" /></div>
+          <div class="form-group"><label>时间</label><input type="text" id="actTime" placeholder="如: 14:00-17:00" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" /></div>
+        </div>
+
+        <div class="form-group">
+          <label>活动图标</label>
+          <div class="emoji-picker" id="emojiPicker">
+            <span class="emoji-option" onclick="pickEmoji(this)">📅</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🎵</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🎨</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">⚽</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">📚</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">💻</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🎤</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🎭</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🤝</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🏀</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🎉</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🔥</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🌱</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">♻️</span>
+            <span class="emoji-option" onclick="pickEmoji(this)">🔬</span>
+          </div>
+          <input type="text" id="actEmoji" value="📅" class="emoji-value" maxlength="4" />
+        </div>
+
+        <div class="form-group"><label>地点</label><input type="text" id="actLocation" placeholder="活动举办地点" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" /></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="form-group"><label>类别</label>
+            <select id="actTag" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+              <option value="兴趣">兴趣</option><option value="学术">学术</option><option value="体育">体育</option><option value="公益">公益</option><option value="科技">科技</option>
+            </select>
+          </div>
+          <div class="form-group"><label>学院</label>
+            <select id="actCollege" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;">
+              <option value="">不限</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>活动封面图</label>
+          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+            <div id="actPosterPreview" style="width:100px;height:60px;border-radius:6px;background:var(--color-gray-100);display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:var(--text-tertiary);overflow:hidden;border:1px solid var(--border-color);flex-shrink:0;">
+              <span id="posterPlaceholder">📷 封面</span>
+              <img id="posterImg" style="display:none;width:100%;height:100%;object-fit:cover;" />
+            </div>
+            <button class="btn btn-ghost btn-sm" onclick="document.getElementById('posterInput').click()">上传图片</button>
+            <input type="file" id="posterInput" accept="image/*" style="display:none" onchange="uploadPoster(this)" />
+            <span id="posterStatus" style="font-size:0.75rem;color:var(--text-tertiary);"></span>
+          </div>
+        </div>
+        <div class="form-group"><label>活动描述</label><textarea id="actDesc" rows="4" placeholder="详细介绍你的活动..." style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;"></textarea></div>
+
+                <div class="form-group"><label>联系方式（QQ/微信，申请通过后可见）</label><input type="text" id="actContact" placeholder="如: QQ 123456789" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" /></div>
+
+        <div class="form-group"><label>温馨提示（每行一条）</label><textarea id="actTips" rows="3" placeholder="建议自带水杯&#10;提前10分钟到场&#10;如遇雨天改期" style="width:100%;padding:0.6rem 0.9rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;"></textarea></div>
+
+        <div style="display:flex;gap:1rem;margin-top:1.5rem;">
+          <button class="btn btn-primary btn-lg" style="flex:1;justify-content:center;" onclick="createActivity()">发布活动</button>
+          <button class="btn btn-ghost btn-lg" style="flex:1;justify-content:center;" onclick="window.location='activities.html'">取消</button>
+        </div>
+        <div id="createError" style="color:#E85D3A;font-size:0.85rem;margin-top:0.8rem;text-align:center;"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:3rem;">
+    <div class="container"><div class="footer-bottom"><span>&copy; 2026 Wust Spark</span></div></div>
+  </footer>
+
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    document.getElementById('actDate').valueAsDate = new Date();
+
+    // 编辑模式：加载已有活动
+    var editId = new URLSearchParams(location.search).get('id');
+    if (editId) {
+      document.querySelector('h1').textContent = '编辑活动';
+      document.querySelector('.btn-primary').textContent = '保存修改';
+      apiFetch('/activities/'+editId).then(function(a){
+        document.getElementById('actTitle').value = a.title || '';
+        document.getElementById('actDate').value = a.date || '';
+        document.getElementById('actTime').value = a.time || '';
+        document.getElementById('actLocation').value = a.location || '';
+        document.getElementById('actTag').value = a.tag || '兴趣';
+        document.getElementById('actDesc').value = a.description || '';
+        document.getElementById('actContact').value = a.contact_info || '';
+        document.getElementById('actEmoji').value = a.emoji || '📅';
+        document.getElementById('actTips').value = (a.tips||[]).join('\n');
+        if (a.cover_image) {
+          posterUrl = a.cover_image;
+          document.getElementById('posterImg').src = a.cover_image;
+          document.getElementById('posterImg').style.display = 'block';
+          document.getElementById('posterPlaceholder').style.display = 'none';
+        }
+      }).catch(function(e){ showToast(e.message,'error'); });
+    }
+
+    var posterUrl = '';
+    function uploadPoster(input) {
+      var file = input.files[0]; if (!file) return;
+      if (file.size > 5*1024*1024) { showToast('图片不能超过5MB','error'); return; }
+      var st = document.getElementById('posterStatus');
+      st.textContent = '上传中...';
+      var fd = new FormData(); fd.append('file', file); fd.append('type', 'activity');
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', '/club-api/upload');
+      xhr.setRequestHeader('Authorization', 'Bearer ' + (getToken() || ''));
+      xhr.onload = function() {
+        try {
+          var d = JSON.parse(xhr.responseText);
+          if (xhr.status >= 200 && xhr.status < 300) {
+            posterUrl = d.url;
+            document.getElementById('posterImg').src = d.url;
+            document.getElementById('posterImg').style.display = 'block';
+            document.getElementById('posterPlaceholder').style.display = 'none';
+            st.textContent = '✅'; showToast('图片已上传');
+          } else { st.textContent = '❌'; showToast(d.error || '上传失败', 'error'); }
+        } catch(e) { st.textContent = '❌'; showToast('服务器返回异常', 'error'); }
+      };
+      xhr.onerror = function() { st.textContent = '❌'; showToast('网络错误', 'error'); };
+      xhr.timeout = 30000;
+      xhr.send(fd);
+    }
+
+    function pickEmoji(el) {
+      document.querySelectorAll('#emojiPicker .emoji-option').forEach(function(s){s.classList.remove('active');});
+      el.classList.add('active');
+      document.getElementById('actEmoji').value = el.textContent;
+    }
+
+    fetch('/club-api/categories?level=1').then(function(r){return r.json()}).then(function(d){
+      var sel = document.getElementById('actCollege');
+      if (d.flat) d.flat.forEach(function(c){ if(c.level===1) sel.innerHTML += '<option value="'+c.id+'">'+c.name+'</option>'; });
+    }).catch(function(){});
+
+    async function createActivity() {
+      var btn = event.target;
+      btn.disabled = true;
+      btn.textContent = '发布中...';
+      document.getElementById('createError').textContent = '';
+
+      try {
+        if (!getToken()) { window.location = 'login.html'; return; }
+
+        var tips = document.getElementById('actTips').value.split('\n').filter(Boolean);
+        var body = {
+          title: document.getElementById('actTitle').value,
+          date: document.getElementById('actDate').value,
+          time: document.getElementById('actTime').value,
+          location: document.getElementById('actLocation').value,
+          tag: document.getElementById('actTag').value,
+          college_id: document.getElementById('actCollege').value || null,
+          description: document.getElementById('actDesc').value,
+          contact_info: document.getElementById("actContact").value,
+          tips: tips,
+          emoji: document.getElementById("actEmoji").value,
+          cover_image: posterUrl,
+          type: 'upcoming'
+        };
+
+        if (!body.title || !body.date) { throw new Error('请填写标题和日期'); }
+
+        if (editId) {
+          await apiFetch('/activities/'+editId, { method: 'PUT', body: body });
+          showToast('已保存！');
+          setTimeout(function() { window.location = 'activity-detail.html?id='+editId; }, 500);
+        } else {
+          var result = await apiFetch('/activities', { method: 'POST', body: body });
+          showToast('发布成功！');
+          setTimeout(function() { window.location = 'activity-detail.html?id=' + result.id; }, 500);
+        }
+      } catch(e) {
+        document.getElementById('createError').textContent = e.message;
+        btn.disabled = false;
+        btn.textContent = '发布活动';
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="浏览校园所有社团 - Wust Spark 校园社团风采展示平台">
+  <title>社团 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  <section class="page-hero">
+    <h1>🎪 全部社团</h1>
+    <p>发现你的热爱，找到属于你的团队</p>
+    <div style="margin-top:1rem;">
+      <a href="club-manage.html" class="btn btn-primary btn-sm">＋ 入驻社团</a>
+      <a href="club-manage.html" class="btn btn-outline btn-sm" style="margin-left:0.5rem;">⚙️ 管理</a>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <!-- 移动端筛选 -->
+      <div class="filter-bar-mobile">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="搜索社团..." />
+        </div>
+        <div class="filter-chips" id="clubFilterChips"></div>
+        <button class="btn btn-ghost btn-sm filter-toggle-btn" id="clubFilterToggle">
+          <span>☰</span> 筛选
+        </button>
+      </div>
+      <!-- 筛选抽屉 -->
+      <div class="drawer-overlay" id="clubDrawerOverlay"></div>
+      <div class="filter-drawer" id="clubFilterDrawer">
+        <div class="drawer-header">
+          <h3>筛选条件</h3>
+          <button class="drawer-close" id="clubDrawerClose">✕</button>
+        </div>
+        <div class="drawer-body">
+          <div class="drawer-section">
+            <span class="drawer-label">📌 类型</span>
+            <div class="drawer-tags" id="typeTags">
+              <button class="tag-chip active" data-type="club">🎪 社团</button>
+              <button class="tag-chip" data-type="department">🏛️ 部门</button>
+            </div>
+          </div>
+          <div class="drawer-section">
+            <span class="drawer-label">🎯 级别</span>
+            <div class="drawer-tags" id="levelTags">
+              <button class="tag-chip active" data-level="all">全部</button>
+              <button class="tag-chip" data-level="school">🏛️ 校级</button>
+              <button class="tag-chip" data-level="college">🏫 院级</button>
+            </div>
+          </div>
+          <div class="drawer-section" id="collegeSection" style="display:none;">
+            <span class="drawer-label">🏛️ 选择学院</span>
+            <div class="drawer-tags" id="collegeTags">
+              <button class="tag-chip active" data-college="all">全部学院</button>
+            </div>
+          </div>
+          <div class="drawer-section">
+            <span class="drawer-label">🏷️ 类别</span>
+            <div class="drawer-tags" id="filterTags">
+              <button class="tag-chip active" data-filter="all" data-group="all">全部</button>
+              <button class="tag-chip" data-filter="兴趣" data-group="club">🎨 兴趣</button>
+              <button class="tag-chip" data-filter="学术" data-group="club">📚 学术</button>
+              <button class="tag-chip" data-filter="体育" data-group="club">⚽ 体育</button>
+              <button class="tag-chip" data-filter="公益" data-group="club">💚 公益</button>
+              <button class="tag-chip" data-filter="科技" data-group="club">💻 科技</button>
+              <button class="tag-chip" data-filter="服务" data-group="department" style="display:none;">🤝 服务</button>
+              <button class="tag-chip" data-filter="组织" data-group="department" style="display:none;">📋 组织</button>
+              <button class="tag-chip" data-filter="志愿" data-group="department" style="display:none;">🤝 志愿</button>
+              <button class="tag-chip" data-filter="宣传" data-group="department" style="display:none;">📱 宣传</button>
+              <button class="tag-chip" data-filter="文艺" data-group="department" style="display:none;">🎭 文艺</button>
+              <button class="tag-chip" data-filter="爱国" data-group="department" style="display:none;">🇨🇳 爱国</button>
+              <button class="tag-chip" data-filter="管理" data-group="department" style="display:none;">🎪 管理</button>
+              <button class="tag-chip" data-filter="行政" data-group="department" style="display:none;">📄 行政</button>
+              <button class="tag-chip" data-filter="文体" data-group="department" style="display:none;">⚽ 文体</button>
+              <button class="tag-chip" data-filter="实践" data-group="department" style="display:none;">🌱 实践</button>
+              <button class="tag-chip" data-filter="理论" data-group="department" style="display:none;">📖 理论</button>
+            </div>
+          </div>
+        </div>
+        <div class="drawer-footer">
+          <button class="btn btn-ghost" onclick="document.querySelectorAll('.tag-chip').forEach(function(t){t.classList.remove('active')});document.querySelector('[data-filter=all]').classList.add('active');document.querySelector('[data-level=all]').classList.add('active');document.querySelector('[data-type=club]').classList.add('active');(document.querySelector('[data-college=all]')||{}).classList&&document.querySelector('[data-college=all]').classList.add('active');document.getElementById('collegeSection').style.display='none';renderAllClubs()">重置</button>
+          <button class="btn btn-primary" id="clubDrawerApply">应用</button>
+        </div>
+      </div>
+      <!-- 加载状态 -->
+      <div id="loadingState" class="loading-state">
+        <div class="loading-spinner"></div>
+        <p>正在加载社团数据...</p>
+      </div>
+      <!-- 社团网格 -->
+      <div class="club-grid" id="allClubGrid"></div>
+      <!-- 空状态 -->
+      <div id="emptyState" class="empty-state" style="display:none;">
+        <span class="empty-icon">🔍</span>
+        <h3>没有找到匹配的社团</h3>
+        <p>试试其他关键词或筛选条件吧</p>
+      </div>
+    </div>
+  </section>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3><span>✨</span> Wust Spark</h3>
+          <p>致力于打破校园信息壁垒，让每一个热爱都能找到归属。</p>
+        </div>
+        <div>
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="clubs.html">社团</a></li>
+            <li><a href="activities.html">活动</a></li><li><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>帮助支持</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="mailto:wusters@wust.edu.cn">反馈意见</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>关注我们</h4>
+          <div class="footer-social">
+            <a href="#" aria-label="微信">💬</a>
+            <a href="#" aria-label="微博">📱</a>
+            <a href="#" aria-label="B站">📺</a>
+            <a href="#" aria-label="抖音">🎵</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Wust Spark. All rights reserved.</span>
+        <span>用热爱连接每一个你 ❤️</span>
+      </div>
+    </div>
+  </footer>
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+  <!-- 底部导航（移动端） -->
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+  <script src="js/main.js?v=80"></script>
+</body>
+</html>

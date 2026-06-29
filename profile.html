@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>个人空间 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .profile-wrap { padding-top: 80px; padding-bottom: 80px; }
+    .profile-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
+    .profile-header h1 { font-size: 1.4rem; font-weight: 700; flex: 1; }
+    .layout { display: grid; grid-template-columns: 260px 1fr; gap: 1.5rem; }
+    .sidebar { background: var(--bg-card); border-radius: var(--radius-lg); padding: 1.5rem; border: 1px solid var(--border-color); text-align: center; position: sticky; top: 80px; height: fit-content; }
+    .avatar { width: 72px; height: 72px; border-radius: 50%; background: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 2.2rem; margin: 0 auto 0.8rem; color: white; }
+    .pname { font-size: 1.2rem; font-weight: 700; }
+    .pmeta { color: var(--text-tertiary); font-size: 0.8rem; margin: 0.2rem 0; }
+    .pstats { display: flex; justify-content: center; gap: 1.2rem; margin: 0.8rem 0; padding: 0.6rem 0; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
+    .pstat-num { font-size: 1.1rem; font-weight: 700; }
+    .pstat-label { font-size: 0.7rem; color: var(--text-tertiary); }
+    .ptags { display: flex; flex-wrap: wrap; gap: 0.3rem; justify-content: center; margin: 0.5rem 0; }
+    .ptag { padding: 0.15rem 0.5rem; background: var(--color-gray-100); border-radius: var(--radius-sm); font-size: 0.72rem; color: var(--text-tertiary); font-weight: 500; }
+    .pbio { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin: 0.6rem 0; }
+    .main { display: flex; flex-direction: column; gap: 0.8rem; }
+    .card { background: var(--bg-card); border-radius: var(--radius-lg); padding: 1rem 1.2rem; border: 1px solid var(--border-color); }
+    .card-hd { display: flex; align-items: center; gap: 0.4rem; margin-bottom: 0.6rem; }
+    .card-hd h2 { font-size: 0.95rem; font-weight: 700; flex: 1; }
+    .card-hd a { font-size: 0.78rem; color: var(--color-primary); }
+    .item { display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.6rem; border-radius: var(--radius-sm); background: var(--color-gray-50); margin-bottom: 0.3rem; font-size: 0.85rem; cursor: pointer; }
+    .item:hover { background: var(--color-gray-100); }
+    .item .e { font-size: 1.1rem; }
+    .item .info { flex: 1; }
+    .item .t { font-weight: 600; }
+    .item .d { font-size: 0.72rem; color: var(--text-tertiary); }
+    .empty-tip { color: var(--text-tertiary); font-size: 0.82rem; padding: 0.3rem 0; }
+    .notif-bell { position: relative; cursor: pointer; font-size: 1.2rem; }
+    .notif-dot { position: absolute; top: -3px; right: -5px; width: 15px; height: 15px; border-radius: 50%; background: #FF4757; color: white; font-size: 0.55rem; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+    .friend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.4rem; }
+    .friend-item { display: flex; align-items: center; gap: 0.5rem; padding: 0.35rem 0.5rem; border-radius: var(--radius-sm); background: var(--color-gray-50); }
+    .favatar { width: 28px; height: 28px; border-radius: 50%; background: var(--gradient-secondary); display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; font-weight: 700; }
+    .fname { font-size: 0.78rem; font-weight: 600; }
+    .role-badge { font-size: 0.62rem; padding: 0.08rem 0.35rem; border-radius: var(--radius-sm); font-weight: 600; }
+    .role-org { background: rgba(232,93,58,0.1); color: var(--color-primary); }
+    .role-par { background: rgba(14,168,138,0.1); color: var(--color-accent-dark); }
+    .status-pending { background: rgba(247,201,72,0.15); color: #B8860B; }
+    .status-approved { background: rgba(14,168,138,0.1); color: var(--color-accent-dark); }
+    .status-rejected { background: rgba(232,93,58,0.1); color: var(--color-primary); }
+    @media(max-width:768px) { .layout { grid-template-columns: 1fr; } .sidebar { position: static; } }
+    .edit-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; display:none; align-items:center; justify-content:center; }
+    .edit-modal.open { display: flex; }
+    .edit-modal-content { background: var(--bg-card); border-radius: var(--radius-lg); width: 90%; max-width: 480px; max-height: 80vh; overflow-y: auto; padding: 1.2rem; box-shadow: var(--shadow-xl); }
+  </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links">
+        <a href="index.html">首页</a><a href="clubs.html">社团</a><a href="activities.html">活动</a><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+    </div>
+  </nav>
+
+  <div class="profile-wrap">
+    <div class="container">
+      <div id="profileContent">
+        <div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 通知弹窗 -->
+  <div class="edit-modal" id="notifModal">
+    <div class="edit-modal-content" style="max-width:480px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;">
+        <h3 style="font-weight:700;font-size:1rem;">通知</h3>
+        <button class="btn btn-ghost btn-sm" onclick="readAllNotif()">全部已读</button>
+      </div>
+      <div id="notifList"><p style="color:var(--text-tertiary);font-size:0.82rem;text-align:center;padding:1rem 0;">暂无通知</p></div>
+      <button class="btn btn-ghost btn-sm" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="closeNotif()">关闭</button>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:2rem;">
+    <div class="container"><div class="footer-bottom"><span>&copy; 2026 Wust Spark</span></div></div>
+  </footer>
+
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html" class="active"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    function ready(fn) { if (document.readyState !== 'loading') setTimeout(fn, 30); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(fn, 30); }); }
+
+    function showNotif() { loadNotifs(); document.getElementById('notifModal').classList.add('open'); }
+    function closeNotif() { document.getElementById('notifModal').classList.remove('open'); }
+    document.getElementById('notifModal').onclick = function(e) { if (e.target === this) closeNotif(); };
+
+    async function loadNotifs() {
+      try {
+        var d = await apiFetch('/notifications');
+        var list = document.getElementById('notifList');
+        if (!d.notifications || d.notifications.length === 0) { list.innerHTML = '<p style="color:var(--text-tertiary);font-size:0.82rem;text-align:center;padding:1rem 0;">暂无通知</p>'; return; }
+        var h = '';
+        for (var i = 0; i < d.notifications.length; i++) {
+          var n = d.notifications[i];
+          var isUnread = !n.is_read;
+          var bgStyle = isUnread ? 'background:var(--color-primary-softer);' : '';
+          h += '<div onclick="markRead(' + n.id + ',this)" style="cursor:pointer;padding:0.5rem 0.6rem;border-bottom:1px solid var(--border-color);font-size:0.82rem;border-radius:6px;transition:background .15s;' + bgStyle + '">';
+          h += '<div style="display:flex;align-items:center;gap:0.3rem;">';
+          if (isUnread) h += '<span style="width:6px;height:6px;border-radius:50%;background:var(--color-primary);flex-shrink:0;"></span>';
+          h += '<div style="font-weight:' + (isUnread ? '700' : '500') + ';">' + n.title + '</div>';
+          h += '</div>';
+          h += '<div style="color:var(--text-tertiary);font-size:0.72rem;margin-top:0.15rem;">' + (n.content || '') + '</div></div>';
+        }
+        list.innerHTML = h;
+      } catch(e) {}
+    }
+
+    async function markRead(id, el) {
+      try {
+        await apiFetch('/notifications/' + id + '/read', {method:'PUT'});
+        el.style.background = 'transparent';
+        el.querySelector('span') && el.querySelector('span').remove();
+        el.querySelector('div > div').style.fontWeight = '500';
+        // 更新未读数
+        var d = await apiFetch('/notifications');
+        var dot = document.querySelector('.notif-dot');
+        if (dot && d.unread_count > 0) dot.textContent = d.unread_count;
+        else if (dot) dot.remove();
+      } catch(e) {}
+    }
+
+    async function readAllNotif() {
+      try { await apiFetch('/notifications/read-all', {method:'PUT'}); closeNotif(); location.reload(); } catch(e) {}
+    }
+
+    ready(function() {
+      if (!getToken()) {
+        document.getElementById('profileContent').innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
+        return;
+      }
+      loadFullProfile();
+      updateNavAuth();
+    });
+
+    function genItem(emoji, title, date, extra, link) {
+      var e = extra || '';
+      return '<div class="item" onclick="location=\'' + link + '\'"><div class="e">' + emoji + '</div><div class="info"><div class="t">' + title + '</div><div class="d">' + (date || '') + '</div></div>' + e + '</div>';
+    }
+
+    async function loadFullProfile() {
+      var el = document.getElementById('profileContent');
+      try {
+        var d = await apiFetch('/users/me/space');
+        var u = d.user;
+        var tags = (u.interests || '').split(',').filter(Boolean);
+
+        var h = '';
+        h += '<div class="profile-header"><h1>我的空间</h1>';
+        h += '<div class="notif-bell" onclick="showNotif()"><span>&#x1F514;</span>';
+        if (d.unread_notifications > 0) h += '<span class="notif-dot">' + d.unread_notifications + '</span>';
+        h += '</div>';
+        h += '<a href="friends.html" class="btn btn-outline btn-sm">好友</a>';
+        h += '<a href="activity-create.html" class="btn btn-primary btn-sm">创建活动</a></div>';
+
+        h += '<div class="layout">';
+        // Sidebar
+        h += '<div class="sidebar"><div class="avatar" id="profileAvatar" style="overflow:hidden;">';
+        if (u.avatar) h += '<img src="' + u.avatar + '" style="width:100%;height:100%;object-fit:cover;" />';
+        else h += (u.nickname || u.username || '?')[0];
+        h += '</div>';
+        h += '<div class="pname">' + (u.nickname || u.username) + '</div>';
+        h += '<div class="pmeta">' + (u.college || '') + ' ' + (u.grade || '') + '</div>';
+        h += '<div class="pstats"><div><div class="pstat-num">' + d.friends_count + '</div><div class="pstat-label">好友</div></div><div><div class="pstat-num">' + d.activities.length + '</div><div class="pstat-label">参加</div></div><div><div class="pstat-num">' + d.created_activities.length + '</div><div class="pstat-label">发布</div></div></div>';
+        h += '<button class="btn btn-outline btn-sm" style="width:100%;" onclick="goEdit()">✏️ 编辑资料</button>';
+        if (tags.length > 0) { h += '<div class="ptags">'; for (var j = 0; j < tags.length; j++) { h += '<span class="ptag">' + tags[j].trim() + '</span>'; } h += '</div>'; }
+        if (u.bio) h += '<div class="pbio">' + u.bio + '</div>';
+        h += '</div>';
+        // Main content
+        h += '<div class="main">';
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F514; 通知</h2><a href="#" onclick="showNotif();return false;">查看</a></div><div class="empty-tip">' + (d.unread_notifications > 0 ? '你有 ' + d.unread_notifications + ' 条未读通知' : '暂无新通知') + '</div></div>';
+
+        // 我的收藏
+        h += '<div class="card" id="myFavCard"><div class="card-hd"><h2>⭐ 我的收藏</h2></div><div id="myFavList"><div class="empty-tip">加载中...</div></div></div>';
+
+        // 我的点赞
+        h += '<div class="card" id="myLikesCard"><div class="card-hd"><h2>❤️ 我的点赞</h2></div><div id="myLikesList"><div class="empty-tip">加载中...</div></div></div>';
+
+        // Created activities
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F680; 我发布的活动</h2><a href="activity-create.html">发布</a></div>';
+        if (d.created_activities.length > 0) { for (var i = 0; i < d.created_activities.length; i++) { var a = d.created_activities[i]; h += genItem(a.emoji || '📅', a.title, a.date, '<div style="display:flex;gap:0.2rem;"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();location=\'activity-create.html?id='+a.id+'\'">✏️</button><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="event.stopPropagation();deleteMyActivity('+a.id+')">🗑️</button></div>', 'activity-detail.html?id=' + a.id); } }
+        else { h += '<div class="empty-tip">还没有发布活动</div>'; }
+        h += '</div>';
+
+        // Applications
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F4CB; 我申请的活动</h2></div>';
+        if (d.applications.length > 0) { for (var i = 0; i < d.applications.length; i++) { var a = d.applications[i]; var sc = a.status === 'approved' ? 'status-approved' : a.status === 'rejected' ? 'status-rejected' : 'status-pending'; var st = a.status === 'approved' ? '已通过' : a.status === 'rejected' ? '已拒绝' : '待审核'; h += genItem(a.emoji || '📅', a.title, a.date, '<span class="role-badge ' + sc + '">' + st + '</span>', 'activity-detail.html?id=' + a.id); } }
+        else { h += '<div class="empty-tip">还没有申请过活动</div>'; }
+        h += '</div>';
+
+        // Activities
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F4C5; 我参加的活动</h2></div>';
+        if (d.activities.length > 0) { for (var i = 0; i < d.activities.length; i++) { var a = d.activities[i]; var rc = a.role === 'organizer' ? 'role-org' : 'role-par'; var rt = a.role === 'organizer' ? '发起人' : a.role === 'cohost' ? '合办' : '参与者'; h += genItem(a.emoji || '📅', a.title, a.date + ' ' + (a.location || ''), '<span class="role-badge ' + rc + '">' + rt + '</span>', 'activity-detail.html?id=' + a.id); } }
+        else { h += '<div class="empty-tip">还没有参加活动</div>'; }
+        h += '</div>';
+
+        // Clubs
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F3AA; 我的社团</h2><a href="clubs.html">浏览</a></div>';
+        if (d.clubs.length > 0) { for (var i = 0; i < d.clubs.length; i++) { var c = d.clubs[i]; var rt2 = c.role === 'president' ? '社长' : c.role === 'vice_president' ? '副社长' : '成员'; h += genItem(c.emoji, c.name, rt2 + ' | ' + c.members + ' 人', '', 'club-detail.html?id=' + c.id); } }
+        else { h += '<div class="empty-tip">还没有加入社团</div>'; }
+        h += '</div>';
+
+        // Friends
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F91D; 好友 (' + d.friends_count + ')</h2><a href="friends.html">管理</a></div>';
+        if (d.friends && d.friends.length > 0) { h += '<div class="friend-grid">'; for (var i = 0; i < d.friends.length; i++) { var f = d.friends[i]; var _fav = (f.nickname || f.username || '?')[0]; h += '<div class="friend-item"><div class="favatar">' + _fav + '</div><div><div class="fname">' + (f.nickname || f.username) + '</div><div style="font-size:0.68rem;color:var(--text-tertiary);">' + (f.college || '') + '</div></div></div>'; } h += '</div>'; }
+        else { h += '<div class="empty-tip">还没有好友</div>'; }
+        h += '</div>';
+
+        h += '</div></div>';
+        el.innerHTML = h;
+        // 加载勋章
+        loadBadges();
+        loadMyLikes();
+        loadMyFavs();
+      } catch(e) {
+        var msg = e.message || '';
+        if (msg.indexOf('登录') >= 0 || msg.indexOf('未登录') >= 0 || msg.indexOf('过期') >= 0) {
+          el.innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
+        } else {
+          el.innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">⚠️</span><h3>加载失败</h3><p>' + msg + '</p><button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="location.reload()">重试</button></div>';
+        }
+      }
+    }
+
+    function goToActivity(id){location.href='activity-detail.html?id='+id;}
+    function goEdit() { location.href = 'profile-edit.html'; }
+    async function loadBadges() {
+      try {
+        var d = await apiFetch('/badges');
+        var list = document.getElementById('badgeList');
+        if (!list) return;
+        if (!d.badges || !d.badges.length) { list.innerHTML = '<div style="font-size:0.78rem;color:var(--text-tertiary);">暂无勋章</div>'; return; }
+        var h = '<div style="display:flex;flex-wrap:wrap;gap:0.4rem;">';
+        d.badges.forEach(function(b){
+          var owned = d.user_badges.indexOf(b.id) >= 0;
+          var opacity = owned ? '1' : '0.25';
+          h += '<div style="text-align:center;width:56px;opacity:' + opacity + ';" title="' + (owned ? b.description : '未获得') + '"><div style="font-size:1.5rem;">' + b.icon + '</div><div style="font-size:0.6rem;color:var(--text-tertiary);margin-top:0.1rem;">' + (owned ? b.name : '???') + '</div></div>';
+        });
+        h += '</div>';
+        list.innerHTML = h;
+      } catch(e) {}
+    }
+    async function loadMyLikes() {
+      try {
+        var d = await apiFetch('/likes/mine');
+        var list = document.getElementById('myLikesList');
+        if (!list) return;
+        if (!d.likes || !d.likes.length) { list.innerHTML = '<div class="empty-tip">还没有点赞过活动</div>'; return; }
+        var h = '';
+        d.likes.forEach(function(l){
+          h += '<div class="item" onclick="location.href=\'activity-detail.html?id=' + l.target_id + '\'"><div class="e">' + (l.emoji||'📅') + '</div><div class="info"><div class="t">' + (l.title||'') + '</div><div class="d">' + (l.date||'') + '</div></div></div>';        });
+        list.innerHTML = h;
+      } catch(e) {}
+    }
+    async function loadMyFavs() {
+      try {
+        var d = await apiFetch('/favs/mine');
+        var list = document.getElementById('myFavList');
+        if (!list) return;
+        if (!d.favs || !d.favs.length) { list.innerHTML = '<div class="empty-tip">还没有收藏活动</div>'; return; }
+        var h = '';
+        d.favs.forEach(function(l){
+          h += '<div class="item" onclick="location.href=\'activity-detail.html?id=' + l.target_id + '\'"><div class="e">' + (l.emoji||'📅') + '</div><div class="info"><div class="t">' + (l.title||'') + '</div><div class="d">' + (l.date||'') + '</div></div></div>';
+        });
+        list.innerHTML = h;
+      } catch(e) {}
+    }
+    async function deleteMyActivity(id) {
+      if (!await confirmDialog({icon:'🗑️',title:'删除活动',message:'确定删除该活动吗？',confirmText:'删除',danger:true})) return;
+      try { await apiFetch('/activities/'+id,{method:'DELETE'}); showToast('已删除'); location.reload(); }
+      catch(e) { showToast(e.message,'error'); }
+    }
+  </script>
+</body>
+</html>

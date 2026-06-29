@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>好友 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .friend-page { padding-top: calc(64px + 1.5rem); padding-bottom: 4rem; }
+    .friend-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 0.6rem; }
+    .friend-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 1rem; text-align: center; }
+    .friend-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--gradient-secondary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem; margin: 0 auto 0.5rem; }
+    .friend-name { font-weight: 600; font-size: 0.85rem; margin-bottom: 0.15rem; }
+    .friend-college { font-size: 0.72rem; color: var(--text-tertiary); margin-bottom: 0.5rem; }
+    .req-item { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem; background: var(--color-gray-50); border-radius: var(--radius-sm); margin-bottom: 0.3rem; flex-wrap: wrap; }
+    .req-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--gradient-secondary); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 0.9rem; flex-shrink: 0; }
+    .search-box { margin-bottom: 1rem; }
+    .search-box input { width: 100%; padding: 0.6rem 0.9rem; border: 1.5px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.9rem; }
+    .search-box input:focus { border-color: var(--color-primary); outline: none; }
+  </style>
+</head>
+<body>
+    <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="friend-page">
+    <div class="container">
+      <div style="display:flex;align-items:center;gap:1rem;margin-bottom:0.5rem;">
+        <h1 style="font-size:1.5rem;font-weight:700;flex:1;">好友管理</h1>
+        <a href="profile.html" class="btn btn-ghost btn-sm">← 返回</a>
+      </div>
+
+      <div class="tab-bar" id="tabBar">
+        <button class="tab active" data-tab="friends">我的好友</button>
+        <button class="tab" data-tab="requests">好友请求</button>
+        <button class="tab" data-tab="search">添加好友</button>
+      </div>
+
+      <div id="friendsContent">
+        <div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer" style="margin-top:3rem;">
+    <div class="container"><div class="footer-bottom"><span>&copy; 2026 Wust Spark</span></div></div>
+  </footer>
+
+    <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="js/main.js?v=80"></script>
+  <script>
+    var tabBar = document.getElementById('tabBar');
+    tabBar && tabBar.addEventListener('click', function(e) {
+      var btn = e.target.closest('.tab');
+      if (!btn) return;
+      tabBar.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+      btn.classList.add('active');
+      if (btn.dataset.tab === 'friends') loadFriends();
+      else if (btn.dataset.tab === 'requests') loadRequests();
+      else if (btn.dataset.tab === 'search') showSearch();
+    });
+
+    function ready(fn) { if (document.readyState !== 'loading') setTimeout(fn,30); else document.addEventListener('DOMContentLoaded',function(){setTimeout(fn,30);}); }
+
+    ready(function() {
+      if (!getToken()) { document.getElementById('friendsContent').innerHTML = '<div class="empty-state"><p>请先登录</p><a href="login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>'; return; }
+      loadFriends();
+    });
+
+    function loadFriends() {
+      var el = document.getElementById('friendsContent');
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      apiFetch('/friends').then(function(d) {
+        if (d.friends.length === 0) { el.innerHTML = '<div class="empty-state"><p>还没有好友</p></div>'; return; }
+        var h = '<div class="friend-grid">';
+        for (var i = 0; i < d.friends.length; i++) {
+          var f = d.friends[i];
+          h += '<div class="friend-card"><div class="friend-avatar">' + (f.nickname||f.username||'?')[0] + '</div><div class="friend-name">' + (f.nickname||f.username) + '</div><div class="friend-college">' + (f.college||'') + '</div><button class="btn btn-ghost btn-sm" onclick="removeFriend(' + f.id + ')">删除</button></div>';
+        }
+        h += '</div>';
+        el.innerHTML = h;
+      }).catch(function(e) {
+        el.innerHTML = '<div class="empty-state"><p>' + e.message + '</p></div>';
+      });
+    }
+
+    function loadRequests() {
+      var el = document.getElementById('friendsContent');
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      apiFetch('/friends/requests').then(function(d) {
+        var h = '';
+        if (d.received.length > 0) {
+          h += '<h3 style="font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;">收到的请求</h3>';
+          for (var i = 0; i < d.received.length; i++) {
+            var r = d.received[i];
+            h += '<div class="req-item"><div class="req-avatar">' + (r.avatar?'<img src="'+r.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />':(r.nickname||r.username||'?')[0]) + '</div><div class="friend-info" style="flex:1;"><div style="font-weight:600;font-size:0.85rem;">' + (r.nickname||r.username) + '</div><div style="font-size:0.75rem;color:var(--text-tertiary);">' + (r.college||'') + '</div></div><button class="btn btn-primary btn-sm" onclick="respondRequest(' + r.request_id + ',\'accept\')">通过</button><button class="btn btn-ghost btn-sm" onclick="respondRequest(' + r.request_id + ',\'reject\')">拒绝</button></div>';
+          }
+        }
+        if (d.sent.length > 0) {
+          h += '<h3 style="font-size:0.9rem;font-weight:600;margin:1rem 0 0.5rem;">发出的请求</h3>';
+          for (var i = 0; i < d.sent.length; i++) {
+            var s = d.sent[i];
+            h += '<div class="req-item"><div class="req-avatar">' + (s.avatar?'<img src="'+s.avatar+'" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />':(s.nickname||s.username||'?')[0]) + '</div><div style="font-weight:600;font-size:0.85rem;">' + (s.nickname||s.username) + '</div><span style="font-size:0.75rem;color:var(--text-tertiary);margin-left:auto;">等待对方确认</span></div>';
+          }
+        }
+        if (!h) h = '<div class="empty-state"><p>暂无好友请求</p></div>';
+        el.innerHTML = h;
+      }).catch(function(e) { el.innerHTML = '<div class="empty-state"><p>' + e.message + '</p></div>'; });
+    }
+
+    function showSearch() {
+      var el = document.getElementById('friendsContent');
+      el.innerHTML = '<div class="search-box"><input type="text" id="searchUser" placeholder="搜索用户名或昵称..." oninput="searchUsers()" /></div><div id="searchResults"><div class="empty-state"><p>输入关键词搜索用户</p></div></div>';
+    }
+
+    var searchTimer;
+    function searchUsers() {
+      clearTimeout(searchTimer);
+      searchTimer = setTimeout(function() {
+        var q = document.getElementById('searchUser').value;
+        if (!q || q.length < 1) { document.getElementById('searchResults').innerHTML = '<div class="empty-state"><p>输入关键词搜索用户</p></div>'; return; }
+        apiFetch('/friends/search?q=' + encodeURIComponent(q)).then(function(d) {
+          if (d.users.length === 0) { document.getElementById('searchResults').innerHTML = '<div class="empty-state"><p>未找到用户</p></div>'; return; }
+          var h = '<div class="friend-grid">';
+          for (var i = 0; i < d.users.length; i++) {
+            var u = d.users[i];
+            h += '<div class="friend-card"><div class="friend-avatar">' + (u.nickname||u.username||'?')[0] + '</div><div class="friend-name">' + (u.nickname||u.username) + '</div><div class="friend-college">' + (u.college||'') + '</div><button class="btn btn-primary btn-sm" onclick="addFriend(' + u.id + ')">加好友</button></div>';
+          }
+          h += '</div>';
+          document.getElementById('searchResults').innerHTML = h;
+        });
+      }, 300);
+    }
+
+    function addFriend(id) {
+      apiFetch('/friends/request', {method:'POST',body:{user_id:id}}).then(function(d) {
+        showToast(d.message);
+      }).catch(function(e) { showToast(e.message,'error'); });
+    }
+
+    function respondRequest(id, action) {
+      apiFetch('/friends/respond', {method:'POST',body:{request_id:id,action:action}}).then(function(d) {
+        showToast(d.message);
+        loadRequests();
+      }).catch(function(e) { showToast(e.message,'error'); });
+    }
+
+    async function removeFriend(id) {
+      var ok = await confirmDialog({icon:'🗑️',title:'删除好友',message:'确定删除该好友吗？',confirmText:'删除',danger:true});
+      if (!ok) return;
+      apiFetch('/friends/' + id, {method:'DELETE'}).then(function(d) {
+        showToast(d.message);
+        loadFriends();
+      }).catch(function(e) { showToast(e.message,'error'); });
+    }
+  </script>
+</body>
+</html>

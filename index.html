@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Wust Spark - 校园社团风采展示平台，发现精彩社团活动，打破信息壁垒">
+  <title>Wust Spark · 校园社团风采</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+</head>
+<body>
+  <!-- ==================== 导航栏 ==================== -->
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="index.html" class="navbar-logo">
+        <span class="logo-icon">✨</span>
+        Wust Spark
+      </a>
+      <div class="navbar-links" id="navLinks">
+        <a href="index.html" class="active">首页</a>
+        <a href="clubs.html">社团</a>
+        <a href="activities.html">活动</a>
+        <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
+        <a href="about.html">关于</a>
+        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+  <!-- ==================== Hero 区域 ==================== -->
+  <section class="hero" id="home">
+    <div class="hero-bg-shapes">
+      <div class="hero-shape hero-shape-1"></div>
+      <div class="hero-shape hero-shape-2"></div>
+      <div class="hero-shape hero-shape-3"></div>
+    </div>
+    <div class="container">
+      <div class="hero-content">
+        <div class="hero-badge">
+          <span>🔥</span>
+          <span>校园社团聚合平台</span>
+        </div>
+        <h1 class="hero-title">
+          发现你的
+          <span class="highlight">无限可能</span>
+        </h1>
+        <p class="hero-desc">
+          Wust Spark 汇聚全校优秀社团与精彩活动，打破信息藩篱，
+          让每一个热爱都能找到归属，让每一次灵感都能绽放光芒。
+        </p>
+        <div class="hero-actions">
+          <a href="clubs.html" class="btn btn-primary btn-lg">
+            探索社团 <span>→</span>
+          </a>
+          <a href="activities.html" class="btn btn-outline btn-lg">
+            近期活动
+          </a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat-item">
+            <div class="stat-number" id="statClubs">-</div>
+            <div class="stat-label">社团/部门</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" id="statActivities">-</div>
+            <div class="stat-label">活动</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number">0</div>
+            <div class="stat-label">成员（等你来）</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-illustration">
+          <!-- 中央主图 -->
+          <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;">
+            <defs>
+              <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#FF6B35"/>
+                <stop offset="100%" stop-color="#F7C948"/>
+              </linearGradient>
+              <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#7C3AED"/>
+                <stop offset="100%" stop-color="#B794F4"/>
+              </linearGradient>
+              <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#06D6A0"/>
+                <stop offset="100%" stop-color="#4ADE80"/>
+              </linearGradient>
+            </defs>
+            <!-- 圆形装饰 -->
+            <circle cx="200" cy="180" r="120" fill="url(#grad1)" opacity="0.1"/>
+            <circle cx="200" cy="180" r="90" fill="url(#grad2)" opacity="0.15"/>
+            <circle cx="200" cy="180" r="60" fill="url(#grad1)" opacity="0.2"/>
+            <!-- 人物剪影 -->
+            <g transform="translate(200,180)">
+              <circle cx="0" cy="-30" r="25" fill="white"/>
+              <ellipse cx="0" cy="30" rx="40" ry="35" fill="white" opacity="0.9"/>
+              <circle cx="-10" cy="-35" r="3" fill="#2D3748" opacity="0.3"/>
+              <circle cx="10" cy="-35" r="3" fill="#2D3748" opacity="0.3"/>
+              <path d="M-8 -25 Q0 -20 8 -25" stroke="#2D3748" stroke-width="2" fill="none" opacity="0.3"/>
+            </g>
+            <!-- 小装饰点 -->
+            <circle cx="120" cy="100" r="8" fill="url(#grad1)" opacity="0.5">
+              <animate attributeName="r" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="290" cy="120" r="6" fill="url(#grad2)" opacity="0.5">
+              <animate attributeName="r" values="6;10;6" dur="2.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="280" cy="270" r="10" fill="url(#grad3)" opacity="0.5">
+              <animate attributeName="r" values="10;14;10" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="100" cy="260" r="5" fill="url(#grad1)" opacity="0.4">
+              <animate attributeName="r" values="5;9;5" dur="3.5s" repeatCount="indefinite"/>
+            </circle>
+            <!-- 星星 -->
+            <text x="140" y="80" font-size="24" opacity="0.6">⭐</text>
+            <text x="270" y="90" font-size="18" opacity="0.5">🌟</text>
+            <text x="110" y="300" font-size="20" opacity="0.4">✨</text>
+            <text x="300" y="300" font-size="22" opacity="0.5">💫</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ==================== 特性简介 ==================== -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">✨ 平台亮点</span>
+        <h2 class="section-title">让社团连接更简单</h2>
+        <p class="section-subtitle">一站式平台，轻松发现、参与、管理校园社团活动</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🔍</div>
+          <h3>轻松发现</h3>
+          <p>按类别、关键词快速找到感兴趣的社团，告别信息盲区</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">📅</div>
+          <h3>活动日历</h3>
+          <p>全校社团活动一目了然，再也不会错过精彩</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🤝</div>
+          <h3>即时加入</h3>
+          <p>一键联系社团负责人，轻松开启你的社团之旅</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🏆</div>
+          <h3>风采展示</h3>
+          <p>每个社团都有自己的专属展示空间，秀出独特魅力</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ==================== 热门社团 ==================== -->
+  <section class="section section-alt" id="clubs">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">🌟 热门社团</span>
+        <h2 class="section-title">总有一个适合你</h2>
+        <p class="section-subtitle">涵盖兴趣、学术、体育、公益、科技等多元领域，总有一款适合你</p>
+      </div>
+      <div class="club-grid" id="clubGrid">
+        <!-- 由 JS 动态渲染 -->
+      </div>
+      <div style="text-align:center;margin-top:var(--space-2xl);">
+        <a href="clubs.html" class="btn btn-outline">
+          查看全部社团 <span>→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- ==================== 近期活动 ==================== -->
+  <section class="section" id="activities">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">🎭 近期活动</span>
+        <h2 class="section-title">精彩正在发生</h2>
+        <p class="section-subtitle">从学术讲座到文艺演出，每一天都有新精彩</p>
+      </div>
+      <div class="activity-grid" id="activityGrid">
+        <!-- 由 JS 动态渲染 -->
+      </div>
+      <div style="text-align:center;margin-top:var(--space-2xl);">
+        <a href="activities.html" class="btn btn-outline">
+          查看全部活动 <span>→</span>
+        </a>
+      </div>
+    </div>
+  </section>
+  <!-- ==================== CTA ==================== -->
+  <section class="cta-section">
+    <div class="container">
+      <div class="cta-content">
+        <h2>🎉 准备好开启社团之旅了吗？</h2>
+        <p>无论你是想加入社团，还是想展示自己社团的风采，Wust Spark 都在这里等你</p>
+        <div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">
+          <a href="clubs.html" class="btn btn-white btn-lg">浏览社团</a>
+          <a href="index.html" class="btn btn-outline btn-lg" style="border-color:white;color:white;">返回首页</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- ==================== 页脚 ==================== -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <h3><span>✨</span> Wust Spark</h3>
+          <p>致力于打破校园信息壁垒，让每一个热爱都能找到归属。汇聚社团力量，点亮校园生活。</p>
+        </div>
+        <div>
+          <h4>快速链接</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">首页</a></li>
+            <li><a href="clubs.html">社团</a></li>
+            <li><a href="activities.html">活动</a></li><li><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a></li>
+            <li><a href="about.html">关于我们</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>帮助支持</h4>
+          <ul class="footer-links">
+            <li><a href="about.html">关于我们</a></li>
+            <li><a href="mailto:wusters@wust.edu.cn">反馈意见</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>关注我们</h4>
+          <div class="footer-social">
+            <a href="#" aria-label="微信">💬</a>
+            <a href="#" aria-label="微博">📱</a>
+            <a href="#" aria-label="B站">📺</a>
+            <a href="#" aria-label="抖音">🎵</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 Wust Spark. All rights reserved.</span>
+        <span>用热爱连接每一个你 ❤️</span>
+      </div>
+    </div>
+  </footer>
+  <!-- 回到顶部按钮 -->
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+  <!-- 底部导航（移动端） -->
+  <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="index.html" class="active"><span class="nav-icon">🏠</span>首页</a>
+    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+  <script src="js/main.js?v=80"></script>
+  <script>
+    // 实时统计
+    fetch('/club-api/stats').then(function(r){return r.json()}).then(function(d){
+      if (d.clubs !== undefined) {
+        var total = (d.clubs||0) + (d.departments||0);
+        document.getElementById('statClubs').textContent = total;
+      }
+      if (d.activities !== undefined) document.getElementById('statActivities').textContent = d.activities;
+    }).catch(function(){});
+  </script>
+</body>
+</html>
