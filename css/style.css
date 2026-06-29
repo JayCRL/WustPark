@@ -2417,7 +2417,7 @@ body {
 .team-panel,
 .market-item,
 .team-card {
-  border-radius: 16px !important;
+  border-radius: 24px !important;
 }
 .club-card:hover,
 .activity-card:hover,
@@ -2425,7 +2425,7 @@ body {
 .market-item:hover,
 .team-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(37, 99, 235, 0.22) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
   box-shadow: var(--shadow-lg);
 }
 
@@ -3030,7 +3030,7 @@ body {
 .team-card,
 .create-card,
 .friend-card {
-  border-radius: 18px !important;
+  border-radius: 24px !important;
 }
 
 .feature-card,
@@ -3559,7 +3559,7 @@ body.msg-theme {
   .msg-theme #stage {
     width: calc(100% - 1rem) !important;
     height: clamp(250px, calc(100vh - 430px), 390px) !important;
-    border-radius: 18px !important;
+    border-radius: 24px !important;
   }
 
   .msg-theme .post-area input,
@@ -3803,7 +3803,7 @@ main,
 .philosophy-card,
 .activity-desc-card,
 .tips-card {
-  border-radius: 16px !important;
+  border-radius: 24px !important;
 }
 
 .feature-card,
@@ -4022,7 +4022,7 @@ select option {
 
 .confirm-box {
   background: rgba(255,255,255,0.88) !important;
-  border-radius: 18px !important;
+  border-radius: 24px !important;
 }
 
 body.msg-theme {

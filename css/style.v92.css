@@ -2333,7 +2333,7 @@ body {
   top: 0.7rem;
   left: 1rem;
   right: 1rem;
-  border-radius: 18px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
@@ -2374,7 +2374,7 @@ body {
 .section-tag,
 .card-tag,
 .pill {
-  border: 1px solid rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.08);
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.65);
 }
 .hero-title,
@@ -2417,7 +2417,7 @@ body {
 .team-panel,
 .market-item,
 .team-card {
-  border-radius: 16px !important;
+  border-radius: 24px !important;
 }
 .club-card:hover,
 .activity-card:hover,
@@ -2425,7 +2425,7 @@ body {
 .market-item:hover,
 .team-card:hover {
   transform: translateY(-5px);
-  border-color: rgba(37, 99, 235, 0.22) !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
   box-shadow: var(--shadow-lg);
 }
 
@@ -2515,7 +2515,7 @@ textarea:focus,
 .team-head {
   padding: 1.1rem 1.2rem;
   border: 1px solid rgba(15, 23, 42, 0.08);
-  border-radius: 16px;
+  border-radius: 24px;
   background: rgba(255,255,255,0.76);
   box-shadow: var(--shadow-sm);
   backdrop-filter: blur(14px);
@@ -2577,7 +2577,7 @@ textarea:focus,
   overflow: auto;
   margin: auto;
   padding: 1.25rem;
-  border-radius: 18px;
+  border-radius: 24px;
   background: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(255, 255, 255, 0.72);
   box-shadow: 0 28px 80px rgba(15, 23, 42, 0.26);
@@ -2658,7 +2658,7 @@ textarea:focus,
     padding: 0.85rem;
   }
   .confirm-box {
-    border-radius: 16px;
+    border-radius: 24px;
     padding: 1rem;
   }
   .confirm-actions {
@@ -2673,7 +2673,7 @@ textarea:focus,
     right: 0.75rem;
     bottom: max(0.6rem, env(safe-area-inset-bottom));
     width: auto;
-    border-radius: 18px;
+    border-radius: 24px;
     border: 1px solid rgba(15,23,42,0.08);
     box-shadow: 0 16px 36px rgba(15,23,42,0.16);
     background: rgba(255,255,255,0.92);
@@ -3030,7 +3030,7 @@ body {
 .team-card,
 .create-card,
 .friend-card {
-  border-radius: 18px !important;
+  border-radius: 24px !important;
 }
 
 .feature-card,
@@ -3559,7 +3559,7 @@ body.msg-theme {
   .msg-theme #stage {
     width: calc(100% - 1rem) !important;
     height: clamp(250px, calc(100vh - 430px), 390px) !important;
-    border-radius: 18px !important;
+    border-radius: 24px !important;
   }
 
   .msg-theme .post-area input,
@@ -3803,7 +3803,7 @@ main,
 .philosophy-card,
 .activity-desc-card,
 .tips-card {
-  border-radius: 16px !important;
+  border-radius: 24px !important;
 }
 
 .feature-card,
@@ -3852,7 +3852,7 @@ main,
 .ad-hero-badge {
   color: var(--color-primary-dark) !important;
   background: rgba(255, 255, 255, 0.74) !important;
-  border-color: rgba(36, 107, 152, 0.15) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
   box-shadow: none !important;
   backdrop-filter: blur(16px) saturate(140%) !important;
   -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
@@ -4022,7 +4022,7 @@ select option {
 
 .confirm-box {
   background: rgba(255,255,255,0.88) !important;
-  border-radius: 18px !important;
+  border-radius: 24px !important;
 }
 
 body.msg-theme {
