@@ -45,7 +45,9 @@
         <button class="tab" data-tab="images">图片审核</button>
         <button class="tab" data-tab="contributions">社团贡献</button>
         <button class="tab" data-tab="logs">操作日志</button>
+        <button class="tab" data-tab="clubs">社团管理</button>
         <button class="tab" data-tab="claims">认领审核</button>
+        <button class="tab" data-tab="club-pending">入驻审核</button>
         <button class="tab" data-tab="admins">管理员</button>
       </div>
 
@@ -138,6 +140,7 @@
       else if (b.dataset.tab === 'logs') loadOperationLogs();
       else if (b.dataset.tab === 'claims') loadPendingClaims();
       else if (b.dataset.tab === 'images') loadPendingImages();
+      else if (b.dataset.tab === 'club-pending') loadClubPendingReview();
     });
 
     function loadStats() {
@@ -326,7 +329,38 @@
         loadContributions();
       } catch(e) { showToast(e.message, 'error'); }
     }
-    async function loadOperationLogs() {
+    var clubPendingStatus = 'pending';
+async function loadClubPendingReview() {
+  var el = document.getElementById('adminContent');
+  el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+  var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (clubPendingStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'pending\';loadClubPendingReview()">待审核</button><button class="btn btn-sm ' + (clubPendingStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'approved\';loadClubPendingReview()">已通过</button><button class="btn btn-sm ' + (clubPendingStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'rejected\';loadClubPendingReview()">已拒绝</button><button class="btn btn-sm ' + (clubPendingStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'all\';loadClubPendingReview()">全部</button></div>';
+  try {
+    var d = await apiFetch('/admin/clubs/pending?status=' + clubPendingStatus);
+    if (!d.clubs || !d.clubs.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无社团入驻申请</div>'; return; }
+    var h = tabs;
+    d.clubs.forEach(function(c){
+      var statusLabel = c.status === 'approved' ? '✅ 已通过' : c.status === 'rejected' ? '❌ 已拒绝' : '⏳ 待审核';
+      var actions = '';
+      if (c.status === 'pending') {
+        actions = '<button class="btn btn-primary btn-sm" onclick="reviewClubPending(' + c.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewClubPending(' + c.id + ',\'reject\')">拒绝</button>';
+      }
+      h += '<div class="review-item"><div class="info"><div class="title">' + (c.emoji||'🎪') + ' ' + c.name + ' ' + statusLabel + '</div><div class="meta">🏷️ 创建人：' + (c.creator_nickname||c.creator_name||'') + ' | ' + (c.created_at||'') + '</div>' + (c.description ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">' + c.description.substring(0,100) + '</div>' : '') + '</div>' + actions + '</div>';
+    });
+    el.innerHTML = h;
+  } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
+}
+async function reviewClubPending(id, action) {
+  try {
+    var reason = '';
+    if (action === 'reject') {
+      reason = (await confirmDialog({icon:'❌',title:'拒绝理由',message:'请输入拒绝原因（可选）：',prompt:true,placeholder:'理由',confirmText:'确认拒绝'})) || '';
+    }
+    await apiFetch('/admin/clubs/' + id + '/review', { method: 'POST', body: { action: action, reject_reason: reason } });
+    showToast(action === 'approve' ? '已通过' : '已拒绝');
+    loadClubPendingReview();
+  } catch(e) { showToast(e.message, 'error'); }
+}
+async function loadOperationLogs() {
       var el = document.getElementById('adminContent');
       el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
       try {

@@ -122,4 +122,32 @@ router.get('/stats', authMiddleware, requireAdmin, async (req, res) => {
   }
 });
 
+// GET /api/admin/clubs/pending - 待审核社团
+router.get('/clubs/pending', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { status = 'pending' } = req.query;
+    const [rows] = await pool.query(
+      `SELECT c.*, u.username AS creator_name, u.nickname AS creator_nickname
+       FROM clubs c LEFT JOIN users u ON c.created_by = u.id
+       WHERE c.status=? ORDER BY c.created_at DESC`, [status]
+    );
+    res.json({ clubs: rows });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// POST /api/admin/clubs/:id/review - 审核社团入驻
+router.post('/clubs/:id/review', authMiddleware, requireAdmin, async (req, res) => {
+  try {
+    const { action, reject_reason } = req.body;
+    const status = action === 'approve' ? 'approved' : 'rejected';
+    await pool.query('UPDATE clubs SET status=?, reviewed_by=?, reviewed_at=NOW(), reject_reason=? WHERE id=?',
+      [status, req.user.id, reject_reason || '', req.params.id]);
+    if (action === 'reject') {
+      // 如果拒绝，把社长身份也移除
+      await pool.query("DELETE FROM club_members WHERE club_id=? AND role='president'", [req.params.id]);
+    }
+    res.json({ message: action === 'approve' ? '已通过' : '已拒绝' });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
 module.exports = { router, requireAdmin };

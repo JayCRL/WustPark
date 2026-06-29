@@ -42,12 +42,28 @@ router.get('/', async (req, res) => {
       sql += ' AND (c.name LIKE ? OR c.description LIKE ?)';
       params.push(kw, kw);
     }
+    // 公开列表只显示已审核通过的社团
+    sql += " AND c.status='approved'";
     sql += ' ORDER BY c.members DESC, c.id ASC';
 
     const [rows] = await pool.query(sql, params);
     res.json({ clubs: rows });
   } catch (err) {
     console.error('Get clubs error:', err);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+// GET /api/clubs/logs - 操作日志（管理员，放在 :id 之前避免被拦截）
+router.get('/logs', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
+    const { page = 1, limit = 50 } = req.query;
+    const offset = (page - 1) * limit;
+    const [rows] = await pool.query('SELECT * FROM operation_logs ORDER BY created_at DESC LIMIT ? OFFSET ?', [parseInt(limit), parseInt(offset)]);
+    res.json({ logs: rows });
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ error: '服务器错误' });
   }
 });
@@ -77,16 +93,19 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// POST /api/clubs - 创建社团（需登录）
+// POST /api/clubs - 创建社团（需登录，新社团需审核）
 router.post('/', authMiddleware, async (req, res) => {
   try {
     const { name, emoji, tag, description, philosophy, contact, join_info, color, type, level, college_id } = req.body;
     if (!name) return res.status(400).json({ error: '名称为必填项' });
 
+    const isAdmin = !!(req.user && req.user.is_admin);
+    const status = isAdmin ? 'approved' : 'pending';
+
     const [result] = await pool.query(
-      'INSERT INTO clubs (name, type, level, college_id, emoji, tag, description, philosophy, contact, join_info, color, created_by) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)',
+      'INSERT INTO clubs (name, type, level, college_id, emoji, tag, description, philosophy, contact, join_info, color, created_by, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
       [name, type || 'club', level || 'college', college_id || null, emoji || '🎪', tag || '', description || '', philosophy || '',
-       contact || '', join_info || '', color || 'primary', req.user.id]
+       contact || '', join_info || '', color || 'primary', req.user.id, status]
     );
 
     await pool.query(
@@ -94,7 +113,7 @@ router.post('/', authMiddleware, async (req, res) => {
       [result.insertId, req.user.id]
     );
 
-    res.status(201).json({ message: '社团创建成功', id: result.insertId });
+    res.status(201).json({ message: isAdmin ? '社团创建成功' : '入驻申请已提交，等待管理员审核', id: result.insertId, pending: status === 'pending' });
   } catch (err) {
     console.error('Create club error:', err);
     res.status(500).json({ error: '服务器错误' });
@@ -254,16 +273,6 @@ router.post('/contributions/:id/review', authMiddleware, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 
-// GET /api/clubs/logs - 操作日志（管理员）
-router.get('/logs', authMiddleware, async (req, res) => {
-  try {
-    if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
-    const { page = 1, limit = 50 } = req.query;
-    const offset = (page - 1) * limit;
-    const [rows] = await pool.query('SELECT * FROM operation_logs ORDER BY created_at DESC LIMIT ? OFFSET ?', [parseInt(limit), parseInt(offset)]);
-    res.json({ logs: rows });
-  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
-});
 
 // ============ 社团认领 ============
 
