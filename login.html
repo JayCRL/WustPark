@@ -53,7 +53,10 @@
         </div>
         <div style="margin-bottom:0.8rem;text-align:left;">
           <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">密码</label>
-          <input type="password" id="password" placeholder="输入统一认证密码" style="width:100%;padding:0.65rem 0.85rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;" />
+          <div style="position:relative;">
+            <input type="password" id="password" placeholder="输入统一认证密码" style="width:100%;padding:0.65rem 2.5rem 0.65rem 0.85rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:0.9rem;box-sizing:border-box;" />
+            <button type="button" id="togglePassword" tabindex="-1" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);border:none;background:none;cursor:pointer;font-size:1.1rem;padding:4px;line-height:1;color:var(--text-tertiary);">👁️</button>
+          </div>
         </div>
       </div>
       <button class="wust-btn" id="loginBtn" onclick="doWustLogin()">🎓 统一认证登录</button>
@@ -88,6 +91,13 @@
     // 回车提交
     document.getElementById('password').addEventListener('keydown', function(e) { if (e.key === 'Enter') doWustLogin(); });
     document.getElementById('studentId').addEventListener('keydown', function(e) { if (e.key === 'Enter') document.getElementById('password').focus(); });
+    // 密码可见切换
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      var pwd = document.getElementById('password');
+      var isPassword = pwd.type === 'password';
+      pwd.type = isPassword ? 'text' : 'password';
+      this.textContent = isPassword ? '🙈' : '👁️';
+    });
   </script>
 </body>
 </html>

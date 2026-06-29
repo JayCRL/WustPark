@@ -165,10 +165,15 @@ router.post('/wust', async (req, res) => {
       return res.json({ message: '认证成功', token, is_new_user: false, user: { id: u.id, username: u.username, nickname: u.nickname, role: u.role, is_admin: is_ad2 } });
     }
 
+    // mywust_go 返回了明确错误 → 透传给用户
+    if (r && r.code !== 200 && r.message) {
+      return res.status(401).json({ error: r.message });
+    }
+
     // WUST 认证失败，降级到本地
     var bcrypt = require('bcryptjs');
     var [localUsers] = await pool.query('SELECT * FROM users WHERE (username=? OR student_id=?)', [username, username]);
-    if (localUsers.length === 0) return res.status(401).json({ error: '账号不存在' });
+    if (localUsers.length === 0) return res.status(401).json({ error: '账号不存在，请检查学号是否正确，或联系管理员' });
     var lu = localUsers[0];
     var valid = await bcrypt.compare(password, lu.password_hash);
     if (!valid) return res.status(401).json({ error: '密码错误' });

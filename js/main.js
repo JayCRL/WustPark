@@ -1402,7 +1402,8 @@ function claimClub(id) {
 function uploadClaimImage(input) {
   var file = input.files[0]; if (!file) return;
   if (file.size > 5*1024*1024) { showToast('图片不能超过5MB','error'); return; }
-  document.getElementById('claimImageStatus').textContent = '上传中...';
+  var st = document.getElementById('claimImageStatus');
+  st.textContent = '上传中...';
   var fd = new FormData(); fd.append('file', file); fd.append('type', 'claim');
   var xhr = new XMLHttpRequest();
   xhr.open('POST', '/club-api/upload');
@@ -1413,11 +1414,13 @@ function uploadClaimImage(input) {
       if (xhr.status >= 200 && xhr.status < 300) {
         claimImages.push(d.url);
         document.getElementById('claimImagePreview').innerHTML += '<div style="width:56px;height:56px;border-radius:6px;overflow:hidden;border:1px solid #eee;position:relative;"><img src="'+d.url+'" style="width:100%;height:100%;object-fit:cover;" /><span onclick="this.parentElement.remove()" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--color-danger);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</span></div>';
-        document.getElementById('claimImageStatus').textContent = '✅';
-      } else { document.getElementById('claimImageStatus').textContent = '❌'; }
-    } catch(e) { document.getElementById('claimImageStatus').textContent = '❌'; }
+        st.textContent = '✅';
+      } else { st.textContent = d.error || '❌ 上传失败'; }
+    } catch(e) { st.textContent = '❌ 响应解析失败'; }
+    input.value = '';
   };
-  xhr.onerror = function() { document.getElementById('claimImageStatus').textContent = '❌'; };
+  xhr.onerror = function() { st.textContent = '❌ 网络错误'; input.value = ''; };
+  xhr.ontimeout = function() { st.textContent = '⏱ 上传超时'; input.value = ''; };
   xhr.timeout = 30000; xhr.send(fd);
 }
 async function submitClaim() {

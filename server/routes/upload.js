@@ -4,6 +4,7 @@ const path = require('path');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 const { authMiddleware } = require('../middleware/auth');
+const pool = require('../config/db');
 const { isOSSConfigured, ossConfig } = require('../config/oss');
 
 const router = express.Router();
@@ -59,6 +60,37 @@ router.post('/', authMiddleware, (req, res) => {
   });
 });
 
-// 静态文件服务（在 server.js 中配置）
+// GET /api/upload/pending - 待审核图片列表（管理员）
+router.get('/pending', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '需要管理员权限' });
+    const [rows] = await pool.query(
+      `SELECT ir.*, u.nickname, u.username FROM image_reviews ir
+       LEFT JOIN users u ON ir.user_id = u.id
+       WHERE ir.status='pending' ORDER BY ir.created_at DESC`
+    );
+    res.json({ images: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
+
+// POST /api/upload/:id/review - 审核图片（管理员）
+router.post('/:id/review', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '需要管理员权限' });
+    const { action } = req.body;
+    const status = action === 'approve' ? 'approved' : 'rejected';
+    await pool.query(
+      'UPDATE image_reviews SET status=?, reviewed_by=?, reviewed_at=NOW() WHERE id=?',
+      [status, req.user.id, req.params.id]
+    );
+    res.json({ message: '操作成功' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: '服务器错误' });
+  }
+});
 
 module.exports = router;
