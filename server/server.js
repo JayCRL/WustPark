@@ -44,6 +44,35 @@ app.use('/api/users', require('./routes/profile'));
 app.use('/api/credit', require('./routes/credit'));
 app.use('/api/admin', require('./routes/admin').router);
 
+// 代理 Go 后端的公告接口（解决 private network CORS）
+app.all('/api/wust-announcements*', async (req, res) => {
+  try {
+    const http = require('http');
+    const path = req.path.replace('/api/wust-announcements', '/api/announcements') + (req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '');
+    const options = { hostname: '127.0.0.1', port: 8080, path, method: req.method, headers: { ...req.headers, host: '127.0.0.1:8080', 'Authorization': 'Basic ' + Buffer.from('JSPV:jspv').toString('base64') } };
+    delete options.headers['cookie'];
+    const proxy = http.request(options, (proxyRes) => {
+      res.status(proxyRes.statusCode);
+      proxyRes.headers['access-control-allow-origin'] = '*';
+      res.set(proxyRes.headers);
+      proxyRes.pipe(res);
+    });
+    proxy.on('error', () => res.status(502).json({ error: '代理错误' }));
+    if (req.method !== 'GET' && req.method !== 'HEAD') req.pipe(proxy); else proxy.end();
+  } catch (e) { res.status(500).json({ error: '服务器错误' }); }
+});
+
+// 公开统计
+app.get('/api/stats', async (req, res) => {
+  try {
+    const pool = require('./config/db');
+    const [[clubRow]] = await pool.query("SELECT COUNT(*) AS c FROM clubs WHERE type='club'");
+    const [[deptRow]] = await pool.query("SELECT COUNT(*) AS c FROM clubs WHERE type='department'");
+    const [[actRow]] = await pool.query("SELECT COUNT(*) AS c FROM activities WHERE status='approved'");
+    res.json({ clubs: (+clubRow.c || 0), departments: (+deptRow.c || 0), activities: (+actRow.c || 0) });
+  } catch (e) { res.status(500).json({ error: '服务器错误' }); }
+});
+
 // 健康检查
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });

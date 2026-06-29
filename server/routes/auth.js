@@ -72,8 +72,9 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: '账号或密码错误' });
     }
 
+    var is_ad = !!user.is_admin;
     const token = jwt.sign(
-      { id: user.id, username: user.username, email: user.email, role: user.role },
+      { id: user.id, username: user.username, email: user.email, role: user.role, is_admin: is_ad },
       config.jwtSecret,
       { expiresIn: config.jwtExpiresIn }
     );
@@ -88,7 +89,7 @@ router.post('/login', async (req, res) => {
         nickname: user.nickname,
         avatar: user.avatar,
         role: user.role,
-        is_admin: !!user.is_admin
+        is_admin: is_ad
       }
     });
   } catch (err) {
@@ -155,12 +156,13 @@ router.post('/wust', async (req, res) => {
       var [users] = await pool.query('SELECT * FROM users WHERE student_id=?', [sid]);
       if (users.length === 0) {
         var [result] = await pool.query('INSERT INTO users (username,email,nickname,student_id,password_hash) VALUES (?,?,?,?,?)', [username, sid+'@wust.edu.cn', sname, sid, 'wust_auth']);
-        var token = jwt.sign({ id: result.insertId, username, role: 'user' }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
-        return res.json({ message: '认证成功', token, is_new_user: true, user: { id: result.insertId, username, nickname: sname, role: 'user' } });
+        var token = jwt.sign({ id: result.insertId, username, role: 'user', is_admin: 0 }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+        return res.json({ message: '认证成功', token, is_new_user: true, user: { id: result.insertId, username, nickname: sname, role: 'user', is_admin: false } });
       }
       var u = users[0];
-      var token = jwt.sign({ id: u.id, username: u.username, email: u.email, role: u.role }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
-      return res.json({ message: '认证成功', token, is_new_user: false, user: { id: u.id, username: u.username, nickname: u.nickname, role: u.role, is_admin: !!u.is_admin } });
+      var is_ad2 = !!u.is_admin;
+      var token = jwt.sign({ id: u.id, username: u.username, email: u.email, role: u.role, is_admin: is_ad2 }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+      return res.json({ message: '认证成功', token, is_new_user: false, user: { id: u.id, username: u.username, nickname: u.nickname, role: u.role, is_admin: is_ad2 } });
     }
 
     // WUST 认证失败，降级到本地
@@ -170,8 +172,9 @@ router.post('/wust', async (req, res) => {
     var lu = localUsers[0];
     var valid = await bcrypt.compare(password, lu.password_hash);
     if (!valid) return res.status(401).json({ error: '密码错误' });
-    var token = jwt.sign({ id: lu.id, username: lu.username, email: lu.email, role: lu.role }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
-    return res.json({ message: '登录成功', token, is_new_user: false, user: { id: lu.id, username: lu.username, nickname: lu.nickname, role: lu.role, is_admin: !!lu.is_admin } });
+    var is_ad3 = !!lu.is_admin;
+    var token = jwt.sign({ id: lu.id, username: lu.username, email: lu.email, role: lu.role, is_admin: is_ad3 }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
+    return res.json({ message: '登录成功', token, is_new_user: false, user: { id: lu.id, username: lu.username, nickname: lu.nickname, role: lu.role, is_admin: is_ad3 } });
   } catch(err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 

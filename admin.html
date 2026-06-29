@@ -45,6 +45,7 @@
         <button class="tab" data-tab="images">图片审核</button>
         <button class="tab" data-tab="contributions">社团贡献</button>
         <button class="tab" data-tab="logs">操作日志</button>
+        <button class="tab" data-tab="claims">认领审核</button>
         <button class="tab" data-tab="admins">管理员</button>
       </div>
 
@@ -67,7 +68,7 @@
     <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
 
-  <script src="js/main.js?v=80"></script>
+  <script src="js/main.js?v=82"></script>
   <script>
     async function loadAdminUsers() {
       var el=document.getElementById('adminContent');
@@ -135,6 +136,7 @@
       else if (b.dataset.tab === 'admins') loadAdminUsers();
       else if (b.dataset.tab === 'contributions') loadContributions();
       else if (b.dataset.tab === 'logs') loadOperationLogs();
+      else if (b.dataset.tab === 'claims') loadPendingClaims();
       else if (b.dataset.tab === 'images') loadPendingImages();
     });
 
@@ -251,6 +253,43 @@
       if (!confirm('确定删除该社团吗？')) return;
       apiFetch('/admin/clubs/'+id,{method:'DELETE'}).then(function(){showToast('已删除');loadAllClubsAdmin();}).catch(function(e){showToast(e.message,'error');});
     }
+    async function loadPendingClaims() {
+      var el = document.getElementById('adminContent');
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-primary" onclick="loadPendingClaims()">待处理</button><button class="btn btn-sm btn-ghost" onclick="loadAllClaims()">全部</button></div>';
+      try {
+        var d = await apiFetch('/clubs/claims/pending?status=pending');
+        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无待处理的认领申请</div>'; return; }
+        var h = tabs;
+        d.claims.forEach(function(cl){
+          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'🎪') + ' ' + (cl.club_name||'') + '</div><div class="meta">🏷️ 认领人：' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div>' + (cl.message ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">📝 ' + cl.message + '</div>' : '') + (cl.images ? '<div class="meta" style="margin-top:.3rem;display:flex;gap:.3rem;flex-wrap:wrap;">' + JSON.parse(cl.images).map(function(im){return '<img src="'+im+'" style="width:60px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);cursor:pointer;" onclick="window.open(\''+im+'\')" />';}).join('') + '</div>' : '') + '</div><button class="btn btn-primary btn-sm" onclick="reviewClaim(' + cl.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewClaim(' + cl.id + ',\'reject\')">拒绝</button></div>';
+        });
+        el.innerHTML = h;
+      } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
+    }
+    async function loadAllClaims() {
+      var el = document.getElementById('adminContent');
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-ghost" onclick="loadPendingClaims()">待处理</button><button class="btn btn-sm btn-primary" onclick="loadAllClaims()">全部</button></div>';
+      try {
+        var d = await apiFetch('/clubs/claims/pending?status=all');
+        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无认领记录</div>'; return; }
+        var h = tabs;
+        d.claims.forEach(function(cl){
+          var st = cl.status === 'approved' ? '✅ 已通过' : cl.status === 'rejected' ? '❌ 已拒绝' : '⏳ 待处理';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'🎪') + ' ' + (cl.club_name||'') + ' ' + st + '</div><div class="meta">🏷️ ' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div></div></div>';
+        });
+        el.innerHTML = h;
+      } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
+    }
+    async function reviewClaim(id, action) {
+      try {
+        await apiFetch('/clubs/claims/' + id + '/review', { method: 'POST', body: { action: action } });
+        showToast(action === 'approve' ? '已通过' : '已拒绝');
+        loadPendingClaims();
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    
     async function deleteActivity(id) {
       if (!await confirmDialog({icon:'🗑️',title:'删除活动',message:'确定删除该活动吗？此操作不可撤销。',confirmText:'删除',danger:true})) return;
       try {
@@ -261,19 +300,24 @@
       } catch(e) { showToast(e.message, 'error'); }
     }
 
-    async function loadContributions() {
+    var contribStatus = 'pending';
+    function loadContributions() {
       var el = document.getElementById('adminContent');
       el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
-      try {
-        var d = await apiFetch('/clubs/contributions/pending');
-        if (!d.contributions || !d.contributions.length) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无待处理的社团贡献</div>'; return; }
-        var h = '';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (contribStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'pending\';loadContributions()">待处理</button><button class="btn btn-sm ' + (contribStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'approved\';loadContributions()">已采纳</button><button class="btn btn-sm ' + (contribStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'rejected\';loadContributions()">已拒绝</button><button class="btn btn-sm ' + (contribStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'all\';loadContributions()">全部</button></div>';
+      apiFetch('/clubs/contributions/all?status=' + contribStatus).then(function(d) {
+        if (!d.contributions || !d.contributions.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无贡献记录</div>'; return; }
+        var h = tabs;
         d.contributions.forEach(function(c){
           var typeLabel = c.type === 'question' ? '❓ 疑问' : '📝 补充';
-          h += '<div class="review-item"><div class="info"><div class="title">' + (c.club_emoji||'🎪') + ' ' + (c.club_name||'') + '</div><div class="meta">' + typeLabel + ' | ' + (c.nickname||'匿名') + ' | ' + (c.field||'综合') + '</div><div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;">' + (c.content||'') + '</div></div><button class="btn btn-primary btn-sm" onclick="reviewContribution(' + c.id + ',\'approve\')">采纳</button><button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'reject\')">拒绝</button></div>';
+          var statusLabel = c.status === 'approved' ? '<span style="color:var(--color-accent);">✅ 已采纳</span>' : c.status === 'rejected' ? '<span style="color:var(--color-danger);">❌ 已拒绝</span>' : '<span style="color:var(--color-warning);">⏳ 待处理</span>';
+          var actions = '';
+          if (c.status === 'pending') actions = '<button class="btn btn-primary btn-sm" onclick="reviewContribution(' + c.id + ',\'approve\')">采纳</button><button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'reject\')">拒绝</button>';
+          else actions = '<button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'' + (c.status==='approved'?'reject':'approve') + '\')">' + (c.status==='approved'?'撤销采纳':'重新采纳') + '</button>';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (c.club_emoji||'🎪') + ' ' + (c.club_name||'') + ' ' + statusLabel + '</div><div class="meta">' + typeLabel + ' | ' + (c.nickname||'匿名') + ' | ' + (c.field||'综合') + '</div><div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;">' + (c.content||'') + '</div></div>' + actions + '</div>';
         });
         el.innerHTML = h;
-      } catch(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; }
+      }).catch(function(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; });
     }
     async function reviewContribution(id, action) {
       try {

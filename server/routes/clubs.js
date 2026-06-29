@@ -166,16 +166,27 @@ async function addLog(userId, username, action, targetType, targetId, detail) {
 // POST /api/clubs/:id/contribute - 提交补充信息或提问
 router.post('/:id/contribute', async (req, res) => {
   try {
-    const { type, field, content } = req.body;
+    const { type, field, content, show_contributor, contributor_name } = req.body;
     if (!type || !content) return res.status(400).json({ error: '请填写内容' });
     if (!['info','question'].includes(type)) return res.status(400).json({ error: '类型错误' });
     var nick = req.user ? (req.user.nickname || req.user.username || '匿名') : '匿名';
     var uid = req.user ? req.user.id : 0;
     await pool.query(
-      'INSERT INTO club_contributions (club_id, user_id, nickname, type, field, content) VALUES (?,?,?,?,?,?)',
-      [req.params.id, uid, nick, type, field || '', content]
+      'INSERT INTO club_contributions (club_id, user_id, nickname, type, field, content, show_contributor, contributor_name) VALUES (?,?,?,?,?,?,?,?)',
+      [req.params.id, uid, nick, type, field || '', content, show_contributor ? 1 : 0, contributor_name || '']
     );
     res.json({ message: '已提交，感谢你的贡献！' });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// GET /api/clubs/:id/contributors - 获取贡献墙
+router.get('/:id/contributors', async (req, res) => {
+  try {
+    const [rows] = await pool.query(
+      "SELECT contributor_name, nickname, created_at FROM club_contributions WHERE club_id=? AND status='approved' AND show_contributor=1 ORDER BY created_at DESC",
+      [req.params.id]
+    );
+    res.json({ contributors: rows });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 
@@ -198,7 +209,21 @@ router.get('/:id/contributions', authMiddleware, async (req, res) => {
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 
-// GET /api/clubs/contributions/pending - 获取所有待处理贡献（管理员）
+// GET /api/clubs/contributions/all - 获取所有贡献（管理员，支持status筛选）
+router.get('/contributions/all', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
+    const { status = 'all' } = req.query;
+    let sql = `SELECT c.*, cl.name AS club_name, cl.emoji AS club_emoji FROM club_contributions c LEFT JOIN clubs cl ON c.club_id = cl.id`;
+    let params = [];
+    if (status !== 'all') { sql += ' WHERE c.status=?'; params.push(status); }
+    sql += ' ORDER BY c.created_at DESC';
+    const [rows] = await pool.query(sql, params);
+    res.json({ contributions: rows });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// GET /api/clubs/contributions/pending - 获取所有待处理贡献（管理员，兼容旧版）
 router.get('/contributions/pending', authMiddleware, async (req, res) => {
   try {
     if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
@@ -237,6 +262,61 @@ router.get('/logs', authMiddleware, async (req, res) => {
     const offset = (page - 1) * limit;
     const [rows] = await pool.query('SELECT * FROM operation_logs ORDER BY created_at DESC LIMIT ? OFFSET ?', [parseInt(limit), parseInt(offset)]);
     res.json({ logs: rows });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// ============ 社团认领 ============
+
+// POST /api/clubs/:id/claim - 认领社团
+router.post('/:id/claim', authMiddleware, async (req, res) => {
+  try {
+    const [existing] = await pool.query('SELECT id FROM club_claims WHERE club_id=? AND user_id=? AND status="pending"', [req.params.id, req.user.id]);
+    if (existing.length) return res.status(400).json({ error: '你已经提交过认领申请，请等待审核' });
+    const [already] = await pool.query('SELECT id FROM club_members WHERE club_id=? AND user_id=?', [req.params.id, req.user.id]);
+    if (already.length) return res.status(400).json({ error: '你已经是该社团成员' });
+    const { message, images } = req.body;
+    await pool.query('INSERT INTO club_claims (club_id, user_id, message, images) VALUES (?,?,?,?)', [req.params.id, req.user.id, message || '', JSON.stringify(images || [])]);
+    res.json({ message: '认领申请已提交，等待管理员审核' });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// GET /api/clubs/claims/pending - 待审核认领（管理员）
+router.get('/claims/pending', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
+    const { status = 'pending' } = req.query;
+    const [rows] = await pool.query(
+      `SELECT cc.*, cl.name AS club_name, cl.emoji AS club_emoji, u.nickname, u.username FROM club_claims cc
+       LEFT JOIN clubs cl ON cc.club_id = cl.id LEFT JOIN users u ON cc.user_id = u.id
+       WHERE cc.status=? ORDER BY cc.created_at DESC`, [status]
+    );
+    res.json({ claims: rows });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// POST /api/clubs/claims/:id/review - 审核认领（管理员）
+router.post('/claims/:id/review', authMiddleware, async (req, res) => {
+  try {
+    if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
+    const { action } = req.body;
+    const status = action === 'approve' ? 'approved' : 'rejected';
+    const [rows] = await pool.query('SELECT * FROM club_claims WHERE id=?', [req.params.id]);
+    if (!rows.length) return res.status(404).json({ error: '不存在' });
+    const claim = rows[0];
+
+    await pool.query('UPDATE club_claims SET status=?, handled_by=?, handled_at=NOW() WHERE id=?', [status, req.user.id, req.params.id]);
+
+    if (action === 'approve') {
+      // 设为社团负责人
+      await pool.query("INSERT IGNORE INTO club_members (club_id, user_id, role) VALUES (?,?,'president')", [claim.club_id, claim.user_id]);
+      await pool.query("INSERT INTO notifications (user_id, title, content, type) VALUES (?,'社团认领成功','你成功认领了社团，现在可以管理社团信息了。','system')", [claim.user_id]);
+    } else {
+      await pool.query("INSERT INTO notifications (user_id, title, content, type) VALUES (?,'社团认领未通过','你的社团认领申请未通过审核。','system')", [claim.user_id]);
+    }
+
+    await addLog(req.user.id, req.user.username, '审核社团认领', 'club_claim', claim.club_id, action === 'approve' ? '通过' : '拒绝');
+
+    res.json({ message: '操作成功' });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 

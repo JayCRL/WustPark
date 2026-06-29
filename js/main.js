@@ -2,11 +2,9 @@
  * Wust Spark - 社团风采展示网站
  * 主 JavaScript 文件 v73
  */
-
 // ============================================================
 // API 配置 & 工具
 // ============================================================
-
 // 禁止双指缩放（安全包裹，不阻塞页面加载）
 try {
   document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
@@ -16,29 +14,25 @@ try {
     if (e.touches && e.touches.length > 1) { e.preventDefault(); }
   }, { passive: false });
 } catch(e) { /* 兼容不支持 gesture 事件的浏览器 */ }
-
 const API_BASE = '/club-api';
-
 // ============================================================
 // SVG 图标 & 统一导航组件（消除各页导航不一致 / 重复 / 粘连）
 // ============================================================
 var ICONS = {
-  spark: '<svg class="icon" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 2l2.5 6.9 7.3.3-5.8 4.5 2 7-6-4.1-6 4.1 2-7-5.8-4.5 7.3-.3z"/></svg>',
+  spark: '✨',
   home: '<svg class="icon" viewBox="0 0 24 24"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/></svg>',
   clubs: '<svg class="icon" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.2 2.7-5.2 5.5-5.2s5.5 2 5.5 5.2"/><path d="M16 5.2a3.2 3.2 0 0 1 0 6"/><path d="M17.5 20c0-2.2-1-3.8-2.6-4.8"/></svg>',
   activities: '<svg class="icon" viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>',
   messages: '<svg class="icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z"/></svg>',
   user: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4.5 21c0-4.2 3.8-6.2 7.5-6.2s7.5 2 7.5 6.2"/></svg>',
   admin: '<svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
-  arrowUp: '<svg class="icon" viewBox="0 0 24 24" style="stroke-width:2.5"><path d="M12 19V5M6 11l6-6 6 6"/></svg>',
+  arrowUp: '↑',
   search: '<svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>'
 };
-
 // 统一注入顶部导航 + 移动底部导航；按当前页高亮
 function renderChrome() {
   var path = location.pathname.split('/').pop() || 'index.html';
   if (!path) path = 'index.html';
-
   var topItems = [['index.html','首页'],['clubs.html','社团'],['activities.html','活动'],['cats.html','🐱 校园猫'],['messages.html','寄语'],['about.html','关于']];
   var navbar = document.getElementById('navbar');
   if (navbar) {
@@ -53,7 +47,6 @@ function renderChrome() {
         '<button class="navbar-toggle" id="navToggle" aria-label="菜单"><span></span><span></span><span></span></button>' +
       '</div>';
   }
-
   var botItems = [['index.html','首页',ICONS.home],['clubs.html','社团',ICONS.clubs],['activities.html','活动',ICONS.activities],['cats.html','校园猫','🐱'],['messages.html','寄语',ICONS.messages],['profile.html','我的',ICONS.user]];
   var bn = document.getElementById('bottomNav');
   if (bn) {
@@ -63,11 +56,9 @@ function renderChrome() {
     bn.innerHTML = b;
     document.body.classList.add('has-bottom-nav');
   }
-
   var btt = document.getElementById('backToTop');
   if (btt) btt.innerHTML = ICONS.arrowUp;
 }
-
 // 通用确认 / 输入弹窗（替代原生 alert / confirm / prompt）
 function confirmDialog(opts) {
   opts = opts || {};
@@ -94,17 +85,14 @@ function confirmDialog(opts) {
     if (input) input.addEventListener('keydown', function(e){ if (e.key === 'Enter') document.getElementById('confirmOk').click(); });
   });
 }
-
 // Token 管理
 function getToken() { return localStorage.getItem('ys_token'); }
 function setToken(t) { localStorage.setItem('ys_token', t); }
 function removeToken() { localStorage.removeItem('ys_token'); }
-
 function getAuthHeaders() {
   const t = getToken();
   return t ? { 'Authorization': `Bearer ${t}`, 'Content-Type': 'application/json' } : { 'Content-Type': 'application/json' };
 }
-
 // 文件上传专用（FormData，不经过 JSON headers，带超时）
 async function uploadFile(path, formData) {
   const url = `${API_BASE}${path}`;
@@ -127,7 +115,6 @@ async function uploadFile(path, formData) {
     throw e;
   }
 }
-
 async function apiFetch(path, options = {}) {
   const url = `${API_BASE}${path}`;
   const headers = getAuthHeaders();
@@ -139,21 +126,17 @@ async function apiFetch(path, options = {}) {
   if (!res.ok) throw new Error(data.error || '请求失败');
   return data;
 }
-
 // 登录状态
 function isLoggedIn() { return !!getToken(); }
-
 function getCurrentUser() {
   try {
     const u = localStorage.getItem('ys_user');
     return u ? JSON.parse(u) : null;
   } catch { return null; }
 }
-
 // ============================================================
 // Auth Modal
 // ============================================================
-
 function injectAuthModal() {
   if (document.getElementById('authModal')) return;
   const div = document.createElement('div');
@@ -166,7 +149,6 @@ function injectAuthModal() {
         <button class="auth-tab active" data-tab="login">登录</button>
         <button class="auth-tab" data-tab="register">注册</button>
       </div>
-
       <!-- 登录表单 -->
       <form id="loginForm" class="auth-form active">
         <h3>欢迎回来 👋</h3>
@@ -182,7 +164,6 @@ function injectAuthModal() {
         <div class="auth-error" id="loginError"></div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">登录</button>
       </form>
-
       <!-- 注册表单 -->
       <form id="registerForm" class="auth-form">
         <h3>创建账号 ✨</h3>
@@ -202,7 +183,6 @@ function injectAuthModal() {
         <div class="auth-error" id="registerError"></div>
         <button type="submit" class="btn btn-primary btn-lg" style="width:100%;justify-content:center;">注册</button>
       </form>
-
       <div class="auth-user-info" id="authUserInfo" style="display:none;">
         <div class="auth-avatar">👤</div>
         <div>
@@ -216,15 +196,12 @@ function injectAuthModal() {
   document.body.appendChild(div);
   bindAuthEvents();
 }
-
 function bindAuthEvents() {
   const modal = document.getElementById('authModal');
   if (!modal) return;
-
   // 开关
   document.getElementById('authClose').onclick = () => modal.classList.remove('open');
   modal.onclick = (e) => { if (e.target === modal) modal.classList.remove('open'); };
-
   // Tab 切换
   modal.querySelectorAll('.auth-tab').forEach(tab => {
     tab.onclick = () => {
@@ -237,7 +214,6 @@ function bindAuthEvents() {
       document.getElementById('registerError').textContent = '';
     };
   });
-
   // 登录提交
   document.getElementById('loginForm').onsubmit = async (e) => {
     e.preventDefault();
@@ -258,7 +234,6 @@ function bindAuthEvents() {
     }
     btn.disabled = false; btn.textContent = '登录';
   };
-
   // 注册提交
   document.getElementById('registerForm').onsubmit = async (e) => {
     e.preventDefault();
@@ -283,7 +258,6 @@ function bindAuthEvents() {
     }
     btn.disabled = false; btn.textContent = '注册';
   };
-
   // 退出
   document.getElementById('logoutBtn').onclick = () => {
     removeToken();
@@ -293,12 +267,10 @@ function bindAuthEvents() {
     modal.classList.remove('open');
   };
 }
-
 function openAuthModal() {
   injectAuthModal();
   document.getElementById('authModal').classList.add('open');
 }
-
 function updateAuthUI() {
   const user = getCurrentUser();
   const loginBtns = document.querySelectorAll('.auth-trigger');
@@ -312,40 +284,31 @@ function updateAuthUI() {
     }
   });
 }
-
 // ============================================================
 // 数据
 // ============================================================
-
 const clubsData = [
   {id:1,name:'吉他社（示例）',emoji:'🎸',tag:'兴趣',type:'club',level:'college',desc:'用音乐传递情感，以琴弦连接心灵。',members:86,color:'primary'},
   {id:2,name:'机器人社（示例）',emoji:'🤖',tag:'科技',type:'club',level:'college',desc:'探索人工智能与机械工程的奇妙世界。',members:45,color:'accent'}
 ];
-
 const activitiesData = [
   {id:1,title:'校园草地音乐节（示例）',club:'吉他社',clubId:1,emoji:'🎵',date:'2026-07-05',time:'19:00-21:30',location:'操场草坪',desc:'夏日微风，吉他轻弹。',type:'upcoming',tag:'兴趣',tips:['建议自带坐垫或野餐垫','现场提供荧光棒']}
 ];
-
 const timelineData = [
   { date: '2026-06-27', title: '🚀 Wust Spark 服务上线', desc: 'Wust Spark 正式上线运行，为全校师生提供社团服务', club: '平台团队' }
 ];
-
 // ============================================================
 // 工具函数
 // ============================================================
-
 function getClubById(id) {
   return clubsData.find(c => c.id === Number(id));
 }
-
 function getActivityById(id) {
   return activitiesData.find(a => a.id === Number(id));
 }
-
 function getActivitiesByClub(clubId) {
   return activitiesData.filter(a => a.clubId === Number(clubId));
 }
-
 function debounce(fn, delay) {
   let timer;
   return (...args) => {
@@ -353,16 +316,13 @@ function debounce(fn, delay) {
     timer = setTimeout(() => fn(...args), delay);
   };
 }
-
 function showToast(message, type = 'success') {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
-
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
   document.body.appendChild(toast);
-
   requestAnimationFrame(() => {
     toast.classList.add('show');
     setTimeout(() => {
@@ -371,22 +331,18 @@ function showToast(message, type = 'success') {
     }, 3000);
   });
 }
-
 function simulateLoading(container, callback) {
   const loading = container.querySelector('#loadingState');
   if (loading) loading.style.display = 'block';
-
   // 模拟加载延迟（演示效果）
   setTimeout(() => {
     if (loading) loading.style.display = 'none';
     callback();
   }, 400);
 }
-
 // ============================================================
 // 渲染函数
 // ============================================================
-
 function renderClubCard(club) {
   var lv = club.level === 'school' ? '<span style="margin-left:0.3rem;font-size:0.65rem;padding:0.1rem 0.4rem;background:rgba(107,76,230,0.08);color:var(--color-secondary);border-radius:4px;font-weight:600;">校级</span>' : '<span style="margin-left:0.3rem;font-size:0.65rem;padding:0.1rem 0.4rem;background:var(--color-gray-100);color:var(--text-tertiary);border-radius:4px;font-weight:600;">院级</span>';
   return `
@@ -404,7 +360,6 @@ function renderClubCard(club) {
     </a>
   `;
 }
-
 function fmtDate(dateStr) {
   if (!dateStr) return '';
   var d = new Date(dateStr);
@@ -414,7 +369,6 @@ function fmtDate(dateStr) {
   var wd = weekdays[d.getDay()];
   return month+'月'+day+'日 周'+wd;
 }
-
 function renderActivityCard(activity) {
   var dateHtml = activity.date ? '<div class="card-date"><span class="cd-month">' + activity.date.substring(0,7).replace('-','月') + '月</span><span class="cd-day">' + parseInt(activity.date.substring(8,10)) + '</span><span class="cd-dot">·</span><span class="cd-weekday">' + fmtDate(activity.date).split(' ')[1] + '</span></div>' : '';
   var timeHtml = activity.time ? '<span class="card-time">⏰ ' + activity.time + '</span>' : '';
@@ -445,7 +399,6 @@ function renderActivityCard(activity) {
     </a>
   `;
 }
-
 // 卡片点赞（不跳转）
 async function toggleCardLike(id, el) {
   try {
@@ -456,7 +409,6 @@ async function toggleCardLike(id, el) {
     if (d.liked) { el.classList.add('card-liked'); } else { el.classList.remove('card-liked'); }
   } catch(e) { showToast(e.message, 'error'); }
 }
-
 // 卡片收藏（不跳转）
 async function toggleCardFav(id, el) {
   try {
@@ -468,7 +420,6 @@ async function toggleCardFav(id, el) {
     showToast(d.liked ? '已收藏' : '已取消收藏');
   } catch(e) { showToast(e.message, 'error'); }
 }
-
 function renderTimelineItem(item, index) {
   return `
     <div class="timeline-item animate-on-scroll">
@@ -482,37 +433,29 @@ function renderTimelineItem(item, index) {
     </div>
   `;
 }
-
 // ============================================================
 // 首页：热门社团 (取前6个)
 // ============================================================
-
 function renderHomeClubs() {
   const grid = document.getElementById('clubGrid');
   if (!grid) return;
-
   const featured = clubsData.slice(0, 6);
   grid.innerHTML = featured.map(renderClubCard).join('');
   observeAnimatedElements();
 }
-
 // ============================================================
 // 首页：活动 (取前4个)
 // ============================================================
-
 function renderHomeActivities() {
   const grid = document.getElementById('activityGrid');
   if (!grid) return;
-
   const featured = activitiesData.slice(0, 4);
   grid.innerHTML = featured.map(renderActivityCard).join('');
   observeAnimatedElements();
 }
-
 // ============================================================
 // API 数据获取（带静态数据降级）
 // ============================================================
-
 async function fetchClubsFromAPI(tag = 'all', keyword = '') {
   try {
     const params = new URLSearchParams();
@@ -532,7 +475,6 @@ async function fetchClubsFromAPI(tag = 'all', keyword = '') {
     return filtered;
   }
 }
-
 async function fetchClubDetailFromAPI(id) {
   try {
     const data = await apiFetch(`/clubs/${id}`);
@@ -543,7 +485,6 @@ async function fetchClubDetailFromAPI(id) {
     return { club, history: club.history || [], images: [] };
   }
 }
-
 async function fetchActivitiesFromAPI(filters = {}) {
   try {
     const params = new URLSearchParams();
@@ -567,7 +508,6 @@ async function fetchActivitiesFromAPI(filters = {}) {
     return filtered;
   }
 }
-
 async function fetchActivityDetailFromAPI(id) {
   try {
     const data = await apiFetch(`/activities/${id}`);
@@ -581,17 +521,14 @@ async function fetchActivityDetailFromAPI(id) {
     return { activity, tips: activity.tips || [] };
   }
 }
-
 // ============================================================
 // 全部社团页面
 // ============================================================
-
 function renderAllClubs() {
   var grid = document.getElementById('allClubGrid');
   var empty = document.getElementById('emptyState');
   var loading = document.getElementById('loadingState');
   if (!grid) return;
-
   var activeType = document.querySelector('#typeTags .tag-chip.active');
   var activeTag = document.querySelector('#filterTags .tag-chip.active');
   var activeLevel = document.querySelector('#levelTags .tag-chip.active');
@@ -601,17 +538,14 @@ function renderAllClubs() {
   var level = activeLevel ? activeLevel.dataset.level : 'all';
   var college = activeClg ? activeClg.dataset.college : 'all';
   var keyword = (document.getElementById('searchInput')||{}).value || '';
-
   if (loading) loading.style.display = 'block';
   if (empty) empty.style.display = 'none';
-
   var p = [];
   if (type !== 'club') p.push('type=' + type);
   if (filter !== 'all') p.push('tag=' + encodeURIComponent(filter));
   if (level !== 'all') p.push('level=' + level);
   if (college !== 'all') p.push('college_id=' + college);
   if (keyword.trim()) p.push('keyword=' + encodeURIComponent(keyword.trim()));
-
   fetch('/club-api/clubs' + (p.length ? '?' + p.join('&') : '')).then(function(r){return r.json()}).then(function(data) {
     var list = data.clubs || [];
     if (list.length === 0) { grid.innerHTML = ''; if (empty) empty.style.display = 'block'; if (loading) loading.style.display = 'none'; return; }
@@ -630,11 +564,9 @@ function renderAllClubs() {
     observeAnimatedElements();
   });
 }
-
 // ============================================================
 // 全部活动页面
 // ============================================================
-
 function renderAllActivities(filters) {
   if (!filters) filters = getActivityFilters();
   var grid = document.getElementById('allActivityGrid');
@@ -642,23 +574,19 @@ function renderAllActivities(filters) {
   var loading = document.getElementById('loadingState');
   var resultCount = document.getElementById('resultCount');
   if (!grid) return;
-
   var category = filters.category || 'all';
   var time = filters.time || 'all';
   var keyword = filters.keyword || '';
   var sort = filters.sort || 'date';
   var college = filters.college || 'all';
-
   if (loading) loading.style.display = 'block';
   if (empty) empty.style.display = 'none';
-
   var params = [];
   if (category !== 'all') params.push('tag=' + encodeURIComponent(category));
   if (time !== 'all') params.push('type=' + encodeURIComponent(time));
   if (keyword.trim()) params.push('keyword=' + encodeURIComponent(keyword.trim()));
   if (sort) params.push('sort=' + sort);
   if (college !== 'all') params.push('college_id=' + college);
-
   fetch('/club-api/activities' + (params.length ? '?' + params.join('&') : '')).then(function(r){return r.json()}).then(function(data) {
     var list = data.activities || [];
     if (sort === 'club') list.sort(function(a,b){return (a.club_name||'').localeCompare(b.club_name||'');});
@@ -688,7 +616,6 @@ html += '<a href="activity-detail.html?id=' + a.id + '" class="activity-card-lin
     observeAnimatedElements();
   });
 }
-
 // 获取当前所有筛选状态
 function getActivityFilters() {
   var catTag = document.querySelector('#activityCatFilter .tag-chip.active');
@@ -697,7 +624,6 @@ function getActivityFilters() {
   var levelTag = document.querySelector('#activityLevelFilter .tag-chip.active');
   var collegeTag = document.querySelector('#activityCollegeFilter .tag-chip.active');
   var searchInput = document.getElementById('activitySearch');
-
   return {
     category: catTag ? catTag.dataset.cat : 'all',
     time: timeTag ? timeTag.dataset.time : 'all',
@@ -707,12 +633,10 @@ function getActivityFilters() {
     keyword: searchInput ? searchInput.value : ''
   };
 }
-
 // 应用当前所有筛选条件
 function applyActivityFilters() {
   renderAllActivities(getActivityFilters());
 }
-
 // 重置所有筛选
 window.resetActivityFilters = function() {
   document.querySelectorAll('#activityCatFilter .tag-chip,#activityTimeFilter .tag-chip,#activitySort .tag-chip,#activityLevelFilter .tag-chip').forEach(function(t){t.classList.remove('active');});
@@ -726,27 +650,21 @@ window.resetActivityFilters = function() {
   document.getElementById('activityCollegeSection').style.display = 'none';
   applyActivityFilters();
 };
-
 // ============================================================
 // 时间线
 // ============================================================
-
 function renderTimeline() {
   const container = document.getElementById('timeline');
   if (!container) return;
-
   container.innerHTML = timelineData.map((item, index) => renderTimelineItem(item, index)).join('');
   observeAnimatedElements();
 }
-
 // ============================================================
 // 滚动动画 (Intersection Observer)
 // ============================================================
-
 function observeAnimatedElements() {
   const elements = document.querySelectorAll('.animate-on-scroll:not(.observed)');
   if (elements.length === 0) return;
-
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -759,47 +677,36 @@ function observeAnimatedElements() {
     threshold: 0.1,
     rootMargin: '0px 0px -50px 0px'
   });
-
   elements.forEach(el => observer.observe(el));
 }
-
 // ============================================================
 // 导航栏滚动效果
 // ============================================================
-
 function initNavbar() {
   const navbar = document.getElementById('navbar');
   if (!navbar) return;
-
   let lastScroll = 0;
-
   window.addEventListener('scroll', () => {
     const currentScroll = window.scrollY;
-
     if (currentScroll > 50) {
       navbar.classList.add('scrolled');
     } else {
       navbar.classList.remove('scrolled');
     }
-
     lastScroll = currentScroll;
   }, { passive: true });
 }
-
 // ============================================================
 // 移动端导航切换
 // ============================================================
-
 function initMobileNav() {
   const toggle = document.getElementById('navToggle');
   const links = document.getElementById('navLinks');
   if (!toggle || !links) return;
-
   toggle.addEventListener('click', () => {
     toggle.classList.toggle('open');
     links.classList.toggle('open');
   });
-
   // 点击链接后关闭菜单
   links.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
@@ -808,15 +715,12 @@ function initMobileNav() {
     });
   });
 }
-
 // ============================================================
 // 回到顶部
 // ============================================================
-
 function initBackToTop() {
   const btn = document.getElementById('backToTop');
   if (!btn) return;
-
   window.addEventListener('scroll', () => {
     if (window.scrollY > 400) {
       btn.classList.add('visible');
@@ -824,23 +728,19 @@ function initBackToTop() {
       btn.classList.remove('visible');
     }
   }, { passive: true });
-
   btn.addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 }
-
 // ============================================================
 // 社团页面筛选 & 搜索
 // ============================================================
-
 function initClubFilters() {
   var typeC = document.getElementById('typeTags');
   var fc = document.getElementById('filterTags');
   var lc = document.getElementById('levelTags');
   var cc = document.getElementById('collegeTags');
   var si = document.getElementById('searchInput');
-
   function setup(c) {
     if (!c) return;
     c.addEventListener('click', function(e) {
@@ -868,7 +768,6 @@ function initClubFilters() {
   setup(typeC); setup(fc); setup(lc); setup(cc);
   if (si) si.addEventListener('input', debounce(renderAllClubs, 300));
 }
-
 function loadColleges() {
   var ct = document.getElementById('collegeTags');
   if (ct.querySelectorAll('.tag-chip').length > 1) return;
@@ -882,11 +781,9 @@ function loadColleges() {
     });
   }).catch(function(){});
 }
-
 // ============================================================
 // 活动页面筛选 & 搜索
 // ============================================================
-
 function initActivityFilters() {
   var catC = document.getElementById('activityCatFilter');
   var timeC = document.getElementById('activityTimeFilter');
@@ -894,7 +791,6 @@ function initActivityFilters() {
   var levelC = document.getElementById('activityLevelFilter');
   var collegeC = document.getElementById('activityCollegeFilter');
   var searchI = document.getElementById('activitySearch');
-
   function setup(c, cb) {
     if (!c) return;
     c.addEventListener('click', function(e) {
@@ -920,7 +816,6 @@ function initActivityFilters() {
     searchI.addEventListener('keydown', function(e) { if (e.key === 'Enter') applyActivityFilters(); });
   }
 }
-
 function loadActColleges() {
   var ct = document.getElementById('activityCollegeFilter');
   if (ct.querySelectorAll('.tag-chip').length > 1) return;
@@ -928,7 +823,6 @@ function loadActColleges() {
     (d.flat||d).forEach(function(c){ if (c.level === 1) { var b = document.createElement('button'); b.className = 'tag-chip'; b.dataset.college = c.id; b.textContent = c.name; ct.appendChild(b); } });
   }).catch(function(){});
 }
-
 // 获取联系方式
 async function toggleLike(id, type) {
   try {
@@ -938,7 +832,6 @@ async function toggleLike(id, type) {
     if (btn) { btn.innerHTML = (s.liked ? '❤️' : '🤍') + ' <span id="likeCount">' + s.count + '</span>'; if (s.liked) btn.style.borderColor = 'var(--color-primary)'; else btn.style.borderColor = ''; }
   } catch(e) { showToast(e.message, 'error'); }
 }
-
 function fetchContact(id) {
   var btn = document.getElementById('contactBtn');
   var display = document.getElementById('contactDisplay');
@@ -954,27 +847,21 @@ function fetchContact(id) {
     showToast(e.message, 'error');
   });
 }
-
 // ============================================================
 // 活动详情页渲染
 // ============================================================
-
 function renderActivityDetail() {
   var container = document.getElementById('activityDetail');
   if (!container) return;
-
   var params = new URLSearchParams(window.location.search);
   var activityId = params.get('id');
-
   // 加载状态
   container.innerHTML = '<div class="loading-state" style="padding:8rem 2rem;"><div class="loading-spinner"></div><p>正在加载活动信息...</p></div>';
-
   fetchActivityDetailFromAPI(activityId).then(function(result) {
     if (!result || !result.activity) {
       container.innerHTML = '<div class="empty-state" style="padding:6rem 2rem;"><span class="empty-icon">🔍</span><h3>活动不存在</h3><p>请检查活动 ID 是否正确</p><a href="activities.html" class="btn btn-primary" style="margin-top:1rem;">返回活动列表</a></div>';
       return;
     }
-
     var activity = result.activity;
     var tips = result.tips || activity.tips || [];
     var tipsList = tips.map(function(t) { return typeof t === 'object' ? t.tip_text || t : t; });
@@ -988,17 +875,14 @@ function renderActivityDetail() {
     var activityTime = activity.time || '';
     var activityLocation = activity.location || '';
     var activityDesc = activity.description || '';
-
     // 温馨提示
     var tipsHtml = tipsList.length > 0
       ? '<section class="detail-section"><div class="container-narrow"><div class="section-header"><span class="section-tag">💡 温馨提示</span><h2 class="section-title">参加活动前必看</h2></div><div class="tips-card"><ul class="tips-list">' + tipsList.map(function(tip) { return '<li class="tips-item animate-on-scroll">' + tip + '</li>'; }).join('') + '</ul></div></div></section>'
       : '';
-
     // 主办社团
     var clubHtml = club
       ? '<section class="detail-section section-alt"><div class="container-narrow" style="text-align:center;"><div class="section-header"><span class="section-tag">🎪 主办社团</span><h2 class="section-title">' + club.emoji + ' ' + club.name + '</h2><p class="section-subtitle">' + club.desc + '</p><a href="club-detail.html?id=' + club.id + '" class="btn btn-outline" style="margin-top:1rem;">了解 ' + club.name + ' →</a></div></div></section>'
       : '';
-
     container.innerHTML =
       '<section class="activity-detail-hero"><div class="ad-hero-bg" style="background:' + getActivityGradient(activityTag) + ';"></div><div class="container"><div class="ad-hero-content"><a href="activities.html" class="cd-back-link">← 返回活动列表</a><div class="ad-hero-emoji">' + activityEmoji + '</div><span class="ad-hero-badge ' + (isUpcoming ? 'badge-upcoming' : 'badge-past') + '">' + (isUpcoming ? '🔥 即将举办' : '📌 往期回顾') + '</span><h1 class="ad-hero-title">' + activityTitle + '</h1><div class="ad-hero-meta"><span>📅 ' + activityDate + '</span>' + (activityTime ? '<span>⏰ ' + activityTime + '</span>' : '') + '<span>📍 ' + activityLocation + '</span><span>🏷️ ' + activityTag + '</span><span>🎪 ' + (activity.club_name || activity.club || '') + '</span><div style="margin-top:.7rem;"><button class="btn btn-outline btn-sm" id="likeBtn" onclick="toggleLike(' + activityId + ', &#39;activity&#39;)">❤️ <span id="likeCount">0</span></button></div></div></div></div></section>' +
       '<section class="detail-section"><div class="container-narrow"><div class="section-header"><span class="section-tag">📖 活动介绍</span><h2 class="section-title">关于本次活动</h2></div><div class="activity-desc-card animate-on-scroll"><p>' + activityDesc + '</p></div></div></section>' + '<section class="detail-section"><div class="container-narrow" style="text-align:center;" id="applySection"></div></section>' +
@@ -1006,12 +890,10 @@ function renderActivityDetail() {
       tipsHtml +
       clubHtml +
       (isUpcoming ? '<section class="cta-section"><div class="container"><div class="cta-content"><h2>🎉 对活动感兴趣？</h2><p>了解更多活动详情，欢迎联系主办社团</p><div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">' + (club ? '<a href="club-detail.html?id=' + club.id + '#join-club" class="btn btn-white btn-lg">联系 ' + club.name + '</a>' : '') + '<a href="activities.html" class="btn btn-outline btn-lg" style="border-color:white;color:white;">浏览更多活动</a></div></div></div></section>' : '');
-
     observeAnimatedElements();
     if (isUpcoming) { loadApplyStatus(activityId); }
   });
 }
-
 function loadApplyStatus(id) {
   var sec = document.getElementById('applySection');
   if (!sec) return;
@@ -1060,7 +942,6 @@ function loadApplyStatus(id) {
     sec.innerHTML = '<div style="padding:0.5rem 0;"><a href="login.html" class="btn btn-primary btn-lg" style="display:inline-flex;">登录后申请</a></div>';
   });
 }
-
 async function applyActivity(id) {
   var msg = await confirmDialog({ icon:'📝', title:'申请参加活动', message:'写一段申请词，让主办方更了解你：', prompt:true, defaultValue:'我想参加这个活动！', confirmText:'提交申请' });
   if (msg === null) return;
@@ -1071,7 +952,6 @@ async function applyActivity(id) {
     loadApplyStatus(id);
   } catch(e) { showToast(e.message, 'error'); }
 }
-
 async function respondApply(aid, appId, action) {
   try {
     var d = await apiFetch('/activities/' + aid + '/applications/' + appId + '/respond', { method: 'POST', body: { action: action } });
@@ -1079,12 +959,10 @@ async function respondApply(aid, appId, action) {
     loadApplyStatus(aid);
   } catch(e) { showToast(e.message, 'error'); }
 }
-
 function genCta(club) {
   var link = club ? '<a href="club-detail.html?id=' + club.id + '#join-club" class="btn btn-white btn-lg">联系 ' + club.name + '</a>' : '';
   return '<section class="cta-section"><div class="container"><div class="cta-content"><h2>🎉 对活动感兴趣？</h2><p>了解更多活动详情，欢迎联系主办社团</p><div style="display:flex;gap:var(--space-md);justify-content:center;flex-wrap:wrap;">' + link + '<a href="activities.html" class="btn btn-outline btn-lg" style="border-color:white;color:white;">浏览更多活动</a></div></div></div></section>';
 }
-
 function loadClubSections(clubId) {
   fetch("/club-api/clubs/" + clubId + "/sections").then(function(r){return r.json()}).then(function(d){
     var el = document.getElementById("clubSections");
@@ -1097,7 +975,6 @@ function loadClubSections(clubId) {
     el.innerHTML = h;
   }).catch(function(){});
 }
-
 function getActivityGradient(tag) {
   const gradients = {
     '兴趣': 'linear-gradient(135deg, #FF6B35, #F7C948)',
@@ -1108,18 +985,14 @@ function getActivityGradient(tag) {
   };
   return gradients[tag] || 'linear-gradient(135deg, #FF6B35, #F7C948)';
 }
-
 // ============================================================
 // 社团详情页渲染
 // ============================================================
-
 function renderClubDetail() {
   const container = document.getElementById('clubDetail');
   if (!container) return;
-
   const params = new URLSearchParams(window.location.search);
   const clubId = params.get('id');
-
   // 加载状态
   container.innerHTML = `
     <div class="loading-state" style="padding:8rem 2rem;">
@@ -1127,7 +1000,6 @@ function renderClubDetail() {
       <p>正在加载社团信息...</p>
     </div>
   `;
-
   fetchClubDetailFromAPI(clubId).then(result => {
     if (!result || !result.club) {
       container.innerHTML = `
@@ -1140,10 +1012,8 @@ function renderClubDetail() {
       `;
       return;
     }
-
     const { club, history, images } = result;
     const clubActivities = activitiesData.filter(a => a.clubId === Number(clubId)).slice(0, 3);
-
     // 历史时间线
     const historyHtml = history && history.length > 0
       ? `
@@ -1165,7 +1035,6 @@ function renderClubDetail() {
         </div>
       </section>`
       : '';
-
     // 社团相册
     const albumHtml = images && images.length > 0
       ? `
@@ -1184,7 +1053,6 @@ function renderClubDetail() {
         </div>
       </section>`
       : '';
-
     // 活动
     const activitiesHtml = clubActivities.length > 0
       ? `
@@ -1198,13 +1066,11 @@ function renderClubDetail() {
         </div>
       </section>`
       : '';
-
     // 认领提示 - 信息不完整时显示
     var claimNotice = '';
     if (!club.description && !club.contact && !club.philosophy) {
       claimNotice = '<section class="detail-section" style="padding-top:2rem;"><div class="container-narrow" style="text-align:center;padding:1.5rem;background:rgba(232,93,58,0.04);border-radius:12px;border:1px dashed rgba(232,93,58,0.2);"><div style="font-size:1.2rem;margin-bottom:.3rem;">🏷️</div><p style="font-size:.85rem;color:var(--text-secondary);">本社团信息尚未完善，欢迎社团负责人<a href="mailto:wusters@wust.edu.cn?subject=认领社团：${encodeURIComponent(club.name)}" style="color:var(--color-primary);font-weight:600;">联系认领</a>并完善资料</p></div></section>';
     }
-
     container.innerHTML = claimNotice + `
       <!-- Hero -->
       <section class="club-detail-hero" style="--hero-gradient: ${getClubGradient(club.color)};">
@@ -1223,11 +1089,11 @@ function renderClubDetail() {
             <div class="cd-hero-actions">
               <a href="#join-club" class="btn btn-white btn-lg">加入我们</a>
               <button class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.3);color:#fff;" onclick="showContributeModal(${club.id},'${club.name}')">✏️ 补充信息</button>
+              <button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);" onclick="claimClub(${club.id})">🏷️ 认领社团</button>
             </div>
           </div>
         </div>
       </section>
-
       <!-- 社团理念 -->
       <section class="detail-section">
         <div class="container-narrow">
@@ -1241,19 +1107,14 @@ function renderClubDetail() {
           </div>
         </div>
       </section>
-
       <!-- 板块 -->
       <div id="clubSections"></div>
-
       <!-- 历史时间线 -->
       ${historyHtml}
-
       <!-- 社团相册 -->
       ${albumHtml}
-
       <!-- 活动 -->
       ${activitiesHtml}
-
       <!-- 加入 CTA -->
       <section class="detail-section" id="join-club">
         <div class="container-narrow">
@@ -1273,16 +1134,31 @@ function renderClubDetail() {
           </div>
         </div>
       </section>
+      <!-- 贡献墙 -->
+      <section class="detail-section" id="contributors-section" style="padding-top:0;">
+        <div class="container-narrow">
+          <div class="section-header">
+            <span class="section-tag">🙌 贡献者</span>
+            <h2 class="section-title" style="font-size:1.2rem;">感谢以下同学的贡献</h2>
+          </div>
+          <div id="contributorsList" style="text-align:center;font-size:.85rem;color:var(--text-tertiary);">加载中...</div>
+        </div>
+      </section>
     `;
     observeAnimatedElements();
       loadClubSections(club.id);
+      // 加载贡献墙
+      fetch('/club-api/clubs/' + clubId + '/contributors').then(function(r){return r.json()}).then(function(d){
+        var el = document.getElementById('contributorsList');
+        if (!el) return;
+        if (!d.contributors || !d.contributors.length) { el.innerHTML = '还没有贡献者，来做第一个吧 ✨'; return; }
+        el.innerHTML = d.contributors.map(function(c){ return '<span style="display:inline-block;margin:.2rem;padding:.15rem .6rem;background:var(--color-gray-50);border-radius:20px;font-size:.82rem;">🙌 ' + (c.contributor_name || c.nickname || '匿名') + '</span>'; }).join('');
+      }).catch(function(){});
 });
 }
-
 function showClubContact(name, contact) {
   confirmDialog({ icon:'📞', title:(name || '社团') + ' · 联系方式', message: contact || '暂无联系方式', confirmText:'知道了', hideCancel:true });
 }
-
 function getClubGradient(color) {
   const gradients = {
     primary: 'linear-gradient(135deg, #FF6B35, #FF4757)',
@@ -1293,34 +1169,27 @@ function getClubGradient(color) {
   };
   return gradients[color] || gradients.primary;
 }
-
 function initContactForm() {
   const form = document.getElementById('contactForm');
   if (!form) return;
-
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-
     const name = document.getElementById('name').value.trim();
     const email = document.getElementById('email').value.trim();
     const message = document.getElementById('message').value.trim();
-
     if (!name || !email || !message) {
       showToast('请填写所有必填字段 🙏', 'error');
       return;
     }
-
     if (!email.includes('@') || !email.includes('.')) {
       showToast('请输入有效的邮箱地址 📧', 'error');
       return;
     }
-
     // 模拟提交
     const submitBtn = form.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '⏳ 发送中...';
     submitBtn.disabled = true;
-
     setTimeout(() => {
       showToast('消息已发送！我们会尽快回复你 🎉', 'success');
       form.reset();
@@ -1329,11 +1198,9 @@ function initContactForm() {
     }, 1500);
   });
 }
-
 // ============================================================
 // 移动端抽屉 & 底部导航
 // ============================================================
-
 function initDrawer() {
   const toggle = document.getElementById('filterToggle');
   const drawer = document.getElementById('filterDrawer');
@@ -1362,7 +1229,6 @@ function initDrawer() {
     if (cA) cA.onclick = function() { renderAllClubs(); ccd(); };
   }
 }
-
 function updateNavAuth() {
   var el = document.getElementById('navAuth');
   // 登录墙
@@ -1371,7 +1237,6 @@ function updateNavAuth() {
   var ok = false;
   for (var i = 0; i < wp.length; i++) { if (cp === wp[i]) { ok = true; break; } }
   if (!ok && !getToken()) { window.location.href = 'login.html'; return; }
-
   if (!el) return;
   var user = getCurrentUser();
   if (user) {
@@ -1395,7 +1260,6 @@ function updateNavAuth() {
     el.innerHTML = '<a href="login.html" class="btn btn-outline btn-sm">登录</a>';
   }
 }
-
 function logout() {
   removeToken();
   localStorage.removeItem('ys_user');
@@ -1403,7 +1267,6 @@ function logout() {
   updateNavAuth();
   setTimeout(function(){ window.location.reload(); }, 300);
 }
-
 function initBottomNav() {
   var nav = document.getElementById('bottomNav');
   if (!nav) return;
@@ -1412,19 +1275,15 @@ function initBottomNav() {
     if (p.includes(a.getAttribute('href').replace('.html',''))) a.classList.add('active');
   });
 }
-
 // ============================================================
 // 初始化
 // ============================================================
-
 document.addEventListener('DOMContentLoaded', () => {
   // 统一导航 / 底部导航（必须最先，后续组件依赖其注入的 DOM）
   renderChrome();
-
   // Auth 系统
   injectAuthModal();
   updateAuthUI();
-
   // 全局组件
   initNavbar();
   initMobileNav();
@@ -1432,94 +1291,143 @@ document.addEventListener('DOMContentLoaded', () => {
   initDrawer();
   initBottomNav();
   updateNavAuth();
-
   // 首页
   renderHomeClubs();
   renderHomeActivities();
-
   // 社团列表页
   const allClubGrid = document.getElementById('allClubGrid');
   if (allClubGrid) {
     renderAllClubs();
     initClubFilters();
   }
-
   // 活动列表页
   const allActivityGrid = document.getElementById('allActivityGrid');
   if (allActivityGrid) {
     renderAllActivities();
     initActivityFilters();
   }
-
   // 时间线
   renderTimeline();
-
   // 社团详情页
   const clubDetail = document.getElementById('clubDetail');
   if (clubDetail) {
     renderClubDetail();
   }
-
   // 活动详情页
   const activityDetail = document.getElementById('activityDetail');
   if (activityDetail) {
     renderActivityDetail();
   }
-
   // 联系表单
   initContactForm();
-
   // 社团贡献模态框
-  if (!document.getElementById('contributeModal')) {
-    var cm = document.createElement('div'); cm.id = 'contributeModal';
-    cm.style.cssText = 'position:fixed;inset:0;z-index:3000;display:none;background:rgba(0,0,0,.5);align-items:center;justify-content:center;';
-    cm.onclick = function(e) { if (e.target === cm) closeContributeModal(); };
-    cm.innerHTML = '<div style="background:#fff;border-radius:16px;padding:1.2rem;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;"><h3 id="contributeTitle" style="font-weight:700;font-size:1rem;">✏️ 补充信息</h3><button onclick="closeContributeModal()" style="border:none;background:transparent;font-size:1.2rem;cursor:pointer;color:#999;">✕</button></div>' +
-      '<div style="display:flex;gap:.3rem;margin-bottom:.6rem;"><button class="btn btn-primary btn-sm" id="contributeTabInfo" onclick="switchContributeTab(\'info\')">📝 补充信息</button><button class="btn btn-ghost btn-sm" id="contributeTabQuestion" onclick="switchContributeTab(\'question\')">❓ 提出疑问</button></div>' +
-      '<div id="contributeFields"><label style="font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.25rem;">信息类别</label>' +
-      '<select id="contributeField" style="width:100%;padding:.45rem .7rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:.85rem;margin-bottom:.5rem;"><option value="">综合</option><option value="description">社团介绍</option><option value="philosophy">社团理念</option><option value="contact">联系方式</option><option value="join_info">加入方式</option></select>' +
-      '<label style="font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.25rem;">内容 <span style="color:var(--color-danger);">*</span></label>' +
-      '<textarea id="contributeContent" rows="4" style="width:100%;padding:.5rem .7rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:.85rem;resize:vertical;" placeholder="请详细描述你要补充的信息或提出的疑问..."></textarea>' +
-      '<div id="contributeError" style="color:var(--color-danger);font-size:.8rem;margin-top:.3rem;"></div></div>' +
-      '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.6rem;" onclick="submitContribute()">提交 ✨</button></div>';
-    document.body.appendChild(cm);
-  }
+  initContributeModal();
 });
 
-var contributeClubId = null, contributeClubName = '';
-
-function showContributeModal(id, name) {
-  contributeClubId = id; contributeClubName = name;
-  document.getElementById('contributeTitle').textContent = '✏️ 补充信息 · ' + name;
-  document.getElementById('contributeContent').value = '';
-  document.getElementById('contributeError').textContent = '';
-  document.getElementById('contributeModal').style.display = 'flex';
+function initContributeModal() {
+  if (document.getElementById('contributeModal')) return;
+  var cm = document.createElement('div'); cm.id = 'contributeModal';
+  cm.style.cssText = 'position:fixed;inset:0;z-index:3000;display:none;background:rgba(0,0,0,.5);align-items:center;justify-content:center;';
+  cm.onclick = function(e) { if (e.target === cm) closeContributeModal(); };
+  cm.innerHTML = '<div style="background:#fff;border-radius:16px;padding:1.2rem;max-width:480px;width:90%;max-height:80vh;overflow-y:auto;" onclick="event.stopPropagation()">' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;"><h3 id="contributeTitle" style="font-weight:700;font-size:1rem;">✏️ 补充信息</h3><button onclick="closeContributeModal()" style="border:none;background:transparent;font-size:1.2rem;cursor:pointer;color:#999;">✕</button></div>' +
+    '<div style="display:flex;gap:.3rem;margin-bottom:.6rem;"><button class="btn btn-primary btn-sm" id="contributeTabInfo" onclick="switchContributeTab(\'info\')">📝 补充信息</button><button class="btn btn-ghost btn-sm" id="contributeTabQuestion" onclick="switchContributeTab(\'question\')">❓ 提出疑问</button></div>' +
+    '<div id="contributeFields"><label style="font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.25rem;">信息类别</label>' +
+    '<select id="contributeField" style="width:100%;padding:.45rem .7rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:.85rem;margin-bottom:.5rem;"><option value="">综合</option><option value="description">社团介绍</option><option value="philosophy">社团理念</option><option value="contact">联系方式</option><option value="join_info">加入方式</option></select>' +
+    '<label style="font-size:.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:.25rem;">内容 <span style="color:var(--color-danger);">*</span></label>' +
+    '<textarea id="contributeContent" rows="4" style="width:100%;padding:.5rem .7rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:.85rem;resize:vertical;" placeholder="请详细描述你要补充的信息或提出的疑问..."></textarea>' +
+    '<div style="margin:.5rem 0;padding:.5rem;background:#f9f8f6;border-radius:8px;"><label style="display:flex;align-items:center;gap:.4rem;cursor:pointer;font-size:.82rem;"><input type="checkbox" id="contributorToggle" onchange="var el=document.getElementById(\'contributorNameWrap\');el.style.display=this.checked?\'block\':\'none\'" /> 显示在贡献墙</label><div id="contributorNameWrap" style="display:none;margin-top:.3rem;"><input id="contributorName" placeholder="贡献者昵称（留空用用户名）" style="width:100%;padding:.4rem .6rem;border:1.5px solid var(--border-color);border-radius:6px;font-size:.82rem;box-sizing:border-box;" /></div></div>' +
+    '<div id="contributeError" style="color:var(--color-danger);font-size:.8rem;margin-top:.3rem;"></div>' +
+    '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.6rem;" onclick="submitContribute()">提交 ✨</button></div>';
+  document.body.appendChild(cm);
 }
 
+var contributeClubId = null, contributeClubName = '';
+function showContributeModal(id, name) {
+  contributeClubId = id; contributeClubName = name;
+  // 确保模态框已创建
+  var m = document.getElementById('contributeModal');
+  if (!m) initContributeModal();
+  document.getElementById('contributeTitle').textContent = '✏️ 补充信息 · ' + name;
+  var cc = document.getElementById('contributeContent');
+  if (cc) cc.value = '';
+  var ce = document.getElementById('contributeError');
+  if (ce) ce.textContent = '';
+  document.getElementById('contributeModal').style.display = 'flex';
+}
 function closeContributeModal() { document.getElementById('contributeModal').style.display = 'none'; }
-
 function switchContributeTab(tab) {
   var infoBtn = document.getElementById('contributeTabInfo');
   var qBtn = document.getElementById('contributeTabQuestion');
   if (tab === 'info') { infoBtn.className = 'btn btn-primary btn-sm'; qBtn.className = 'btn btn-ghost btn-sm'; }
   else { qBtn.className = 'btn btn-primary btn-sm'; infoBtn.className = 'btn btn-ghost btn-sm'; }
 }
-
 async function submitContribute() {
   if (!contributeClubId) return;
   var content = document.getElementById('contributeContent').value.trim();
   if (!content) { document.getElementById('contributeError').textContent = '请输入内容'; return; }
   var field = document.getElementById('contributeField').value;
   var type = document.getElementById('contributeTabInfo').className.indexOf('btn-primary') >= 0 ? 'info' : 'question';
+  var showContributor = document.getElementById('contributorToggle') && document.getElementById('contributorToggle').checked;
+  var contributorName = document.getElementById('contributorName') ? document.getElementById('contributorName').value.trim() : '';
   document.getElementById('contributeError').textContent = '';
   try {
-    await apiFetch('/clubs/' + contributeClubId + '/contribute', { method: 'POST', body: { type, field, content } });
+    await apiFetch('/clubs/' + contributeClubId + '/contribute', { method: 'POST', body: { type, field, content, show_contributor: showContributor, contributor_name: contributorName } });
     showToast('已提交，感谢你的贡献！');
     closeContributeModal();
   } catch(e) { document.getElementById('contributeError').textContent = e.message; }
 }
-
+var claimClubId = null, claimImages = [];
+function claimClub(id) {
+  if (!getToken()) { showToast('请先登录','error'); return; }
+  claimClubId = id; claimImages = [];
+  // 创建或复用认领弹窗
+  var m = document.getElementById('claimModal');
+  if (!m) {
+    m = document.createElement('div'); m.id = 'claimModal';
+    m.style.cssText = 'position:fixed;inset:0;z-index:3000;display:none;background:rgba(0,0,0,.5);align-items:center;justify-content:center;';
+    m.onclick = function(e) { if (e.target === m) m.style.display = 'none'; };
+    m.innerHTML = '<div style="background:#fff;border-radius:16px;padding:1.2rem;max-width:480px;width:90%;" onclick="event.stopPropagation()">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.8rem;"><h3 style="font-weight:700;font-size:1rem;">🏷️ 认领社团</h3><button onclick="document.getElementById(\'claimModal\').style.display=\'none\'" style="border:none;background:transparent;font-size:1.2rem;cursor:pointer;color:#999;">✕</button></div>' +
+      '<p style="font-size:.82rem;color:var(--text-tertiary);margin-bottom:.6rem;">请提供你与该社团关系的证明材料，以便管理员核实</p>' +
+      '<textarea id="claimMessage" rows="3" style="width:100%;padding:.5rem .7rem;border:1.5px solid var(--border-color);border-radius:8px;font-size:.85rem;resize:vertical;box-sizing:border-box;" placeholder="请说明你的职务、任职时间等（必填）"></textarea>' +
+      '<div style="display:flex;align-items:center;gap:.4rem;margin-top:.5rem;flex-wrap:wrap;"><span style="font-size:.78rem;color:var(--text-tertiary);">📎 证明材料（选填）</span><button class="btn btn-ghost btn-sm" onclick="document.getElementById(\'claimImageInput\').click()">上传图片</button><input type="file" id="claimImageInput" accept="image/*" style="display:none" onchange="uploadClaimImage(this)" /><span id="claimImageStatus" style="font-size:.72rem;color:var(--text-tertiary);"></span></div>' +
+      '<div id="claimImagePreview" style="display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.3rem;"></div>' +
+      '<div id="claimError" style="color:var(--color-danger);font-size:.8rem;margin-top:.3rem;"></div>' +
+      '<button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:.6rem;" onclick="submitClaim()">提交认领</button></div>';
+    document.body.appendChild(m);
+  }
+  m.style.display = 'flex';
+}
+function uploadClaimImage(input) {
+  var file = input.files[0]; if (!file) return;
+  if (file.size > 5*1024*1024) { showToast('图片不能超过5MB','error'); return; }
+  document.getElementById('claimImageStatus').textContent = '上传中...';
+  var fd = new FormData(); fd.append('file', file); fd.append('type', 'claim');
+  var xhr = new XMLHttpRequest();
+  xhr.open('POST', '/club-api/upload');
+  xhr.setRequestHeader('Authorization', 'Bearer ' + (getToken() || ''));
+  xhr.onload = function() {
+    try {
+      var d = JSON.parse(xhr.responseText);
+      if (xhr.status >= 200 && xhr.status < 300) {
+        claimImages.push(d.url);
+        document.getElementById('claimImagePreview').innerHTML += '<div style="width:56px;height:56px;border-radius:6px;overflow:hidden;border:1px solid #eee;position:relative;"><img src="'+d.url+'" style="width:100%;height:100%;object-fit:cover;" /><span onclick="this.parentElement.remove()" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--color-danger);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;">✕</span></div>';
+        document.getElementById('claimImageStatus').textContent = '✅';
+      } else { document.getElementById('claimImageStatus').textContent = '❌'; }
+    } catch(e) { document.getElementById('claimImageStatus').textContent = '❌'; }
+  };
+  xhr.onerror = function() { document.getElementById('claimImageStatus').textContent = '❌'; };
+  xhr.timeout = 30000; xhr.send(fd);
+}
+async function submitClaim() {
+  var msg = document.getElementById('claimMessage').value.trim();
+  if (!msg) { document.getElementById('claimError').textContent = '请填写你与社团的关系说明'; return; }
+  document.getElementById('claimError').textContent = '';
+  try {
+    await apiFetch('/clubs/' + claimClubId + '/claim', { method: 'POST', body: { message: msg, images: claimImages } });
+    showToast('认领申请已提交，等待管理员审核');
+    document.getElementById('claimModal').style.display = 'none';
+  } catch(e) { document.getElementById('claimError').textContent = e.message; }
+}
   // 对动态加载的元素也执行一次观察
-  setTimeout(observeAnimatedElements, 200);
-});
