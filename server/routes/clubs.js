@@ -293,11 +293,13 @@ router.post('/:id/claim', authMiddleware, async (req, res) => {
 router.get('/claims/pending', authMiddleware, async (req, res) => {
   try {
     if (!req.user.is_admin) return res.status(403).json({ error: '无权限' });
-    const { status = 'pending' } = req.query;
+    const { status = "pending" } = req.query;
+    var where = status === "all" ? "" : " WHERE cc.status=?";
+    var params = status === "all" ? [] : [status];
     const [rows] = await pool.query(
       `SELECT cc.*, cl.name AS club_name, cl.emoji AS club_emoji, u.nickname, u.username FROM club_claims cc
        LEFT JOIN clubs cl ON cc.club_id = cl.id LEFT JOIN users u ON cc.user_id = u.id
-       WHERE cc.status=? ORDER BY cc.created_at DESC`, [status]
+       ${where} ORDER BY cc.created_at DESC`, params
     );
     res.json({ claims: rows });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
