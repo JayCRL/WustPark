@@ -1013,7 +1013,13 @@ function renderClubDetail() {
       return;
     }
     const { club, history, images } = result;
-    const clubActivities = activitiesData.filter(a => a.clubId === Number(clubId)).slice(0, 3);
+    var clubActivities = [];
+    try {
+      var actData = await apiFetch('/activities?club_id=' + clubId);
+      clubActivities = (actData.activities || []).slice(0, 3);
+    } catch(e) {
+      clubActivities = activitiesData.filter(function(a){ return a.clubId === Number(clubId); }).slice(0, 3);
+    }
     // 历史时间线
     const historyHtml = history && history.length > 0
       ? `
@@ -1054,18 +1060,27 @@ function renderClubDetail() {
       </section>`
       : '';
     // 活动
-    const activitiesHtml = clubActivities.length > 0
-      ? `
-      <section class="detail-section">
-        <div class="section-header">
-          <span class="section-tag">🎭 社团活动</span>
-          <h2 class="section-title">近期活动</h2>
-        </div>
-        <div class="activity-grid" style="max-width:var(--container-max);margin:0 auto;">
-          ${clubActivities.map(a => renderActivityCard(a)).join('')}
-        </div>
-      </section>`
-      : '';
+    var activitiesHtml = '';
+    if (clubActivities.length > 0) {
+      activitiesHtml = '\
+      <section class="detail-section" id="clubActivitiesSection">\
+        <div class="section-header">\
+          <span class="section-tag">🎭 社团活动</span>\
+          <h2 class="section-title">近期活动</h2>\
+        </div>\
+        <div class="activity-grid" style="max-width:var(--container-max);margin:0 auto;">\
+          ' + clubActivities.map(function(a){ return renderActivityCard(a); }).join('') + '\
+        </div>\
+      </section>';
+    } else {
+      activitiesHtml = '\
+      <section class="detail-section" id="clubActivitiesSection">\
+        <div class="container-narrow" style="text-align:center;padding:2rem;">\
+          <span style="font-size:2rem;">📭</span>\
+          <p style="color:var(--text-tertiary);margin-top:0.5rem;">本社团暂无活动</p>\
+        </div>\
+      </section>';
+    }
     // 认领提示 - 信息不完整时显示
     var claimNotice = '';
     if (!club.description && !club.contact && !club.philosophy) {
@@ -1128,7 +1143,7 @@ function renderClubDetail() {
               </div>
               <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
                 <button class="btn btn-white btn-lg" onclick="showClubContact('${club.name}','${(club.contact||'').replace(/'/g,"\\'")}')">📞 联系社团</button>
-                <a href="activities.html" class="btn btn-outline btn-lg" style="border-color:white;color:white;">查看全部活动</a>
+                                <button class="btn btn-outline btn-lg" style="border-color:white;color:white;" onclick="document.getElementById('clubActivitiesSection').scrollIntoView({behavior:'smooth'})">查看全部活动</button>
               </div>
             </div>
           </div>
