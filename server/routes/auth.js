@@ -153,13 +153,24 @@ router.post('/wust', async (req, res) => {
     } catch(e) {}
 
     if (wustOk) {
-      var [users] = await pool.query('SELECT * FROM users WHERE student_id=?', [sid]);
+      var [users] = await pool.query(
+        'SELECT * FROM users WHERE student_id=? OR username=? ORDER BY (student_id=?) DESC LIMIT 1',
+        [sid, username, sid]
+      );
       if (users.length === 0) {
         var [result] = await pool.query('INSERT INTO users (username,email,nickname,student_id,password_hash) VALUES (?,?,?,?,?)', [username, sid+'@wust.edu.cn', sname, sid, 'wust_auth']);
         var token = jwt.sign({ id: result.insertId, username, role: 'user', is_admin: 0 }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
         return res.json({ message: '认证成功', token, is_new_user: true, user: { id: result.insertId, username, nickname: sname, role: 'user', is_admin: false } });
       }
       var u = users[0];
+      if (!u.student_id || !u.nickname) {
+        await pool.query(
+          'UPDATE users SET student_id=IF(student_id IS NULL OR student_id="", ?, student_id), nickname=IF(nickname IS NULL OR nickname="", ?, nickname) WHERE id=?',
+          [sid, sname, u.id]
+        );
+        u.student_id = u.student_id || sid;
+        u.nickname = u.nickname || sname;
+      }
       var is_ad2 = !!u.is_admin;
       var token = jwt.sign({ id: u.id, username: u.username, email: u.email, role: u.role, is_admin: is_ad2 }, config.jwtSecret, { expiresIn: config.jwtExpiresIn });
       return res.json({ message: '认证成功', token, is_new_user: false, user: { id: u.id, username: u.username, nickname: u.nickname, role: u.role, is_admin: is_ad2 } });

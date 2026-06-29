@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>社团管理 · Wust Spark</title>
+  <title>组织管理 · Wust Spark</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -47,27 +47,35 @@
   <div class="mgmt-wrap">
     <div class="container-narrow">
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1rem;">
-        <h1 style="font-size:1.3rem;font-weight:700;flex:1;">社团管理</h1>
+        <h1 style="font-size:1.3rem;font-weight:700;flex:1;">组织管理</h1>
         <a href="activity-create.html" class="btn btn-primary btn-sm" style="margin-right:0.3rem;">＋ 发布活动</a>
         <a href="clubs.html" class="btn btn-ghost btn-sm">← 返回</a>
       </div>
 
-      <!-- 社团选择 -->
+      <!-- 组织选择 -->
       <div class="mgmt-card" id="clubSelectCard">
-        <h2>选择要管理的社团</h2>
+        <h2>选择要管理的组织</h2>
         <div class="club-selector" id="clubSelector"></div>
-        <button class="btn btn-outline btn-sm" onclick="showCreateForm()">＋ 入驻新社团</button>
+        <button class="btn btn-outline btn-sm" onclick="showCreateForm()">＋ 创建 / 入驻</button>
+      </div>
+
+      <!-- 加入申请审核 -->
+      <div class="mgmt-card" id="joinRequestsCard" style="display:none;">
+        <h2>加入申请</h2>
+        <div id="joinRequestsList">
+          <p style="color:var(--text-tertiary);font-size:0.85rem;">选择一个组织后查看待审核申请</p>
+        </div>
       </div>
 
       <!-- 编辑表单 -->
       <div class="mgmt-card" id="editForm" style="display:none;">
-        <h2 id="formTitle">编辑社团信息</h2>
+        <h2 id="formTitle">编辑组织信息</h2>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 0.8rem;">
           <div><label>名称</label><input type="text" id="cName" /></div>
           <div><label>Emoji</label><input type="text" id="cEmoji" placeholder="🎪" /></div>
         </div>
         <div style="margin:0.5rem 0;">
-          <label>社团Logo</label>
+          <label>Logo</label>
           <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
             <div id="logoPreview" style="width:64px;height:64px;border-radius:var(--radius-md);background:var(--color-gray-100);display:flex;align-items:center;justify-content:center;font-size:1.5rem;color:var(--text-tertiary);overflow:hidden;border:1px solid var(--border-color);flex-shrink:0;">
               <span id="logoPlaceholder">🏷️</span>
@@ -79,7 +87,7 @@
           </div>
         </div>
         <label>简介</label><textarea id="cDesc" rows="2"></textarea>
-        <label>社团理念</label><textarea id="cPhi" rows="2"></textarea>
+        <label>理念</label><textarea id="cPhi" rows="2"></textarea>
         <label>联系方式</label><input type="text" id="cContact" />
         <label>加入方式</label><input type="text" id="cJoin" />
         <label>成员人数</label><input type="number" id="cMembers" min="0" />
@@ -89,6 +97,7 @@
             <select id="cType" onchange="switchTagOptions()">
               <option value="club">🎪 社团</option>
               <option value="department">🏛️ 部门</option>
+              <option value="interest_group">💡 兴趣组</option>
             </select>
           </div>
           <div>
@@ -106,7 +115,7 @@
         </div>
 
         <div style="margin-top:0.8rem;">
-          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">社团门户板块</label>
+          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">门户板块</label>
           <div id="sectionEditor">
             <div id="sectionList"></div>
             <div style="display:flex;gap:0.3rem;margin-top:0.5rem;flex-wrap:wrap;">
@@ -119,7 +128,7 @@
           <div id="sectionEditorData" style="display:none;"></div>
         </div>
         <div style="margin-top:0.8rem;">
-          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">社团历程（时间线）</label>
+          <label style="font-size:0.8rem;font-weight:600;color:var(--text-secondary);display:block;margin-bottom:0.3rem;">组织历程（时间线）</label>
           <div id="historyList"></div>
           <button class="btn btn-outline btn-sm" onclick="addHistoryItem()">＋ 添加里程碑</button>
         </div>
@@ -142,7 +151,7 @@
     <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
 
-  <script src="js/main.v83.js"></script>
+  <script src="js/main.js?v=88"></script>
   <script>
 
     var historyItems = [];
@@ -207,10 +216,46 @@
     }
     function ready(fn){if(document.readyState!=='loading')setTimeout(fn,30);else document.addEventListener('DOMContentLoaded',function(){setTimeout(fn,30);});}
     ready(function(){if(!getToken()){document.getElementById('clubSelectCard').innerHTML='<p style="text-align:center;padding:2rem;">请先登录</p><a href="login.html" class="btn btn-primary" style="display:block;width:fit-content;margin:0 auto;">去登录</a>';return;}loadMyClubs();updateNavAuth();});
-    function loadMyClubs(){apiFetch('/clubs/manage').then(function(d){var sel=document.getElementById('clubSelector');sel.innerHTML='';if(d.clubs.length===0){sel.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">你还没有管理的社团</p>';return;}d.clubs.forEach(function(c){var a=document.createElement('a');a.href='#';a.textContent=c.emoji+' '+c.name+' ('+(c.role==='president'?'社长':'副社长')+')';a.onclick=function(e){e.preventDefault();editClub(c.id);};sel.appendChild(a);});}).catch(function(e){document.getElementById('clubSelectCard').innerHTML='<p style="color:var(--text-tertiary);">'+e.message+'</p>';});}
-    function showCreateForm(){editingId=null;document.getElementById('formTitle').textContent='入驻新社团';['cName','cEmoji','cDesc','cPhi','cContact','cJoin','cMembers'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('cType').value='club';switchTagOptions();document.getElementById('cLevel').value='college';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';sections=[];sectionIdCounter=0;document.getElementById('sectionList').innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块，点击上方按钮添加</p>';setTimeout(toggleCollegeSelect,50);}
-    function editClub(id){editingId=id;document.getElementById('formTitle').textContent='编辑信息';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';loadClubCollege(id);}
+    function getManagedTypeName(type){return type==='interest_group'?'兴趣组':(type==='department'?'部门':'社团');}
+    function getManagedRoleName(c){if(c.role==='president')return c.type==='interest_group'?'组长':(c.type==='department'?'负责人':'社长');if(c.role==='vice_president')return c.type==='interest_group'?'副组长':(c.type==='department'?'副负责人':'副社长');return '成员';}
+    function getDefaultEmoji(type){return type==='interest_group'?'💡':(type==='department'?'🏛️':'🎪');}
+    function loadMyClubs(){apiFetch('/clubs/manage').then(function(d){var sel=document.getElementById('clubSelector');sel.innerHTML='';if(d.clubs.length===0){sel.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">你还没有管理的组织</p>';return;}d.clubs.forEach(function(c){var a=document.createElement('a');a.href='#';a.textContent=(c.emoji||getDefaultEmoji(c.type))+' '+c.name+' · '+getManagedTypeName(c.type)+' ('+getManagedRoleName(c)+')';a.onclick=function(e){e.preventDefault();editClub(c.id);};sel.appendChild(a);});}).catch(function(e){document.getElementById('clubSelectCard').innerHTML='<p style="color:var(--text-tertiary);">'+e.message+'</p>';});}
+    function showCreateForm(){editingId=null;document.getElementById('formTitle').textContent='创建 / 入驻';['cName','cEmoji','cDesc','cPhi','cContact','cJoin','cMembers'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('cType').value='club';document.getElementById('cEmoji').value='🎪';switchTagOptions();document.getElementById('cLevel').value='college';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';sections=[];sectionIdCounter=0;document.getElementById('sectionList').innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块，点击上方按钮添加</p>';setTimeout(toggleCollegeSelect,50);}
+    function editClub(id){editingId=id;document.getElementById('formTitle').textContent='编辑信息';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';loadClubCollege(id);loadJoinRequests(id);}
     function cancelEdit(){document.getElementById('editForm').style.display='none';editingId=null;}
+    function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+    function loadJoinRequests(clubId){
+      var card=document.getElementById('joinRequestsCard');
+      var list=document.getElementById('joinRequestsList');
+      card.style.display='block';
+      list.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">正在加载申请...</p>';
+      apiFetch('/clubs/join-requests/'+clubId).then(function(d){
+        var rows=d.requests||[];
+        if(!rows.length){list.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无待审核加入申请</p>';return;}
+        var h='';
+        rows.forEach(function(r){
+          var name=escapeHtml(r.nickname||r.username||('用户 #'+r.user_id));
+          var msg=escapeHtml(r.message||'这个同学还没有填写申请理由');
+          h+='<div style="border:1px solid var(--border-color);border-radius:10px;padding:0.75rem 0.85rem;margin-bottom:0.55rem;background:var(--color-gray-50);">';
+          h+='<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;"><strong style="font-size:0.9rem;">'+name+'</strong><span style="font-size:0.72rem;color:var(--text-tertiary);">申请时间 '+(r.joined_at?new Date(r.joined_at).toLocaleString('zh-CN',{hour12:false}):'未知')+'</span></div>';
+          h+='<p style="font-size:0.82rem;color:var(--text-secondary);line-height:1.6;margin:0.45rem 0 0.6rem;white-space:pre-wrap;">'+msg+'</p>';
+          h+='<div style="display:flex;gap:0.45rem;justify-content:flex-end;"><button class="btn btn-primary btn-sm" onclick="reviewJoinRequest('+clubId+','+r.id+',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="reviewJoinRequest('+clubId+','+r.id+',\'reject\')">拒绝</button></div>';
+          h+='</div>';
+        });
+        list.innerHTML=h;
+      }).catch(function(e){
+        list.innerHTML='<p style="color:var(--color-danger);font-size:0.85rem;">'+escapeHtml(e.message)+'</p>';
+      });
+    }
+    async function reviewJoinRequest(clubId, requestId, action){
+      var ok=await confirmDialog({icon:action==='approve'?'✅':'✕',title:action==='approve'?'通过加入申请':'拒绝加入申请',message:action==='approve'?'确认通过这条加入申请？':'确认拒绝这条加入申请？',confirmText:action==='approve'?'通过':'拒绝'});
+      if(!ok)return;
+      try{
+        var d=await apiFetch('/clubs/join-requests/'+requestId+'/review',{method:'POST',body:{action:action}});
+        showToast(d.message||'操作成功');
+        loadJoinRequests(clubId);
+      }catch(e){showToast(e.message,'error');}
+    }
     // OSS 上传
     function uploadClubLogo(input){
       var file=input.files[0];if(!file)return;
@@ -240,12 +285,12 @@
     function updateSection(id,f,v){for(var i=0;i<sections.length;i++){if(sections[i].id===id){sections[i][f]=v;break;}}}
     function renderSections(){var el=document.getElementById('sectionList');if(!el)return;if(!sections.length){el.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块</p>';return;}var h='';for(var i=0;i<sections.length;i++){var s=sections[i];h+='<div style="background:var(--color-gray-50);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;border:1px solid var(--border-color);">';if(s.type==='divider'){h+='<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.8rem;color:var(--text-tertiary);">分割线</span><button class="btn btn-ghost btn-sm" onclick="removeSection('+s.id+')">删除</button></div>';}else{h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;"><input value="'+s.title.replace(/"/g,'&quot;')+'" placeholder="板块标题" style="flex:1;border:none;background:transparent;font-weight:600;font-size:0.85rem;padding:0.2rem 0;" onchange="updateSection('+s.id+',\'title\',this.value)" /><button class="btn btn-ghost btn-sm" onclick="removeSection('+s.id+')">✕</button></div>';if(s.type==='image'){var imgSrc=s.content||'';h+='<div style="display:flex;gap:0.3rem;flex-wrap:wrap;">';if(imgSrc){h+='<img src="'+imgSrc+'" style="max-width:120px;max-height:80px;border-radius:4px;object-fit:cover;border:1px solid var(--border-color);" />';}h+='<input type="file" accept="image/*" style="font-size:0.75rem;flex:1;" onchange="uploadSectionImage(this,'+s.id+')" />';h+='<input value="'+s.content.replace(/"/g,'&quot;')+'" placeholder="或粘贴图片链接" style="width:100%;border:1px solid var(--border-color);border-radius:4px;padding:0.3rem 0.5rem;font-size:0.78rem;margin-top:0.3rem;" onchange="updateSection('+s.id+',\'content\',this.value)" />';h+='</div>';}else{h+='<textarea rows="2" placeholder="输入内容..." style="width:100%;border:1px solid var(--border-color);border-radius:4px;padding:0.3rem 0.5rem;font-size:0.82rem;" onchange="updateSection('+s.id+',\'content\',this.value)">'+s.content+'</textarea>';}}h+='</div>';}el.innerHTML=h;}
     function loadClubCollege(id){apiFetch('/clubs/'+id).then(function(d){var c=d.club;document.getElementById('cName').value=c.name||'';document.getElementById('cEmoji').value=c.emoji||'';document.getElementById('cType').value=c.type||'club';switchTagOptions();document.getElementById('cDesc').value=c.description||'';document.getElementById('cPhi').value=c.philosophy||'';document.getElementById('cContact').value=c.contact||'';document.getElementById('cJoin').value=c.join_info||'';document.getElementById('cMembers').value=c.members||0;document.getElementById('cTag').value=c.tag||'兴趣';document.getElementById('cLevel').value=c.level||'college';toggleCollegeSelect();if(c.college_id)setTimeout(function(){document.getElementById('cCollege').value=c.college_id;},500);}).catch(function(e){document.getElementById('editError').textContent=e.message;});apiFetch('/clubs/'+id+'/sections').then(function(d){sections=(d.sections||[]).map(function(s){return{id:++sectionIdCounter,type:'text',title:s.title,content:s.content};});renderSections();}).catch(function(){});}
-    var clubTags=['兴趣','学术','体育','公益','科技'];var deptTags=['服务','组织','志愿','宣传','文艺','爱国','管理','行政','文体','实践','理论'];
-    function switchTagOptions(){var type=document.getElementById('cType').value;var opts=type==='club'?clubTags:deptTags;var sel=document.getElementById('cTag');sel.innerHTML='';opts.forEach(function(t){sel.innerHTML+='<option value="'+t+'">'+t+'</option>';});}switchTagOptions();
+    var clubTags=['兴趣','学术','体育','公益','科技'];var deptTags=['服务','组织','志愿','宣传','文艺','爱国','管理','行政','文体','实践','理论'];var interestTags=['学习','运动','文艺','游戏','生活','技术','公益','其他'];
+    function switchTagOptions(){var type=document.getElementById('cType').value;var opts=type==='department'?deptTags:(type==='interest_group'?interestTags:clubTags);var sel=document.getElementById('cTag');sel.innerHTML='';opts.forEach(function(t){sel.innerHTML+='<option value="'+t+'">'+t+'</option>';});var emoji=document.getElementById('cEmoji');if(emoji&&(!emoji.value||['🎪','🏛️','💡'].indexOf(emoji.value)>=0))emoji.value=getDefaultEmoji(type);}switchTagOptions();
     function toggleCollegeSelect(){var show=document.getElementById('cLevel').value==='college';document.getElementById('cCollegeSection').style.display=show?'block':'none';if(show)loadCollegeList();}
     function loadCollegeList(){var sel=document.getElementById('cCollege');if(sel.options.length>1)return;fetch('/club-api/categories?level=1').then(function(r){return r.json()}).then(function(d){(d.flat||d).forEach(function(c){if(c.level===1)sel.innerHTML+='<option value="'+c.id+'">'+c.name+'</option>';});}).catch(function(){});}
     async function saveClub(){var btn=event.target;btn.disabled=true;document.getElementById('editError').textContent='';var logoUrl='';var logoImg=document.getElementById('logoImg');if(logoImg.style.display!=='none'&&logoImg.src)logoUrl=logoImg.src;
-var body={name:document.getElementById('cName').value,emoji:document.getElementById('cEmoji').value||'🎪',type:document.getElementById('cType').value,tag:document.getElementById('cTag').value,description:document.getElementById('cDesc').value,philosophy:document.getElementById('cPhi').value,contact:document.getElementById('cContact').value,join_info:document.getElementById('cJoin').value,members:parseInt(document.getElementById('cMembers').value)||0,level:document.getElementById('cLevel').value,college_id:document.getElementById('cCollege').value||null,cover_image:logoUrl};if(!body.name){document.getElementById('editError').textContent='请填写名称';btn.disabled=false;return;}try{if(editingId){await apiFetch('/clubs/manage/'+editingId,{method:'PUT',body:body});showToast('已更新');await saveSections(editingId);}else{var r=await apiFetch('/clubs',{method:'POST',body:body});showToast(r.pending?'入驻申请已提交，请等待管理员审核':'入驻成功');editingId=r.id;await saveSections(r.id);}setTimeout(function(){location.reload();},500);}catch(e){document.getElementById('editError').textContent=e.message;btn.disabled=false;}}
+var body={name:document.getElementById('cName').value,type:document.getElementById('cType').value,tag:document.getElementById('cTag').value,description:document.getElementById('cDesc').value,philosophy:document.getElementById('cPhi').value,contact:document.getElementById('cContact').value,join_info:document.getElementById('cJoin').value,members:parseInt(document.getElementById('cMembers').value)||0,level:document.getElementById('cLevel').value,college_id:document.getElementById('cCollege').value||null,cover_image:logoUrl};body.emoji=document.getElementById('cEmoji').value||getDefaultEmoji(body.type);if(!body.name){document.getElementById('editError').textContent='请填写名称';btn.disabled=false;return;}try{if(editingId){await apiFetch('/clubs/manage/'+editingId,{method:'PUT',body:body});showToast('已更新');await saveSections(editingId);}else{var r=await apiFetch('/clubs',{method:'POST',body:body});showToast(r.pending?'创建申请已提交，请等待管理员审核':'创建成功');editingId=r.id;await saveSections(r.id);}setTimeout(function(){location.reload();},500);}catch(e){document.getElementById('editError').textContent=e.message;btn.disabled=false;}}
     async function saveSections(clubId){if(!sections.length)return;for(var i=0;i<sections.length;i++){try{await apiFetch('/clubs/'+clubId+'/sections',{method:'POST',body:{title:sections[i].title,content:sections[i].content}});}catch(e){}}}
   </script>
 

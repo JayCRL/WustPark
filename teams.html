@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Wust Spark 竞赛组队">
+  <title>竞赛组队 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .team-wrap { padding-top: calc(64px + 1.5rem); padding-bottom: 5rem; }
+    .team-head { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .team-title { font-size:1.6rem; font-weight:800; margin:0; }
+    .team-subtitle { color:var(--text-tertiary); font-size:.9rem; margin-top:.25rem; }
+    .team-panel { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1rem; margin-bottom:1rem; }
+    .team-filters { display:grid; grid-template-columns:1.4fr .8fr .8fr auto auto; gap:.6rem; align-items:center; }
+    .team-input, .team-select, .team-textarea { width:100%; border:1.5px solid var(--border-color); border-radius:8px; padding:.6rem .75rem; font-size:.88rem; background:#fff; }
+    .team-textarea { min-height:92px; resize:vertical; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.65rem; }
+    .form-grid .full { grid-column:1 / -1; }
+    .form-label { display:block; font-size:.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:.25rem; }
+    .team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:.8rem; }
+    .team-card { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1rem; min-height:100%; display:flex; flex-direction:column; gap:.55rem; box-shadow:var(--shadow-sm); }
+    .team-card h3 { font-size:1rem; font-weight:800; line-height:1.35; margin:0; }
+    .team-meta { color:var(--text-secondary); font-size:.82rem; line-height:1.55; }
+    .team-desc { color:var(--text-secondary); font-size:.84rem; line-height:1.6; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+    .pill { display:inline-flex; align-items:center; gap:.2rem; border-radius:999px; padding:.16rem .5rem; font-size:.72rem; font-weight:700; background:var(--color-gray-100); color:var(--text-secondary); }
+    .pill-open { background:rgba(14,168,138,.1); color:var(--color-accent-dark); }
+    .pill-full { background:rgba(245,158,11,.14); color:#9A6500; }
+    .pill-closed { background:var(--color-gray-100); color:var(--text-tertiary); }
+    .team-actions { display:flex; gap:.4rem; flex-wrap:wrap; margin-top:auto; }
+    #teamFormPanel, #applicationPanel { display:none; }
+    .app-row { border:1px solid var(--border-color); border-radius:10px; padding:.75rem; margin-bottom:.55rem; background:var(--color-gray-50); }
+    @media (max-width: 760px) {
+      .team-head { align-items:stretch; flex-direction:column; }
+      .team-filters, .form-grid { grid-template-columns:1fr; }
+      .team-filters .btn { justify-content:center; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+
+  <main class="team-wrap">
+    <div class="container">
+      <div class="team-head">
+        <div>
+          <h1 class="team-title">🏁 竞赛组队</h1>
+          <p class="team-subtitle">找算法队友、设计搭子、答辩选手，让比赛不再一个人硬扛。</p>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openTeamForm()">＋ 发布组队</button>
+          <button class="btn btn-outline btn-sm" onclick="loadMyTeams()">我的组队</button>
+        </div>
+      </div>
+
+      <section class="team-panel">
+        <div class="team-filters">
+          <input class="team-input" id="teamKeyword" placeholder="搜索竞赛、方向、队伍..." />
+          <select class="team-select" id="teamCategory">
+            <option value="all">全部方向</option>
+            <option value="互联网+">互联网+</option>
+            <option value="挑战杯">挑战杯</option>
+            <option value="数学建模">数学建模</option>
+            <option value="程序设计">程序设计</option>
+            <option value="电子设计">电子设计</option>
+            <option value="创新创业">创新创业</option>
+            <option value="设计">设计</option>
+            <option value="综合">综合</option>
+          </select>
+          <select class="team-select" id="teamStatus">
+            <option value="open">招募中</option>
+            <option value="full">已满员</option>
+            <option value="closed">已关闭</option>
+            <option value="all">全部</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="loadTeams()">筛选</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetTeamFilters()">重置</button>
+        </div>
+      </section>
+
+      <section class="team-panel" id="teamFormPanel">
+        <form id="teamForm">
+          <div class="form-grid">
+            <div>
+              <label class="form-label">招募标题</label>
+              <input class="team-input" id="postTitle" required placeholder="如：数学建模国赛缺论文手" />
+            </div>
+            <div>
+              <label class="form-label">竞赛名称</label>
+              <input class="team-input" id="competitionName" required placeholder="如：全国大学生数学建模竞赛" />
+            </div>
+            <div>
+              <label class="form-label">方向</label>
+              <select class="team-select" id="postCategory">
+                <option value="互联网+">互联网+</option>
+                <option value="挑战杯">挑战杯</option>
+                <option value="数学建模">数学建模</option>
+                <option value="程序设计">程序设计</option>
+                <option value="电子设计">电子设计</option>
+                <option value="创新创业">创新创业</option>
+                <option value="设计">设计</option>
+                <option value="综合">综合</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">队伍名称（选填）</label>
+              <input class="team-input" id="teamName" placeholder="如：黄家湖冲刺队" />
+            </div>
+            <div>
+              <label class="form-label">当前人数</label>
+              <input class="team-input" id="currentMembers" type="number" min="1" value="1" />
+            </div>
+            <div>
+              <label class="form-label">目标人数</label>
+              <input class="team-input" id="maxMembers" type="number" min="1" value="4" />
+            </div>
+            <div>
+              <label class="form-label">报名/组队截止</label>
+              <input class="team-input" id="deadline" type="date" />
+            </div>
+            <div>
+              <label class="form-label">联系方式</label>
+              <input class="team-input" id="teamContact" required placeholder="QQ / 微信 / 手机" />
+            </div>
+            <div class="full">
+              <label class="form-label">招募方向</label>
+              <input class="team-input" id="neededRoles" required placeholder="如：建模手、编程手、论文手，各 1 名" />
+            </div>
+            <div class="full">
+              <label class="form-label">项目介绍</label>
+              <textarea class="team-textarea" id="teamDesc" placeholder="说明题目方向、已有基础、时间安排等"></textarea>
+            </div>
+            <div class="full">
+              <label class="form-label">期望队友</label>
+              <textarea class="team-textarea" id="teamReq" placeholder="技能要求、年级专业、投入时间等"></textarea>
+            </div>
+          </div>
+          <div style="display:flex;gap:.6rem;margin-top:.9rem;justify-content:flex-end;flex-wrap:wrap;">
+            <button class="btn btn-ghost" type="button" onclick="closeTeamForm()">取消</button>
+            <button class="btn btn-primary" type="submit" id="teamSubmit">发布</button>
+          </div>
+          <div id="teamError" style="color:var(--color-danger);font-size:.82rem;margin-top:.5rem;"></div>
+        </form>
+      </section>
+
+      <section class="team-panel" id="applicationPanel">
+        <div style="display:flex;justify-content:space-between;gap:.6rem;align-items:center;margin-bottom:.7rem;">
+          <h2 style="font-size:1rem;font-weight:800;margin:0;">组队申请</h2>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('applicationPanel').style.display='none'">收起</button>
+        </div>
+        <div id="applicationList"></div>
+      </section>
+
+      <div id="teamList" class="team-grid"></div>
+      <div id="teamEmpty" class="empty-state" style="display:none;"><span class="empty-icon">🔍</span><h3>没有找到组队信息</h3><p>换个关键词，或者发布你的第一条招募。</p></div>
+    </div>
+  </main>
+
+  <nav class="mobile-bottom-nav" id="bottomNav"></nav>
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+  <script src="js/main.js?v=88"></script>
+  <script>
+    var editingTeamId = null;
+
+    function esc(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+    function teamStatusLabel(status) {
+      if (status === 'full') return '<span class="pill pill-full">已满员</span>';
+      if (status === 'closed') return '<span class="pill pill-closed">已关闭</span>';
+      return '<span class="pill pill-open">招募中</span>';
+    }
+    function appStatusLabel(status) {
+      if (status === 'approved') return '<span class="pill pill-open">已通过</span>';
+      if (status === 'rejected') return '<span class="pill pill-closed">已拒绝</span>';
+      if (status === 'pending') return '<span class="pill pill-full">审核中</span>';
+      return '';
+    }
+    function openTeamForm() {
+      editingTeamId = null;
+      document.getElementById('teamForm').reset();
+      document.getElementById('currentMembers').value = 1;
+      document.getElementById('maxMembers').value = 4;
+      document.getElementById('teamSubmit').textContent = '发布';
+      document.getElementById('teamError').textContent = '';
+      document.getElementById('teamFormPanel').style.display = 'block';
+      document.getElementById('postTitle').focus();
+    }
+    function closeTeamForm() {
+      document.getElementById('teamFormPanel').style.display = 'none';
+    }
+    function resetTeamFilters() {
+      document.getElementById('teamKeyword').value = '';
+      document.getElementById('teamCategory').value = 'all';
+      document.getElementById('teamStatus').value = 'open';
+      loadTeams();
+    }
+    function teamBody() {
+      return {
+        title: document.getElementById('postTitle').value.trim(),
+        competition_name: document.getElementById('competitionName').value.trim(),
+        category: document.getElementById('postCategory').value,
+        team_name: document.getElementById('teamName').value.trim(),
+        needed_roles: document.getElementById('neededRoles').value.trim(),
+        current_members: document.getElementById('currentMembers').value,
+        max_members: document.getElementById('maxMembers').value,
+        deadline: document.getElementById('deadline').value,
+        description: document.getElementById('teamDesc').value.trim(),
+        requirements: document.getElementById('teamReq').value.trim(),
+        contact: document.getElementById('teamContact').value.trim()
+      };
+    }
+    function fillTeamForm(team) {
+      editingTeamId = team.id;
+      document.getElementById('postTitle').value = team.title || '';
+      document.getElementById('competitionName').value = team.competition_name || '';
+      document.getElementById('postCategory').value = team.category || '综合';
+      document.getElementById('teamName').value = team.team_name || '';
+      document.getElementById('neededRoles').value = team.needed_roles || '';
+      document.getElementById('currentMembers').value = team.current_members || 1;
+      document.getElementById('maxMembers').value = team.max_members || 4;
+      document.getElementById('deadline').value = team.deadline ? String(team.deadline).substring(0, 10) : '';
+      document.getElementById('teamDesc').value = team.description || '';
+      document.getElementById('teamReq').value = team.requirements || '';
+      document.getElementById('teamContact').value = team.contact || '';
+      document.getElementById('teamSubmit').textContent = '保存修改';
+      document.getElementById('teamFormPanel').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    async function editTeam(id) {
+      try {
+        var d = await apiFetch('/teams/' + id);
+        fillTeamForm(d.team);
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    async function changeTeamStatus(id, status) {
+      try {
+        await apiFetch('/teams/' + id + '/status', { method: 'POST', body: { status: status } });
+        showToast('状态已更新');
+        loadTeams();
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    async function applyTeam(id) {
+      var msg = await confirmDialog({
+        icon: '🏁',
+        title: '申请加入队伍',
+        message: '写下你的技能、经验和联系方式，发起人会看到这段内容。',
+        prompt: true,
+        placeholder: '如：会 Python/建模，QQ xxxxx，时间充足',
+        confirmText: '提交申请'
+      });
+      if (msg === null) return;
+      if (!msg.trim()) { showToast('请填写申请说明', 'error'); return; }
+      try {
+        await apiFetch('/teams/' + id + '/apply', { method: 'POST', body: { message: msg.trim() } });
+        showToast('申请已提交');
+        loadTeams();
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    async function showApplications(id) {
+      var panel = document.getElementById('applicationPanel');
+      var list = document.getElementById('applicationList');
+      panel.style.display = 'block';
+      list.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      try {
+        var d = await apiFetch('/teams/' + id + '/applications');
+        if (!d.applications || !d.applications.length) {
+          list.innerHTML = '<p style="color:var(--text-tertiary);font-size:.86rem;">暂无申请</p>';
+          return;
+        }
+        list.innerHTML = d.applications.map(function(a) {
+          var actions = a.status === 'pending'
+            ? '<button class="btn btn-primary btn-sm" onclick="reviewApplication(' + id + ',' + a.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewApplication(' + id + ',' + a.id + ',\'reject\')">拒绝</button>'
+            : '';
+          return '<div class="app-row"><div style="display:flex;justify-content:space-between;gap:.6rem;align-items:center;flex-wrap:wrap;"><strong>' + esc(a.nickname || a.username || '同学') + '</strong>' + appStatusLabel(a.status) + '</div>' +
+            '<div class="team-meta">' + esc([a.college, a.major, a.grade].filter(Boolean).join(' · ')) + '</div>' +
+            '<p style="font-size:.84rem;color:var(--text-secondary);line-height:1.6;white-space:pre-wrap;margin:.45rem 0;">' + esc(a.message || '') + '</p>' +
+            '<div style="display:flex;justify-content:flex-end;gap:.4rem;flex-wrap:wrap;">' + actions + '</div></div>';
+        }).join('');
+      } catch(e) {
+        list.innerHTML = '<p style="color:var(--color-danger);font-size:.86rem;">' + esc(e.message) + '</p>';
+      }
+    }
+    async function reviewApplication(postId, appId, action) {
+      try {
+        await apiFetch('/teams/applications/' + appId + '/review', { method: 'POST', body: { action: action } });
+        showToast(action === 'approve' ? '已通过' : '已拒绝');
+        showApplications(postId);
+        loadTeams();
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    function renderTeam(team) {
+      var owner = team.nickname || team.username || '同学';
+      var deadline = team.deadline ? String(team.deadline).substring(0, 10) : '未设置';
+      var appStatus = team.my_application_status ? appStatusLabel(team.my_application_status) : '';
+      var actions = '';
+      if (Number(team.is_owner) === 1) {
+        actions = '<button class="btn btn-outline btn-sm" onclick="editTeam(' + team.id + ')">编辑</button>' +
+          '<button class="btn btn-outline btn-sm" onclick="showApplications(' + team.id + ')">查看申请</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="changeTeamStatus(' + team.id + ',\'open\')">开放</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="changeTeamStatus(' + team.id + ',\'full\')">满员</button>' +
+          '<button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="changeTeamStatus(' + team.id + ',\'closed\')">关闭</button>';
+      } else if (team.status === 'open' && !team.my_application_status) {
+        actions = '<button class="btn btn-primary btn-sm" onclick="applyTeam(' + team.id + ')">申请加入</button>';
+      } else if (team.my_application_status) {
+        actions = appStatus;
+      }
+      return '<article class="team-card"><div style="display:flex;justify-content:space-between;gap:.6rem;align-items:center;">' +
+        '<span class="pill">' + esc(team.category || '综合') + '</span>' + teamStatusLabel(team.status) + '</div>' +
+        '<h3>' + esc(team.title) + '</h3>' +
+        '<div class="team-meta">🏆 ' + esc(team.competition_name || '') + (team.team_name ? '<br>👥 ' + esc(team.team_name) : '') + '</div>' +
+        '<div style="display:flex;gap:.35rem;flex-wrap:wrap;"><span class="pill">缺：' + esc(team.needed_roles || '') + '</span><span class="pill">' + Number(team.current_members || 0) + '/' + Number(team.max_members || 0) + ' 人</span><span class="pill">截止 ' + esc(deadline) + '</span></div>' +
+        '<p class="team-desc">' + esc(team.description || '发起人暂未填写项目介绍') + '</p>' +
+        (team.requirements ? '<div class="team-meta">期望队友：' + esc(team.requirements) + '</div>' : '') +
+        '<div class="team-meta">发起人：' + esc(owner) + '<br>联系方式：' + esc(team.contact || '未填写') + '</div>' +
+        '<div class="team-actions">' + actions + '</div></article>';
+    }
+    async function loadTeams() {
+      var list = document.getElementById('teamList');
+      var empty = document.getElementById('teamEmpty');
+      list.innerHTML = '<div class="loading-state" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      empty.style.display = 'none';
+      var params = new URLSearchParams();
+      var kw = document.getElementById('teamKeyword').value.trim();
+      var cat = document.getElementById('teamCategory').value;
+      var status = document.getElementById('teamStatus').value;
+      if (kw) params.set('keyword', kw);
+      if (cat !== 'all') params.set('category', cat);
+      if (status) params.set('status', status);
+      try {
+        var d = await apiFetch('/teams?' + params.toString());
+        if (!d.teams || !d.teams.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+        list.innerHTML = d.teams.map(renderTeam).join('');
+      } catch(e) {
+        list.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>' + esc(e.message) + '</p></div>';
+      }
+    }
+    async function loadMyTeams() {
+      var list = document.getElementById('teamList');
+      var empty = document.getElementById('teamEmpty');
+      list.innerHTML = '<div class="loading-state" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      empty.style.display = 'none';
+      try {
+        var d = await apiFetch('/teams/my');
+        var posts = d.posts || [];
+        if (!posts.length && (!d.applications || !d.applications.length)) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+        var appsHtml = '';
+        if (d.applications && d.applications.length) {
+          appsHtml = '<div class="team-panel" style="grid-column:1/-1;margin:0;"><h2 style="font-size:1rem;font-weight:800;margin-bottom:.6rem;">我的申请</h2>' +
+            d.applications.map(function(a){ return '<div class="team-meta" style="padding:.45rem 0;border-top:1px solid var(--border-color);">' + appStatusLabel(a.status) + ' ' + esc(a.competition_name || '') + ' · ' + esc(a.title || '') + '</div>'; }).join('') + '</div>';
+        }
+        list.innerHTML = posts.map(renderTeam).join('') + appsHtml;
+      } catch(e) { showToast(e.message, 'error'); loadTeams(); }
+    }
+    document.getElementById('teamForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('teamSubmit');
+      var err = document.getElementById('teamError');
+      btn.disabled = true;
+      err.textContent = '';
+      try {
+        var path = editingTeamId ? '/teams/' + editingTeamId : '/teams';
+        var method = editingTeamId ? 'PUT' : 'POST';
+        var d = await apiFetch(path, { method: method, body: teamBody() });
+        showToast(d.message || '已保存');
+        closeTeamForm();
+        loadTeams();
+      } catch(ex) {
+        err.textContent = ex.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    ['teamKeyword','teamCategory','teamStatus'].forEach(function(id) {
+      var el = document.getElementById(id);
+      el.addEventListener(id === 'teamKeyword' ? 'input' : 'change', debounce(loadTeams, 250));
+    });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(loadTeams, 50); });
+  </script>
+</body>
+</html>

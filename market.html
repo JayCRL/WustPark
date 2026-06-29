@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Wust Spark 二手市场">
+  <title>二手市场 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=79">
+  <style>
+    .tool-wrap { padding-top: calc(64px + 1.5rem); padding-bottom: 5rem; }
+    .tool-head { display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+    .tool-title { font-size:1.6rem; font-weight:800; margin:0; }
+    .tool-subtitle { color:var(--text-tertiary); font-size:.9rem; margin-top:.25rem; }
+    .tool-panel { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; padding:1rem; margin-bottom:1rem; }
+    .tool-filters { display:grid; grid-template-columns:1.4fr .8fr .8fr auto auto; gap:.6rem; align-items:center; }
+    .tool-input, .tool-select, .tool-textarea { width:100%; border:1.5px solid var(--border-color); border-radius:8px; padding:.6rem .75rem; font-size:.88rem; background:#fff; }
+    .tool-textarea { min-height:92px; resize:vertical; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:.65rem; }
+    .form-grid .full { grid-column:1 / -1; }
+    .form-label { display:block; font-size:.78rem; font-weight:700; color:var(--text-secondary); margin-bottom:.25rem; }
+    .market-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:.8rem; }
+    .market-item { background:var(--bg-card); border:1px solid var(--border-color); border-radius:12px; overflow:hidden; display:flex; flex-direction:column; min-height:100%; box-shadow:var(--shadow-sm); }
+    .market-img { height:154px; background:var(--color-gray-100); display:flex; align-items:center; justify-content:center; color:var(--text-tertiary); font-size:2rem; overflow:hidden; }
+    .market-img img { width:100%; height:100%; object-fit:cover; }
+    .market-body { padding:.85rem; display:flex; flex-direction:column; gap:.45rem; flex:1; }
+    .market-row { display:flex; justify-content:space-between; align-items:center; gap:.6rem; }
+    .market-title { font-size:.98rem; font-weight:800; color:var(--text-primary); line-height:1.35; }
+    .market-price { font-size:1.05rem; font-weight:900; color:var(--color-primary); white-space:nowrap; }
+    .market-desc { color:var(--text-secondary); font-size:.82rem; line-height:1.55; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+    .pill { display:inline-flex; align-items:center; gap:.2rem; border-radius:999px; padding:.16rem .5rem; font-size:.72rem; font-weight:700; background:var(--color-gray-100); color:var(--text-secondary); }
+    .pill-ok { background:rgba(14,168,138,.1); color:var(--color-accent-dark); }
+    .pill-warn { background:rgba(245,158,11,.14); color:#9A6500; }
+    .pill-muted { background:var(--color-gray-100); color:var(--text-tertiary); }
+    .item-actions { display:flex; gap:.35rem; flex-wrap:wrap; margin-top:auto; }
+    #marketFormPanel { display:none; }
+    #imagePreview { width:78px; height:78px; border-radius:10px; border:1px solid var(--border-color); background:var(--color-gray-100); display:flex; align-items:center; justify-content:center; overflow:hidden; color:var(--text-tertiary); }
+    #imagePreview img { width:100%; height:100%; object-fit:cover; }
+    @media (max-width: 760px) {
+      .tool-head { align-items:stretch; flex-direction:column; }
+      .tool-filters, .form-grid { grid-template-columns:1fr; }
+      .tool-filters .btn { justify-content:center; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar"></nav>
+
+  <main class="tool-wrap">
+    <div class="container">
+      <div class="tool-head">
+        <div>
+          <h1 class="tool-title">🛒 二手市场</h1>
+          <p class="tool-subtitle">发布闲置、筛选物品、和同校同学直接联系交易。</p>
+        </div>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn btn-primary btn-sm" onclick="openMarketForm()">＋ 发布闲置</button>
+          <button class="btn btn-outline btn-sm" onclick="loadMyMarket()">我的发布</button>
+        </div>
+      </div>
+
+      <section class="tool-panel">
+        <div class="tool-filters">
+          <input class="tool-input" id="marketKeyword" placeholder="搜索物品、地点、描述..." />
+          <select class="tool-select" id="marketCategory">
+            <option value="all">全部分类</option>
+            <option value="教材">教材</option>
+            <option value="数码">数码</option>
+            <option value="生活">生活</option>
+            <option value="运动">运动</option>
+            <option value="美妆">美妆</option>
+            <option value="票券">票券</option>
+            <option value="其他">其他</option>
+          </select>
+          <select class="tool-select" id="marketStatus">
+            <option value="available">在售</option>
+            <option value="reserved">已预订</option>
+            <option value="sold">已出</option>
+            <option value="all">全部</option>
+          </select>
+          <button class="btn btn-primary btn-sm" onclick="loadMarket()">筛选</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetMarketFilters()">重置</button>
+        </div>
+      </section>
+
+      <section class="tool-panel" id="marketFormPanel">
+        <form id="marketForm">
+          <div class="form-grid">
+            <div>
+              <label class="form-label">物品名称</label>
+              <input class="tool-input" id="itemTitle" required placeholder="如：九成新显示器" />
+            </div>
+            <div>
+              <label class="form-label">分类</label>
+              <select class="tool-select" id="itemCategory">
+                <option value="教材">教材</option>
+                <option value="数码">数码</option>
+                <option value="生活">生活</option>
+                <option value="运动">运动</option>
+                <option value="美妆">美妆</option>
+                <option value="票券">票券</option>
+                <option value="其他">其他</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">价格</label>
+              <input class="tool-input" id="itemPrice" type="number" min="0" step="0.01" required placeholder="0.00" />
+            </div>
+            <div>
+              <label class="form-label">原价（选填）</label>
+              <input class="tool-input" id="itemOriginalPrice" type="number" min="0" step="0.01" placeholder="0.00" />
+            </div>
+            <div>
+              <label class="form-label">成色</label>
+              <select class="tool-select" id="itemCondition">
+                <option value="全新">全新</option>
+                <option value="几乎全新">几乎全新</option>
+                <option value="轻微使用">轻微使用</option>
+                <option value="正常使用">正常使用</option>
+                <option value="有瑕疵">有瑕疵</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label">交易地点</label>
+              <input class="tool-input" id="itemPlace" placeholder="如：黄家湖校区北门" />
+            </div>
+            <div class="full">
+              <label class="form-label">联系方式</label>
+              <input class="tool-input" id="itemContact" required placeholder="QQ / 微信 / 手机，交易双方自行确认" />
+            </div>
+            <div class="full">
+              <label class="form-label">描述</label>
+              <textarea class="tool-textarea" id="itemDesc" placeholder="说明物品状态、配件、交易要求等"></textarea>
+            </div>
+            <div class="full" style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+              <div id="imagePreview">图片</div>
+              <div>
+                <button class="btn btn-outline btn-sm" type="button" onclick="document.getElementById('itemImage').click()">上传图片</button>
+                <input type="file" id="itemImage" accept="image/*" style="display:none" onchange="uploadMarketImage(this)" />
+                <span id="imageStatus" style="font-size:.76rem;color:var(--text-tertiary);margin-left:.4rem;"></span>
+              </div>
+            </div>
+          </div>
+          <div style="display:flex;gap:.6rem;margin-top:.9rem;justify-content:flex-end;flex-wrap:wrap;">
+            <button class="btn btn-ghost" type="button" onclick="closeMarketForm()">取消</button>
+            <button class="btn btn-primary" type="submit" id="marketSubmit">发布</button>
+          </div>
+          <div id="marketError" style="color:var(--color-danger);font-size:.82rem;margin-top:.5rem;"></div>
+        </form>
+      </section>
+
+      <div id="marketList" class="market-grid"></div>
+      <div id="marketEmpty" class="empty-state" style="display:none;"><span class="empty-icon">🔍</span><h3>没有找到物品</h3><p>换个关键词，或者发布你的第一件闲置。</p></div>
+    </div>
+  </main>
+
+  <nav class="mobile-bottom-nav" id="bottomNav"></nav>
+  <button class="back-to-top" id="backToTop" aria-label="回到顶部">↑</button>
+  <script src="js/main.js?v=88"></script>
+  <script>
+    var editingMarketId = null;
+    var marketImageUrl = '';
+
+    function esc(v) {
+      return String(v == null ? '' : v).replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+    function statusLabel(status) {
+      if (status === 'reserved') return '<span class="pill pill-warn">已预订</span>';
+      if (status === 'sold') return '<span class="pill pill-muted">已出</span>';
+      if (status === 'closed') return '<span class="pill pill-muted">已关闭</span>';
+      return '<span class="pill pill-ok">在售</span>';
+    }
+    function openMarketForm() {
+      editingMarketId = null;
+      marketImageUrl = '';
+      document.getElementById('marketForm').reset();
+      document.getElementById('marketSubmit').textContent = '发布';
+      document.getElementById('imagePreview').innerHTML = '图片';
+      document.getElementById('imageStatus').textContent = '';
+      document.getElementById('marketError').textContent = '';
+      document.getElementById('marketFormPanel').style.display = 'block';
+      document.getElementById('itemTitle').focus();
+    }
+    function closeMarketForm() {
+      document.getElementById('marketFormPanel').style.display = 'none';
+    }
+    function resetMarketFilters() {
+      document.getElementById('marketKeyword').value = '';
+      document.getElementById('marketCategory').value = 'all';
+      document.getElementById('marketStatus').value = 'available';
+      loadMarket();
+    }
+    async function uploadMarketImage(input) {
+      var file = input.files[0];
+      if (!file) return;
+      if (file.size > 5 * 1024 * 1024) { showToast('图片不能超过 5MB', 'error'); return; }
+      var fd = new FormData();
+      fd.append('file', file);
+      fd.append('type', 'market');
+      document.getElementById('imageStatus').textContent = '上传中...';
+      try {
+        var d = await uploadFile('/upload', fd);
+        marketImageUrl = d.url;
+        document.getElementById('imagePreview').innerHTML = '<img src="' + esc(d.url) + '" alt="物品图片" />';
+        document.getElementById('imageStatus').textContent = '已上传';
+      } catch(e) {
+        document.getElementById('imageStatus').textContent = '';
+        showToast(e.message, 'error');
+      } finally {
+        input.value = '';
+      }
+    }
+    function marketBody() {
+      return {
+        title: document.getElementById('itemTitle').value.trim(),
+        category: document.getElementById('itemCategory').value,
+        price: document.getElementById('itemPrice').value,
+        original_price: document.getElementById('itemOriginalPrice').value,
+        condition_level: document.getElementById('itemCondition').value,
+        description: document.getElementById('itemDesc').value.trim(),
+        image_url: marketImageUrl,
+        trade_place: document.getElementById('itemPlace').value.trim(),
+        contact: document.getElementById('itemContact').value.trim()
+      };
+    }
+    function fillMarketForm(item) {
+      editingMarketId = item.id;
+      marketImageUrl = item.image_url || '';
+      document.getElementById('itemTitle').value = item.title || '';
+      document.getElementById('itemCategory').value = item.category || '其他';
+      document.getElementById('itemPrice').value = item.price || 0;
+      document.getElementById('itemOriginalPrice').value = item.original_price || '';
+      document.getElementById('itemCondition').value = item.condition_level || '正常使用';
+      document.getElementById('itemDesc').value = item.description || '';
+      document.getElementById('itemPlace').value = item.trade_place || '';
+      document.getElementById('itemContact').value = item.contact || '';
+      document.getElementById('imagePreview').innerHTML = marketImageUrl ? '<img src="' + esc(marketImageUrl) + '" alt="物品图片" />' : '图片';
+      document.getElementById('marketSubmit').textContent = '保存修改';
+      document.getElementById('marketFormPanel').style.display = 'block';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    async function editMarketItem(id) {
+      try {
+        var d = await apiFetch('/market/' + id);
+        fillMarketForm(d.item);
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    async function changeMarketStatus(id, status) {
+      try {
+        await apiFetch('/market/' + id + '/status', { method: 'POST', body: { status: status } });
+        showToast('状态已更新');
+        loadMarket();
+      } catch(e) { showToast(e.message, 'error'); }
+    }
+    function renderItem(item) {
+      var oldPrice = item.original_price ? '<span style="color:var(--text-tertiary);text-decoration:line-through;font-size:.78rem;margin-left:.25rem;">￥' + Number(item.original_price).toFixed(2) + '</span>' : '';
+      var img = item.image_url ? '<img src="' + esc(item.image_url) + '" alt="' + esc(item.title) + '" />' : '🛍️';
+      var owner = item.nickname || item.username || '同学';
+      var actions = '';
+      if (Number(item.is_owner) === 1) {
+        actions = '<div class="item-actions"><button class="btn btn-outline btn-sm" onclick="editMarketItem(' + item.id + ')">编辑</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="changeMarketStatus(' + item.id + ',\'available\')">在售</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="changeMarketStatus(' + item.id + ',\'reserved\')">预订</button>' +
+          '<button class="btn btn-ghost btn-sm" onclick="changeMarketStatus(' + item.id + ',\'sold\')">已出</button>' +
+          '<button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="changeMarketStatus(' + item.id + ',\'closed\')">关闭</button></div>';
+      }
+      return '<article class="market-item"><div class="market-img">' + img + '</div><div class="market-body">' +
+        '<div class="market-row"><span class="pill">' + esc(item.category || '其他') + '</span>' + statusLabel(item.status) + '</div>' +
+        '<div class="market-row"><h3 class="market-title">' + esc(item.title) + '</h3><div class="market-price">￥' + Number(item.price || 0).toFixed(2) + oldPrice + '</div></div>' +
+        '<p class="market-desc">' + esc(item.description || '这个同学还没有填写更多描述') + '</p>' +
+        '<div style="display:flex;gap:.35rem;flex-wrap:wrap;"><span class="pill">' + esc(item.condition_level || '成色未填') + '</span>' + (item.trade_place ? '<span class="pill">📍 ' + esc(item.trade_place) + '</span>' : '') + '</div>' +
+        '<div style="font-size:.78rem;color:var(--text-tertiary);line-height:1.5;">发布人：' + esc(owner) + '<br>联系方式：' + esc(item.contact || '未填写') + '</div>' +
+        actions + '</div></article>';
+    }
+    async function loadMarket() {
+      var list = document.getElementById('marketList');
+      var empty = document.getElementById('marketEmpty');
+      list.innerHTML = '<div class="loading-state" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      empty.style.display = 'none';
+      var params = new URLSearchParams();
+      var kw = document.getElementById('marketKeyword').value.trim();
+      var cat = document.getElementById('marketCategory').value;
+      var status = document.getElementById('marketStatus').value;
+      if (kw) params.set('keyword', kw);
+      if (cat !== 'all') params.set('category', cat);
+      if (status) params.set('status', status);
+      try {
+        var d = await apiFetch('/market?' + params.toString());
+        if (!d.items || !d.items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+        list.innerHTML = d.items.map(renderItem).join('');
+      } catch(e) {
+        list.innerHTML = '<div class="empty-state" style="grid-column:1/-1;"><p>' + esc(e.message) + '</p></div>';
+      }
+    }
+    async function loadMyMarket() {
+      var list = document.getElementById('marketList');
+      var empty = document.getElementById('marketEmpty');
+      list.innerHTML = '<div class="loading-state" style="grid-column:1/-1;"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      empty.style.display = 'none';
+      try {
+        var d = await apiFetch('/market/my');
+        if (!d.items || !d.items.length) { list.innerHTML = ''; empty.style.display = 'block'; return; }
+        list.innerHTML = d.items.map(renderItem).join('');
+      } catch(e) { showToast(e.message, 'error'); loadMarket(); }
+    }
+    document.getElementById('marketForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      var btn = document.getElementById('marketSubmit');
+      var err = document.getElementById('marketError');
+      btn.disabled = true;
+      err.textContent = '';
+      try {
+        var path = editingMarketId ? '/market/' + editingMarketId : '/market';
+        var method = editingMarketId ? 'PUT' : 'POST';
+        var d = await apiFetch(path, { method: method, body: marketBody() });
+        showToast(d.message || '已保存');
+        closeMarketForm();
+        loadMarket();
+      } catch(ex) {
+        err.textContent = ex.message;
+      } finally {
+        btn.disabled = false;
+      }
+    });
+    ['marketKeyword','marketCategory','marketStatus'].forEach(function(id) {
+      var el = document.getElementById(id);
+      el.addEventListener(id === 'marketKeyword' ? 'input' : 'change', debounce(loadMarket, 250));
+    });
+    document.addEventListener('DOMContentLoaded', function() { setTimeout(loadMarket, 50); });
+  </script>
+</body>
+</html>

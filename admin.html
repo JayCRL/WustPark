@@ -32,7 +32,7 @@
 
       <div class="stats" id="statsRow">
         <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">用户</div></div>
-        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">社团</div></div>
+        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">组织</div></div>
         <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">活动</div></div>
         <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">待审核</div></div>
       </div>
@@ -45,7 +45,7 @@
         <button class="tab" data-tab="images">图片审核</button>
         <button class="tab" data-tab="contributions">社团贡献</button>
         <button class="tab" data-tab="logs">操作日志</button>
-        <button class="tab" data-tab="clubs">社团管理</button>
+        <button class="tab" data-tab="clubs">组织管理</button>
         <button class="tab" data-tab="claims">认领审核</button>
         <button class="tab" data-tab="club-pending">入驻审核</button>
         <button class="tab" data-tab="admins">管理员</button>
@@ -70,7 +70,7 @@
     <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
 
-  <script src="js/main.v83.js"></script>
+  <script src="js/main.js?v=88"></script>
   <script>
     async function loadAdminUsers() {
       var el=document.getElementById('adminContent');
@@ -183,14 +183,20 @@
       }).catch(function(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; });
     }
 
+    function clubTypeLabel(type) {
+      if (type === 'interest_group') return '💡 兴趣组';
+      if (type === 'department') return '🏛️ 部门';
+      return '🎪 社团';
+    }
+
     function loadAllClubsAdmin() {
       var el = document.getElementById('adminContent');
       el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
       apiFetch('/admin/clubs').then(function(d) {
-        if (d.clubs.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无社团</div>'; return; }
+        if (d.clubs.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无组织</div>'; return; }
         var h = '';
         d.clubs.forEach(function(c) {
-          h += '<div class="review-item"><div class="info"><div class="title">' + c.emoji + ' ' + c.name + '</div><div class="meta">' + (c.tag||'') + ' | ' + c.members + '人</div></div><a href="club-manage.html?id=' + c.id + '" class="btn btn-ghost btn-sm">编辑</a><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteAdminClub(' + c.id + ')">删除</button></div>';
+          h += '<div class="review-item"><div class="info"><div class="title">' + c.emoji + ' ' + c.name + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | ' + (c.tag||'') + ' | ' + c.members + '人</div></div><a href="club-manage.html?id=' + c.id + '" class="btn btn-ghost btn-sm">编辑</a><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteAdminClub(' + c.id + ')">删除</button></div>';
         });
         el.innerHTML = h;
       }).catch(function(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; });
@@ -253,7 +259,7 @@
       } catch(e) { showToast(e.message, 'error'); }
     }
     function deleteAdminClub(id) {
-      if (!confirm('确定删除该社团吗？')) return;
+      if (!confirm('确定删除该组织吗？')) return;
       apiFetch('/admin/clubs/'+id,{method:'DELETE'}).then(function(){showToast('已删除');loadAllClubsAdmin();}).catch(function(e){showToast(e.message,'error');});
     }
     async function loadPendingClaims() {
@@ -336,7 +342,7 @@ async function loadClubPendingReview() {
   var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (clubPendingStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'pending\';loadClubPendingReview()">待审核</button><button class="btn btn-sm ' + (clubPendingStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'approved\';loadClubPendingReview()">已通过</button><button class="btn btn-sm ' + (clubPendingStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'rejected\';loadClubPendingReview()">已拒绝</button><button class="btn btn-sm ' + (clubPendingStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'all\';loadClubPendingReview()">全部</button></div>';
   try {
     var d = await apiFetch('/admin/clubs/pending?status=' + clubPendingStatus);
-    if (!d.clubs || !d.clubs.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无社团入驻申请</div>'; return; }
+    if (!d.clubs || !d.clubs.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无入驻申请</div>'; return; }
     var h = tabs;
     d.clubs.forEach(function(c){
       var statusLabel = c.status === 'approved' ? '✅ 已通过' : c.status === 'rejected' ? '❌ 已拒绝' : '⏳ 待审核';
@@ -344,7 +350,7 @@ async function loadClubPendingReview() {
       if (c.status === 'pending') {
         actions = '<button class="btn btn-primary btn-sm" onclick="reviewClubPending(' + c.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewClubPending(' + c.id + ',\'reject\')">拒绝</button>';
       }
-      h += '<div class="review-item"><div class="info"><div class="title">' + (c.emoji||'🎪') + ' ' + c.name + ' ' + statusLabel + '</div><div class="meta">🏷️ 创建人：' + (c.creator_nickname||c.creator_name||'') + ' | ' + (c.created_at||'') + '</div>' + (c.description ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">' + c.description.substring(0,100) + '</div>' : '') + '</div>' + actions + '</div>';
+      h += '<div class="review-item"><div class="info"><div class="title">' + (c.emoji||'🎪') + ' ' + c.name + ' ' + statusLabel + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | 🏷️ 创建人：' + (c.creator_nickname||c.creator_name||'') + ' | ' + (c.created_at||'') + '</div>' + (c.description ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">' + c.description.substring(0,100) + '</div>' : '') + '</div>' + actions + '</div>';
     });
     el.innerHTML = h;
   } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }

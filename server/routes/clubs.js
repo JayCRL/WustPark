@@ -4,6 +4,17 @@ const { authMiddleware, optionalAuth } = require('../middleware/auth');
 
 const router = express.Router();
 
+const CLUB_TYPES = ['club', 'department', 'interest_group'];
+function normalizeClubType(type) {
+  const value = type || 'club';
+  return CLUB_TYPES.includes(value) ? value : null;
+}
+function getDefaultClubEmoji(type) {
+  if (type === 'interest_group') return '💡';
+  if (type === 'department') return '🏛️';
+  return '🎪';
+}
+
 // GET /api/clubs - 获取社团列表（支持搜索和筛选）
 router.get('/', async (req, res) => {
   try {
@@ -68,8 +79,8 @@ router.get('/logs', authMiddleware, async (req, res) => {
   }
 });
 
-// GET /api/clubs/:id - 获取社团详情（含历史、图片）
-router.get('/:id', async (req, res) => {
+// GET /api/clubs/:id - 获取社团详情（含历史、图片、当前用户成员状态）
+router.get('/:id', optionalAuth, async (req, res) => {
   try {
     const [clubs] = await pool.query('SELECT * FROM clubs WHERE id = ?', [req.params.id]);
     if (clubs.length === 0) {
@@ -86,7 +97,16 @@ router.get('/:id', async (req, res) => {
       [req.params.id]
     );
 
-    res.json({ club, history, images });
+    let membership = null;
+    if (req.user && req.user.id) {
+      const [memberRows] = await pool.query(
+        'SELECT id, role, status, joined_at, message FROM club_members WHERE club_id = ? AND user_id = ? LIMIT 1',
+        [req.params.id, req.user.id]
+      );
+      membership = memberRows[0] || null;
+    }
+
+    res.json({ club, history, images, membership });
   } catch (err) {
     console.error('Get club error:', err);
     res.status(500).json({ error: '服务器错误' });
@@ -98,18 +118,20 @@ router.post('/', authMiddleware, async (req, res) => {
   try {
     const { name, emoji, tag, description, philosophy, contact, join_info, color, type, level, college_id } = req.body;
     if (!name) return res.status(400).json({ error: '名称为必填项' });
+    const clubType = normalizeClubType(type);
+    if (!clubType) return res.status(400).json({ error: '类型错误' });
 
     const isAdmin = !!(req.user && req.user.is_admin);
     const status = isAdmin ? 'approved' : 'pending';
 
     const [result] = await pool.query(
       'INSERT INTO clubs (name, type, level, college_id, emoji, tag, description, philosophy, contact, join_info, color, created_by, status) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)',
-      [name, type || 'club', level || 'college', college_id || null, emoji || '🎪', tag || '', description || '', philosophy || '',
+      [name, clubType, level || 'college', college_id || null, emoji || getDefaultClubEmoji(clubType), tag || '', description || '', philosophy || '',
        contact || '', join_info || '', color || 'primary', req.user.id, status]
     );
 
     await pool.query(
-      "INSERT INTO club_members (club_id, user_id, role) VALUES (?, ?, 'president')",
+      "INSERT INTO club_members (club_id, user_id, role, status) VALUES (?, ?, 'president', 'active')",
       [result.insertId, req.user.id]
     );
 
@@ -123,10 +145,12 @@ router.post('/', authMiddleware, async (req, res) => {
 // PUT /api/clubs/:id - 更新社团
 router.put('/:id', authMiddleware, async (req, res) => {
   try {
-    const { name, emoji, tag, description, philosophy, contact, join_info, cover_image, members, color, level, college_id } = req.body;
+    const { name, emoji, tag, description, philosophy, contact, join_info, cover_image, members, color, type, level, college_id } = req.body;
+    const clubType = type === undefined ? null : normalizeClubType(type);
+    if (type !== undefined && !clubType) return res.status(400).json({ error: '类型错误' });
     await pool.query(
-      'UPDATE clubs SET name=?, emoji=?, tag=?, description=?, philosophy=?, contact=?, join_info=?, cover_image=?, members=?, color=?, level=?, college_id=? WHERE id=?',
-      [name, emoji, tag, description, philosophy, contact, join_info,
+      'UPDATE clubs SET name=?, type=COALESCE(?, type), emoji=?, tag=?, description=?, philosophy=?, contact=?, join_info=?, cover_image=?, members=?, color=?, level=?, college_id=? WHERE id=?',
+      [name, clubType, emoji, tag, description, philosophy, contact, join_info,
        cover_image || '', members || 0, color, level || 'college', college_id || null, req.params.id]
     );
     res.json({ message: '更新成功' });
@@ -337,12 +361,17 @@ router.post('/claims/:id/review', authMiddleware, async (req, res) => {
 // POST /api/clubs/:id/join - 申请加入社团（需社长审核）
 router.post('/:id/join', authMiddleware, async (req, res) => {
   try {
+    const [clubRows] = await pool.query("SELECT id, status FROM clubs WHERE id=? AND status='approved'", [req.params.id]);
+    if (!clubRows.length) return res.status(404).json({ error: '社团不存在或暂未开放加入' });
+
     const [existing] = await pool.query("SELECT id, status FROM club_members WHERE club_id=? AND user_id=?", [req.params.id, req.user.id]);
     if (existing.length) {
       if (existing[0].status === 'active') return res.status(400).json({ error: '你已经是该社团成员' });
       if (existing[0].status === 'pending') return res.status(400).json({ error: '已有加入申请等待审核' });
+      if (existing[0].status === 'banned') return res.status(403).json({ error: '当前账号暂不能申请加入该社团' });
     }
-    await pool.query("INSERT INTO club_members (club_id, user_id, role, status) VALUES (?,?,'member','pending') ON DUPLICATE KEY UPDATE status='pending', role='member'", [req.params.id, req.user.id]);
+    const { message } = req.body;
+    await pool.query("INSERT INTO club_members (club_id, user_id, role, status, message) VALUES (?,?,'member','pending',?) ON DUPLICATE KEY UPDATE status='pending', role='member', message=?", [req.params.id, req.user.id, message || '', message || '']);
     // 通知社团负责人
     const [presidents] = await pool.query("SELECT user_id FROM club_members WHERE club_id=? AND role='president' AND status='active'", [req.params.id]);
     var nick = req.user.nickname || req.user.username || '有人';
@@ -356,7 +385,7 @@ router.post('/:id/join', authMiddleware, async (req, res) => {
 // GET /api/clubs/join-requests/:club_id - 获取加入申请（社长/管理员）
 router.get('/join-requests/:club_id', authMiddleware, async (req, res) => {
   try {
-    const [isManager] = await pool.query("SELECT id FROM club_members WHERE club_id=? AND user_id=? AND role='president' AND status='active'", [req.params.club_id, req.user.id]);
+    const [isManager] = await pool.query("SELECT id FROM club_members WHERE club_id=? AND user_id=? AND role IN ('president','vice_president') AND status='active'", [req.params.club_id, req.user.id]);
     if (!isManager.length && !req.user.is_admin) return res.status(403).json({ error: '无权限' });
     const [rows] = await pool.query(
       "SELECT cm.*, u.nickname, u.username FROM club_members cm LEFT JOIN users u ON cm.user_id=u.id WHERE cm.club_id=? AND cm.status='pending' ORDER BY cm.joined_at DESC",
@@ -374,16 +403,22 @@ router.post('/join-requests/:id/review', authMiddleware, async (req, res) => {
     if (!rows.length) return res.status(404).json({ error: '申请不存在' });
     const req2 = rows[0];
     // 检查权限
-    const [isManager] = await pool.query("SELECT id FROM club_members WHERE club_id=? AND user_id=? AND role='president' AND status='active'", [req2.club_id, req.user.id]);
+    const [isManager] = await pool.query("SELECT id FROM club_members WHERE club_id=? AND user_id=? AND role IN ('president','vice_president') AND status='active'", [req2.club_id, req.user.id]);
     if (!isManager.length && !req.user.is_admin) return res.status(403).json({ error: '无权限' });
 
     if (action === 'approve') {
       await pool.query("UPDATE club_members SET status='active' WHERE id=?", [req.params.id]);
       await pool.query('UPDATE clubs SET members=members+1 WHERE id=?', [req2.club_id]);
-      await pool.query("INSERT INTO notifications (user_id, title, content, type) VALUES (?,'加入成功','你已成功加入 ' + ? + '！','system')", [req2.user_id, req2.club_name]);
+      await pool.query(
+        "INSERT INTO notifications (user_id, title, content, type, related_type, related_id) VALUES (?,'加入成功',?,'system','club',?)",
+        [req2.user_id, '你已成功加入 ' + req2.club_name + '！', req2.club_id]
+      );
     } else {
       await pool.query("DELETE FROM club_members WHERE id=?", [req.params.id]);
-      await pool.query("INSERT INTO notifications (user_id, title, content, type) VALUES (?,'加入未通过','你的 ' + ? + ' 加入申请未通过审核。','system')", [req2.user_id, req2.club_name]);
+      await pool.query(
+        "INSERT INTO notifications (user_id, title, content, type, related_type, related_id) VALUES (?,'加入未通过',?,'system','club',?)",
+        [req2.user_id, '你的 ' + req2.club_name + ' 加入申请未通过审核。', req2.club_id]
+      );
     }
     res.json({ message: action === 'approve' ? '已通过' : '已拒绝' });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
@@ -396,7 +431,7 @@ router.post('/:id/leave', authMiddleware, async (req, res) => {
     if (!existing.length) return res.status(400).json({ error: '你还不是该社团成员' });
     if (existing[0].role === 'president') return res.status(400).json({ error: '社长不能退出，请先转让社长' });
     await pool.query("DELETE FROM club_members WHERE id=?", [existing[0].id]);
-    await pool.query('UPDATE clubs SET members=members-1 WHERE id=?', [req.params.id]);
+    await pool.query('UPDATE clubs SET members=GREATEST(members-1, 0) WHERE id=?', [req.params.id]);
     res.json({ message: '已退出社团' });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });

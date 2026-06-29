@@ -3,6 +3,12 @@ const pool = require('../config/db');
 const { authMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
+const CLUB_TYPES = ['club', 'department', 'interest_group'];
+
+function normalizeClubType(type) {
+  if (type === undefined) return null;
+  return CLUB_TYPES.includes(type) ? type : false;
+}
 
 // 检查是否为社团负责人
 async function isClubAdmin(clubId, userId) {
@@ -38,11 +44,13 @@ router.put('/manage/:id', authMiddleware, async (req, res) => {
     if (!(await isClubAdmin(req.params.id, req.user.id))) {
       return res.status(403).json({ error: '只有社团负责人可编辑' });
     }
-    const { name, emoji, tag, description, philosophy, contact, join_info, cover_image, members, color, html_content } = req.body;
+    const { name, emoji, tag, description, philosophy, contact, join_info, cover_image, members, color, html_content, type, level, college_id } = req.body;
+    const clubType = normalizeClubType(type);
+    if (clubType === false) return res.status(400).json({ error: '类型错误' });
     await pool.query(
-      'UPDATE clubs SET name=?, emoji=?, tag=?, description=?, philosophy=?, contact=?, join_info=?, cover_image=?, members=?, color=?, html_content=? WHERE id=?',
-      [name, emoji, tag, description, philosophy, contact, join_info,
-       cover_image || '', members || 0, color, html_content || '', req.params.id]
+      'UPDATE clubs SET name=?, type=COALESCE(?, type), level=?, college_id=?, emoji=?, tag=?, description=?, philosophy=?, contact=?, join_info=?, cover_image=?, members=?, color=?, html_content=? WHERE id=?',
+      [name, clubType, level || 'college', college_id || null, emoji, tag, description, philosophy, contact, join_info,
+       cover_image || '', members || 0, color || 'primary', html_content || '', req.params.id]
     );
     res.json({ message: '社团信息已更新' });
   } catch (err) {

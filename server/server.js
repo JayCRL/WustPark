@@ -39,6 +39,8 @@ app.use('/api/notifications', require('./routes/notifications').router);
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/cats', require('./routes/cats'));
 app.use('/api/friends', require('./routes/friends'));
+app.use('/api/market', require('./routes/market'));
+app.use('/api/teams', require('./routes/teams'));
 app.use('/api', require('./routes/social'));
 app.use('/api/users', require('./routes/profile'));
 app.use('/api/credit', require('./routes/credit'));
@@ -68,8 +70,22 @@ app.get('/api/stats', async (req, res) => {
     const pool = require('./config/db');
     const [[clubRow]] = await pool.query("SELECT COUNT(*) AS c FROM clubs WHERE type='club'");
     const [[deptRow]] = await pool.query("SELECT COUNT(*) AS c FROM clubs WHERE type='department'");
+    const [[interestRow]] = await pool.query("SELECT COUNT(*) AS c FROM clubs WHERE type='interest_group'");
     const [[actRow]] = await pool.query("SELECT COUNT(*) AS c FROM activities WHERE status='approved'");
-    res.json({ clubs: (+clubRow.c || 0), departments: (+deptRow.c || 0), activities: (+actRow.c || 0) });
+    const [[marketRow]] = await pool.query("SELECT COUNT(*) AS c FROM market_items WHERE status <> 'closed'");
+    const [[teamRow]] = await pool.query("SELECT COUNT(*) AS c FROM competition_posts WHERE status <> 'closed'");
+    const clubs = +clubRow.c || 0;
+    const departments = +deptRow.c || 0;
+    const interestGroups = +interestRow.c || 0;
+    res.json({
+      clubs,
+      departments,
+      interest_groups: interestGroups,
+      organizations: clubs + departments + interestGroups,
+      activities: (+actRow.c || 0),
+      market_items: (+marketRow.c || 0),
+      team_posts: (+teamRow.c || 0)
+    });
   } catch (e) { res.status(500).json({ error: '服务器错误' }); }
 });
 

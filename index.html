@@ -22,6 +22,8 @@
         <a href="index.html" class="active">首页</a>
         <a href="clubs.html">社团</a>
         <a href="activities.html">活动</a>
+        <a href="market.html">二手市场</a>
+        <a href="teams.html">竞赛组队</a>
         <a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
         <a href="about.html">关于</a>
         <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
@@ -61,11 +63,17 @@
           <a href="activities.html" class="btn btn-outline btn-lg">
             近期活动
           </a>
+          <a href="market.html" class="btn btn-outline btn-lg">
+            二手市场
+          </a>
+          <a href="teams.html" class="btn btn-outline btn-lg">
+            竞赛组队
+          </a>
         </div>
         <div class="hero-stats">
           <div class="stat-item">
             <div class="stat-number" id="statClubs">-</div>
-            <div class="stat-label">社团/部门</div>
+            <div class="stat-label">社团/部门/兴趣组</div>
           </div>
           <div class="stat-item">
             <div class="stat-number" id="statActivities">-</div>
@@ -158,6 +166,16 @@
           <div class="feature-icon">🏆</div>
           <h3>风采展示</h3>
           <p>每个社团都有自己的专属展示空间，秀出独特魅力</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🛒</div>
+          <h3>二手市场</h3>
+          <p>同校闲置发布与筛选，教材、数码、生活用品流转更方便</p>
+        </div>
+        <div class="feature-card animate-on-scroll">
+          <div class="feature-icon">🏁</div>
+          <h3>竞赛组队</h3>
+          <p>发布招募、申请加入、审核队友，比赛组队有去处</p>
         </div>
       </div>
     </div>
@@ -262,12 +280,12 @@
     <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
     <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
-  <script src="js/main.v83.js"></script>
+  <script src="js/main.js?v=88"></script>
   <script>
     // 实时统计
     fetch('/club-api/stats').then(function(r){return r.json()}).then(function(d){
       if (d.clubs !== undefined) {
-        var total = (d.clubs||0) + (d.departments||0);
+        var total = d.organizations !== undefined ? d.organizations : ((d.clubs||0) + (d.departments||0) + (d.interest_groups||0));
         document.getElementById('statClubs').textContent = total;
       }
       if (d.activities !== undefined) document.getElementById('statActivities').textContent = d.activities;

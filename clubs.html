@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="description" content="浏览校园所有社团 - Wust Spark 校园社团风采展示平台">
+  <meta name="description" content="浏览校园社团、部门和兴趣组 - Wust Spark 校园社团风采展示平台">
   <title>社团 · Wust Spark</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,10 +30,10 @@
     </div>
   </nav>
   <section class="page-hero">
-    <h1>🎪 全部社团</h1>
+    <h1>🎪 社团 · 部门 · 兴趣组</h1>
     <p>发现你的热爱，找到属于你的团队</p>
     <div style="margin-top:1rem;">
-      <a href="club-manage.html" class="btn btn-primary btn-sm">＋ 入驻社团</a>
+      <a href="club-manage.html" class="btn btn-primary btn-sm">＋ 创建 / 入驻</a>
       <a href="club-manage.html" class="btn btn-outline btn-sm" style="margin-left:0.5rem;">⚙️ 管理</a>
     </div>
   </section>
@@ -43,7 +43,7 @@
       <div class="filter-bar-mobile">
         <div class="search-box">
           <span class="search-icon">🔍</span>
-          <input type="text" id="searchInput" placeholder="搜索社团..." />
+          <input type="text" id="searchInput" placeholder="搜索社团 / 部门 / 兴趣组..." />
         </div>
         <div class="filter-chips" id="clubFilterChips"></div>
         <button class="btn btn-ghost btn-sm filter-toggle-btn" id="clubFilterToggle">
@@ -63,6 +63,7 @@
             <div class="drawer-tags" id="typeTags">
               <button class="tag-chip active" data-type="club">🎪 社团</button>
               <button class="tag-chip" data-type="department">🏛️ 部门</button>
+              <button class="tag-chip" data-type="interest_group">💡 兴趣组</button>
             </div>
           </div>
           <div class="drawer-section">
@@ -99,11 +100,19 @@
               <button class="tag-chip" data-filter="文体" data-group="department" style="display:none;">⚽ 文体</button>
               <button class="tag-chip" data-filter="实践" data-group="department" style="display:none;">🌱 实践</button>
               <button class="tag-chip" data-filter="理论" data-group="department" style="display:none;">📖 理论</button>
+              <button class="tag-chip" data-filter="学习" data-group="interest_group" style="display:none;">📚 学习</button>
+              <button class="tag-chip" data-filter="运动" data-group="interest_group" style="display:none;">🏃 运动</button>
+              <button class="tag-chip" data-filter="文艺" data-group="interest_group" style="display:none;">🎨 文艺</button>
+              <button class="tag-chip" data-filter="游戏" data-group="interest_group" style="display:none;">🎮 游戏</button>
+              <button class="tag-chip" data-filter="生活" data-group="interest_group" style="display:none;">🌿 生活</button>
+              <button class="tag-chip" data-filter="技术" data-group="interest_group" style="display:none;">💻 技术</button>
+              <button class="tag-chip" data-filter="公益" data-group="interest_group" style="display:none;">💚 公益</button>
+              <button class="tag-chip" data-filter="其他" data-group="interest_group" style="display:none;">✨ 其他</button>
             </div>
           </div>
         </div>
         <div class="drawer-footer">
-          <button class="btn btn-ghost" onclick="document.querySelectorAll('.tag-chip').forEach(function(t){t.classList.remove('active')});document.querySelector('[data-filter=all]').classList.add('active');document.querySelector('[data-level=all]').classList.add('active');document.querySelector('[data-type=club]').classList.add('active');(document.querySelector('[data-college=all]')||{}).classList&&document.querySelector('[data-college=all]').classList.add('active');document.getElementById('collegeSection').style.display='none';renderAllClubs()">重置</button>
+          <button class="btn btn-ghost" onclick="document.querySelectorAll('.tag-chip').forEach(function(t){t.classList.remove('active')});document.querySelector('[data-filter=all]').classList.add('active');document.querySelector('[data-level=all]').classList.add('active');document.querySelector('[data-type=club]').classList.add('active');document.querySelectorAll('#filterTags .tag-chip[data-group]').forEach(function(x){if(x.dataset.group!=='all')x.style.display=x.dataset.group==='club'?'':'none';});(document.querySelector('[data-college=all]')||{}).classList&&document.querySelector('[data-college=all]').classList.add('active');document.getElementById('collegeSection').style.display='none';renderAllClubs()">重置</button>
           <button class="btn btn-primary" id="clubDrawerApply">应用</button>
         </div>
       </div>
@@ -117,7 +126,7 @@
       <!-- 空状态 -->
       <div id="emptyState" class="empty-state" style="display:none;">
         <span class="empty-icon">🔍</span>
-        <h3>没有找到匹配的社团</h3>
+        <h3>没有找到匹配的结果</h3>
         <p>试试其他关键词或筛选条件吧</p>
       </div>
     </div>
@@ -171,6 +180,6 @@
     <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
     <a href="profile.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
-  <script src="js/main.v83.js"></script>
+  <script src="js/main.js?v=88"></script>
 </body>
 </html>
