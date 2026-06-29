@@ -4219,3 +4219,21 @@ body.msg-theme {
     height: clamp(250px, calc(100vh - 430px), 390px) !important;
   }
 }
+
+/* Fix card-emoji: rounded pill style */
+.club-card .card-emoji,
+.feature-icon,
+.ad-hero-emoji,
+.cd-hero-emoji {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  font-size: 1.6rem !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(15, 23, 42, 0.06) !important;
+  border-radius: 16px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  margin-bottom: var(--space-md) !important;
+}
