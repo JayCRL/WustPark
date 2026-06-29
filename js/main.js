@@ -1000,7 +1000,7 @@ async function renderClubDetail() {
       <p>正在加载社团信息...</p>
     </div>
   `;
-  fetchClubDetailFromAPI(clubId).then(result => {
+  fetchClubDetailFromAPI(clubId).then(async result => {
     if (!result || !result.club) {
       container.innerHTML = `
         <div class="empty-state" style="padding:6rem 2rem;">
