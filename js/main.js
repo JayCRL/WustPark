@@ -988,7 +988,7 @@ function getActivityGradient(tag) {
 // ============================================================
 // 社团详情页渲染
 // ============================================================
-function renderClubDetail() {
+async function renderClubDetail() {
   const container = document.getElementById('clubDetail');
   if (!container) return;
   const params = new URLSearchParams(window.location.search);
@@ -1102,7 +1102,7 @@ function renderClubDetail() {
               ${club.contact ? '<span>📍 ' + club.contact + '</span>' : ''}
             </div>
             <div class="cd-hero-actions">
-              <a href="#join-club" class="btn btn-white btn-lg">加入我们</a>
+              <button class="btn btn-white btn-lg" onclick="joinClub(${club.id})">加入我们</button>
               <button class="btn btn-outline btn-lg" style="border-color:rgba(255,255,255,0.3);color:#fff;" onclick="showContributeModal(${club.id},'${club.name}')">✏️ 补充信息</button>
               <button class="btn btn-outline btn-sm" style="border-color:rgba(255,255,255,0.2);color:rgba(255,255,255,0.7);" onclick="claimClub(${club.id})">🏷️ 认领社团</button>
             </div>
@@ -1392,6 +1392,14 @@ async function submitContribute() {
     closeContributeModal();
   } catch(e) { document.getElementById('contributeError').textContent = e.message; }
 }
+async function joinClub(id) {
+  if (!getToken()) { showToast('请先登录','error'); return; }
+  try {
+    var d = await apiFetch('/clubs/' + id + '/join', { method: 'POST' });
+    showToast(d.message);
+  } catch(e) { showToast(e.message, 'error'); }
+}
+
 var claimClubId = null, claimImages = [];
 function claimClub(id) {
   if (!getToken()) { showToast('请先登录','error'); return; }

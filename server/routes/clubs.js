@@ -318,7 +318,8 @@ router.post('/claims/:id/review', authMiddleware, async (req, res) => {
     await pool.query('UPDATE club_claims SET status=?, handled_by=?, handled_at=NOW() WHERE id=?', [status, req.user.id, req.params.id]);
 
     if (action === 'approve') {
-      // 设为社团负责人
+      // 先降级已有社长，再设为新社长
+      await pool.query("UPDATE club_members SET role='member' WHERE club_id=? AND role='president'", [claim.club_id]);
       await pool.query("INSERT IGNORE INTO club_members (club_id, user_id, role) VALUES (?,?,'president')", [claim.club_id, claim.user_id]);
       await pool.query("INSERT INTO notifications (user_id, title, content, type) VALUES (?,'社团认领成功','你成功认领了社团，现在可以管理社团信息了。','system')", [claim.user_id]);
     } else {
@@ -328,6 +329,31 @@ router.post('/claims/:id/review', authMiddleware, async (req, res) => {
     await addLog(req.user.id, req.user.username, '审核社团认领', 'club_claim', claim.club_id, action === 'approve' ? '通过' : '拒绝');
 
     res.json({ message: '操作成功' });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// ============ 加入/退出社团 ============
+
+// POST /api/clubs/:id/join - 加入社团
+router.post('/:id/join', authMiddleware, async (req, res) => {
+  try {
+    const [existing] = await pool.query('SELECT id FROM club_members WHERE club_id=? AND user_id=?', [req.params.id, req.user.id]);
+    if (existing.length) return res.status(400).json({ error: '你已经是该社团成员' });
+    await pool.query("INSERT INTO club_members (club_id, user_id, role) VALUES (?,?,'member')", [req.params.id, req.user.id]);
+    await pool.query('UPDATE clubs SET members=members+1 WHERE id=?', [req.params.id]);
+    res.json({ message: '已成功加入社团！' });
+  } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
+});
+
+// POST /api/clubs/:id/leave - 退出社团
+router.post('/:id/leave', authMiddleware, async (req, res) => {
+  try {
+    const [existing] = await pool.query("SELECT id, role FROM club_members WHERE club_id=? AND user_id=?", [req.params.id, req.user.id]);
+    if (!existing.length) return res.status(400).json({ error: '你还不是该社团成员' });
+    if (existing[0].role === 'president') return res.status(400).json({ error: '社长不能退出，请先转让社长' });
+    await pool.query("DELETE FROM club_members WHERE club_id=? AND user_id=?", [req.params.id, req.user.id]);
+    await pool.query('UPDATE clubs SET members=members-1 WHERE id=?', [req.params.id]);
+    res.json({ message: '已退出社团' });
   } catch (err) { console.error(err); res.status(500).json({ error: '服务器错误' }); }
 });
 
