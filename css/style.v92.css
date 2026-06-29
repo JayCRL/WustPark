@@ -2907,7 +2907,7 @@ body {
 .drawer,
 .mobile-bottom-nav {
   background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
+  border: none !important;
   box-shadow: var(--glass-shadow) !important;
   backdrop-filter: blur(24px) saturate(150%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(150%) !important;
@@ -3665,7 +3665,7 @@ main,
 .activity-desc-card,
 .tips-card {
   background: var(--glass-bg) !important;
-  border: 1px solid var(--glass-border) !important;
+  border: none !important;
   box-shadow: var(--glass-shadow) !important;
   backdrop-filter: blur(22px) saturate(140%) !important;
   -webkit-backdrop-filter: blur(22px) saturate(140%) !important;
