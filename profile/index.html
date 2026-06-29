@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.v92.css">
+  <link rel="stylesheet" href="../css/style.v92.css">
   <style>
     .profile-wrap { padding-top: 80px; padding-bottom: 80px; }
     .profile-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; }
@@ -56,10 +56,10 @@
 <body>
     <nav class="navbar" id="navbar">
     <div class="container">
-      <a href="index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <a href="../index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
       <div class="navbar-links">
-        <a href="index.html">首页</a><a href="clubs.html">社团</a><a href="activities.html">活动</a><a href="cats.html">🐱 校园猫</a><a href="messages.html">寄语</a>
-        <span id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>
+        <a href="../index.html">首页</a><a href="../clubs/index.html">社团</a><a href="../activities/index.html">活动</a><a href="../cats/index.html">🐱 校园猫</a><a href="../messages/index.html">寄语</a>
+        <span id="navAuth"><a href="../login.html" class="btn btn-outline btn-sm">登录</a></span>
       </div>
     </div>
   </nav>
@@ -89,15 +89,15 @@
   </footer>
 
     <nav class="mobile-bottom-nav" id="bottomNav">
-    <a href="index.html"><span class="nav-icon">🏠</span>首页</a>
-    <a href="clubs.html"><span class="nav-icon">🎪</span>社团</a>
-    <a href="activities.html"><span class="nav-icon">📅</span>活动</a>
-    <a href="cats.html"><span class="nav-icon">🐱</span>校园猫</a><a href="messages.html"><span class="nav-icon">💬</span>寄语</a>
-    <a href="admin.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
-    <a href="profile.html" class="active"><span class="nav-icon">👤</span>我的</a>
+    <a href="../index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="../clubs/index.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="../activities/index.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="../cats/index.html"><span class="nav-icon">🐱</span>校园猫</a><a href="../messages/index.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="../admin/index.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
+    <a href="../profile/index.html" class="active"><span class="nav-icon">👤</span>我的</a>
   </nav>
 
-  <script src="js/main.js?v=88"></script>
+  <script src="../js/main.js?v=88"></script>
   <script>
     function ready(fn) { if (document.readyState !== 'loading') setTimeout(fn, 30); else document.addEventListener('DOMContentLoaded', function(){ setTimeout(fn, 30); }); }
 
@@ -146,7 +146,7 @@
 
     ready(function() {
       if (!getToken()) {
-        document.getElementById('profileContent').innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
+        document.getElementById('profileContent').innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="../login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
         return;
       }
       loadFullProfile();
@@ -170,8 +170,8 @@
         h += '<div class="notif-bell" onclick="showNotif()"><span>&#x1F514;</span>';
         if (d.unread_notifications > 0) h += '<span class="notif-dot">' + d.unread_notifications + '</span>';
         h += '</div>';
-        h += '<a href="friends.html" class="btn btn-outline btn-sm">好友</a>';
-        h += '<a href="activity-create.html" class="btn btn-primary btn-sm">创建活动</a></div>';
+        h += '<a href="../friends/index.html" class="btn btn-outline btn-sm">好友</a>';
+        h += '<a href="../activities/create.html" class="btn btn-primary btn-sm">创建活动</a></div>';
 
         h += '<div class="layout">';
         // Sidebar
@@ -197,7 +197,7 @@
         h += '<div class="card" id="myLikesCard"><div class="card-hd"><h2>❤️ 我的点赞</h2></div><div id="myLikesList"><div class="empty-tip">加载中...</div></div></div>';
 
         // Created activities
-        h += '<div class="card"><div class="card-hd"><h2>&#x1F680; 我发布的活动</h2><a href="activity-create.html">发布</a></div>';
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F680; 我发布的活动</h2><a href="../activities/create.html">发布</a></div>';
         if (d.created_activities.length > 0) { for (var i = 0; i < d.created_activities.length; i++) { var a = d.created_activities[i]; h += genItem(a.emoji || '📅', a.title, a.date, '<div style="display:flex;gap:0.2rem;"><button class="btn btn-ghost btn-sm" onclick="event.stopPropagation();location=\'activity-create.html?id='+a.id+'\'">✏️</button><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="event.stopPropagation();deleteMyActivity('+a.id+')">🗑️</button></div>', 'activity-detail.html?id=' + a.id); } }
         else { h += '<div class="empty-tip">还没有发布活动</div>'; }
         h += '</div>';
@@ -215,13 +215,13 @@
         h += '</div>';
 
         // Clubs
-        h += '<div class="card"><div class="card-hd"><h2>&#x1F3AA; 我的社团</h2><a href="clubs.html">浏览</a></div>';
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F3AA; 我的社团</h2><a href="../clubs/index.html">浏览</a></div>';
         if (d.clubs.length > 0) { for (var i = 0; i < d.clubs.length; i++) { var c = d.clubs[i]; var rt2 = c.role === 'president' ? '社长' : c.role === 'vice_president' ? '副社长' : '成员'; h += genItem(c.emoji, c.name, rt2 + ' | ' + c.members + ' 人', '', 'club-detail.html?id=' + c.id); } }
         else { h += '<div class="empty-tip">还没有加入社团</div>'; }
         h += '</div>';
 
         // Friends
-        h += '<div class="card"><div class="card-hd"><h2>&#x1F91D; 好友 (' + d.friends_count + ')</h2><a href="friends.html">管理</a></div>';
+        h += '<div class="card"><div class="card-hd"><h2>&#x1F91D; 好友 (' + d.friends_count + ')</h2><a href="../friends/index.html">管理</a></div>';
         if (d.friends && d.friends.length > 0) { h += '<div class="friend-grid">'; for (var i = 0; i < d.friends.length; i++) { var f = d.friends[i]; var _fav = (f.nickname || f.username || '?')[0]; h += '<div class="friend-item"><div class="favatar">' + _fav + '</div><div><div class="fname">' + (f.nickname || f.username) + '</div><div style="font-size:0.68rem;color:var(--text-tertiary);">' + (f.college || '') + '</div></div></div>'; } h += '</div>'; }
         else { h += '<div class="empty-tip">还没有好友</div>'; }
         h += '</div>';
@@ -235,7 +235,7 @@
       } catch(e) {
         var msg = e.message || '';
         if (msg.indexOf('登录') >= 0 || msg.indexOf('未登录') >= 0 || msg.indexOf('过期') >= 0) {
-          el.innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
+          el.innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">&#x1F512;</span><h3>请先登录</h3><p>登录后即可查看个人空间</p><a href="../login.html" class="btn btn-primary" style="margin-top:1rem;">去登录</a></div>';
         } else {
           el.innerHTML = '<div class="empty-state" style="padding:4rem;"><span class="empty-icon">⚠️</span><h3>加载失败</h3><p>' + msg + '</p><button class="btn btn-outline btn-sm" style="margin-top:1rem;" onclick="location.reload()">重试</button></div>';
         }
