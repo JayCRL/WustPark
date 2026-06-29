@@ -1,3 +1,4 @@
+const { cacheMiddleware, clearCache } = require('../cache');
 const express = require('express');
 const pool = require('../config/db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
@@ -5,7 +6,7 @@ const { authMiddleware, optionalAuth } = require('../middleware/auth');
 const router = express.Router();
 
 // GET /api/activities - 获取活动列表（多维度筛选）
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware('activities', 300), async (req, res) => {
   try {
     const { tag, type, keyword, sort, club_id, college_id, category_id } = req.query;
     let sql = `

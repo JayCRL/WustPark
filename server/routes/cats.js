@@ -1,9 +1,10 @@
+const { cacheMiddleware, clearCache } = require('../cache');
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const { authMiddleware } = require('../middleware/auth');
 
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware('cats', 600), async (req, res) => {
   try {
     const [rows] = await pool.query("SELECT id, user_id, nickname, title, content, images, cat_name, created_at FROM cat_stories WHERE status='approved' ORDER BY created_at DESC");
     res.json({ stories: rows });

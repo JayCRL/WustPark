@@ -1,3 +1,4 @@
+const { cacheMiddleware, clearCache } = require('../cache');
 const express = require('express');
 const pool = require('../config/db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');

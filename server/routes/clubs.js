@@ -1,4 +1,5 @@
 const express = require('express');
+const { cacheMiddleware, clearCache } = require('../cache');
 const pool = require('../config/db');
 const { authMiddleware, optionalAuth } = require('../middleware/auth');
 
@@ -16,7 +17,7 @@ function getDefaultClubEmoji(type) {
 }
 
 // GET /api/clubs - 获取社团列表（支持搜索和筛选）
-router.get('/', async (req, res) => {
+router.get('/', cacheMiddleware('clubs', 300), async (req, res) => {
   try {
     const { tag, keyword, college_id, category_id, type, level } = req.query;
     let sql = `
@@ -80,7 +81,7 @@ router.get('/logs', authMiddleware, async (req, res) => {
 });
 
 // GET /api/clubs/:id - 获取社团详情（含历史、图片、当前用户成员状态）
-router.get('/:id', optionalAuth, async (req, res) => {
+router.get('/:id', optionalAuth, cacheMiddleware('club', 600), async (req, res) => {
   try {
     const [clubs] = await pool.query('SELECT * FROM clubs WHERE id = ?', [req.params.id]);
     if (clubs.length === 0) {
@@ -135,6 +136,8 @@ router.post('/', authMiddleware, async (req, res) => {
       [result.insertId, req.user.id]
     );
 
+    await clearCache('clubs:*');
+    await clearCache('club:*');
     res.status(201).json({ message: isAdmin ? '社团创建成功' : '入驻申请已提交，等待管理员审核', id: result.insertId, pending: status === 'pending' });
   } catch (err) {
     console.error('Create club error:', err);
@@ -153,6 +156,8 @@ router.put('/:id', authMiddleware, async (req, res) => {
       [name, clubType, emoji, tag, description, philosophy, contact, join_info,
        cover_image || '', members || 0, color, level || 'college', college_id || null, req.params.id]
     );
+    await clearCache('clubs:*');
+    await clearCache('club:*');
     res.json({ message: '更新成功' });
   } catch (err) {
     console.error('Update club error:', err);
