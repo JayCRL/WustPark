@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>管理后台 · Wust Spark</title>
+  <title>绠＄悊鍚庡彴 路 Wust Spark</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -12,12 +12,12 @@
 <body>
   <nav class="navbar" id="navbar">
     <div class="container">
-      <a href="../index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <a href="../index.html" class="navbar-logo"><span class="logo-icon">鉁?/span>Wust Spark</a>
       <div class="navbar-links">
-        <a href="../index.html" style="font-size:0.85rem;">首页</a>
-        <a href="../clubs/index.html" style="font-size:0.85rem;">社团</a>
-        <a href="../activities/index.html" style="font-size:0.85rem;">活动</a>
-        <a href="../messages/index.html" style="font-size:0.85rem;">寄语</a>
+        <a href="../index.html" style="font-size:0.85rem;">棣栭〉</a>
+        <a href="../clubs/index.html" style="font-size:0.85rem;">绀惧洟</a>
+        <a href="../activities/index.html" style="font-size:0.85rem;">娲诲姩</a>
+        <a href="../messages/index.html" style="font-size:0.85rem;">瀵勮</a>
         <span id="navAuth"></span>
       </div>
     </div>
@@ -26,33 +26,34 @@
   <section class="section" style="padding-top:calc(64px + 2rem);padding-bottom:4rem;">
     <div class="container-narrow" style="max-width:900px;margin:0 auto;padding:0 1.5rem;">
       <div class="section-header" style="text-align:center;margin-bottom:1.5rem;">
-        <span class="section-tag">⚙️ 管理后台</span>
-        <h2 class="section-title" style="font-size:1.5rem;">审核 · 管理 · 统计</h2>
+        <span class="section-tag">鈿欙笍 绠＄悊鍚庡彴</span>
+        <h2 class="section-title" style="font-size:1.5rem;">瀹℃牳 路 绠＄悊 路 缁熻</h2>
       </div>
 
       <div class="stats" id="statsRow">
-        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">用户</div></div>
-        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">组织</div></div>
-        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">活动</div></div>
-        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">待审核</div></div>
+        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">鐢ㄦ埛</div></div>
+        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">缁勭粐</div></div>
+        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">娲诲姩</div></div>
+        <div class="stat-card"><div class="stat-num">-</div><div class="stat-label">寰呭鏍?/div></div>
       </div>
 
       <div class="tab-bar" id="adminTabs">
-        <button class="tab active" data-tab="pending">待审核</button>
-        <button class="tab" data-tab="activities">活动</button>
-        <button class="tab" data-tab="clubs">社团</button>
-        <button class="tab" data-tab="messages">留言审核</button>
-        <button class="tab" data-tab="images">图片审核</button>
-        <button class="tab" data-tab="contributions">社团贡献</button>
-        <button class="tab" data-tab="logs">操作日志</button>
-        <button class="tab" data-tab="clubs">组织管理</button>
-        <button class="tab" data-tab="claims">认领审核</button>
-        <button class="tab" data-tab="club-pending">入驻审核</button>
-        <button class="tab" data-tab="admins">管理员</button>
+        <button class="tab active" data-tab="pending">寰呭鏍?/button>
+        <button class="tab" data-tab="activities">娲诲姩</button>
+        <button class="tab" data-tab="clubs">绀惧洟</button>
+        <button class="tab" data-tab="messages">鐣欒█瀹℃牳</button>
+        <button class="tab" data-tab="images">鍥剧墖瀹℃牳</button>
+        <button class="tab" data-tab="info">鏍″洯淇℃伅</button>
+        <button class="tab" data-tab="contributions">绀惧洟璐＄尞</button>
+        <button class="tab" data-tab="logs">鎿嶄綔鏃ュ織</button>
+        <button class="tab" data-tab="clubs">缁勭粐绠＄悊</button>
+        <button class="tab" data-tab="claims">璁ら瀹℃牳</button>
+        <button class="tab" data-tab="club-pending">鍏ラ┗瀹℃牳</button>
+        <button class="tab" data-tab="admins">绠＄悊鍛?/button>
       </div>
 
       <div id="adminContent">
-        <div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>
+        <div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>
       </div>
     </div>
   </section>
@@ -62,24 +63,24 @@
   </footer>
 
   <nav class="mobile-bottom-nav" id="bottomNav">
-    <a href="../index.html"><span class="nav-icon">🏠</span>首页</a>
-    <a href="../clubs/index.html"><span class="nav-icon">🎪</span>社团</a>
-    <a href="../activities/index.html"><span class="nav-icon">📅</span>活动</a>
-    <a href="../cats/index.html"><span class="nav-icon">🐱</span>校园猫</a><a href="../messages/index.html"><span class="nav-icon">💬</span>寄语</a>
-    <a href="../admin/index.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
-    <a href="../profile/index.html"><span class="nav-icon">👤</span>我的</a>
+    <a href="../index.html"><span class="nav-icon">馃彔</span>棣栭〉</a>
+    <a href="../clubs/index.html"><span class="nav-icon">馃帾</span>绀惧洟</a>
+    <a href="../activities/index.html"><span class="nav-icon">馃搮</span>娲诲姩</a>
+    <a href="../cats/index.html"><span class="nav-icon">馃惐</span>鏍″洯鐚?/a><a href="../messages/index.html"><span class="nav-icon">馃挰</span>瀵勮</a>
+    <a href="../admin/index.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">鈿欙笍</span>绠＄悊</a>
+    <a href="../profile/index.html"><span class="nav-icon">馃懁</span>鎴戠殑</a>
   </nav>
 
   <script src="../js/main.js?v=88"></script>
   <script>
     async function loadAdminUsers() {
       var el=document.getElementById('adminContent');
-      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       try {
         var d=await apiFetch('/admin/users?limit=100');
-        var h='<div style="margin-bottom:0.8rem;"><input id="searchUserInput" placeholder="搜索用户名/学号..." style="padding:0.4rem 0.7rem;border:1.5px solid var(--border-color);border-radius:6px;font-size:0.85rem;width:200px;" />';
-        h+='<button class="btn btn-primary btn-sm" style="margin-left:0.3rem;" onclick="searchAndSetAdmin()">设为管理员</button></div>';
-        h+='<div style="font-size:0.8rem;font-weight:600;color:var(--text-tertiary);margin-bottom:0.5rem;">用户列表</div>';
+        var h='<div style="margin-bottom:0.8rem;"><input id="searchUserInput" placeholder="鎼滅储鐢ㄦ埛鍚?瀛﹀彿..." style="padding:0.4rem 0.7rem;border:1.5px solid var(--border-color);border-radius:6px;font-size:0.85rem;width:200px;" />';
+        h+='<button class="btn btn-primary btn-sm" style="margin-left:0.3rem;" onclick="searchAndSetAdmin()">璁句负绠＄悊鍛?/button></div>';
+        h+='<div style="font-size:0.8rem;font-weight:600;color:var(--text-tertiary);margin-bottom:0.5rem;">鐢ㄦ埛鍒楄〃</div>';
         h+='<div id="userListContainer"></div>';
         el.innerHTML=h;
         var container=document.getElementById('userListContainer');
@@ -87,11 +88,11 @@
           var div=document.createElement('div');div.className='review-item';
           var info=document.createElement('div');info.className='info';
           var title=document.createElement('div');title.className='title';
-          title.innerHTML=(u.nickname||u.username)+' '+(u.is_admin?'<span style="font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:4px;background:rgba(232,93,58,0.1);color:var(--color-primary);font-weight:600;">管理员</span>':'<span style="font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:4px;background:var(--color-gray-100);color:var(--text-tertiary);">用户</span>');
+          title.innerHTML=(u.nickname||u.username)+' '+(u.is_admin?'<span style="font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:4px;background:rgba(232,93,58,0.1);color:var(--color-primary);font-weight:600;">绠＄悊鍛?/span>':'<span style="font-size:0.7rem;padding:0.1rem 0.4rem;border-radius:4px;background:var(--color-gray-100);color:var(--text-tertiary);">鐢ㄦ埛</span>');
           var meta=document.createElement('div');meta.className='meta';meta.textContent=u.username+' | '+(u.college||'');
           info.appendChild(title);info.appendChild(meta);div.appendChild(info);
-          if(!u.is_admin){var btn=document.createElement('button');btn.className='btn btn-primary btn-sm';btn.textContent='提升';btn.onclick=function(uid){return function(){setAdmin(uid,1);};}(u.id);div.appendChild(btn);}
-          else if(u.username!='202313201025'){var btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.textContent='取消';btn.onclick=function(uid){return function(){setAdmin(uid,0);};}(u.id);div.appendChild(btn);}
+          if(!u.is_admin){var btn=document.createElement('button');btn.className='btn btn-primary btn-sm';btn.textContent='鎻愬崌';btn.onclick=function(uid){return function(){setAdmin(uid,1);};}(u.id);div.appendChild(btn);}
+          else if(u.username!='202313201025'){var btn=document.createElement('button');btn.className='btn btn-ghost btn-sm';btn.textContent='鍙栨秷';btn.onclick=function(uid){return function(){setAdmin(uid,0);};}(u.id);div.appendChild(btn);}
           container.appendChild(div);
         });
       } catch(e){el.innerHTML='<div style="padding:2rem;text-align:center;">'+e.message+'</div>';}
@@ -104,7 +105,7 @@
         if(!d.users||d.users.length===0){showToast('未找到用户','error');return;}
         if(d.users.length===1){setAdmin(d.users[0].id,1);return;}
         var msg=d.users.map(function(u,i){return (i+1)+'. '+u.username+' ('+(u.nickname||'')+')';}).join('\n');
-        var ans=await confirmDialog({title:'选择用户',message:'找到多个用户，请输入编号（1-'+d.users.length+'）：\n'+msg,prompt:true,placeholder:'输入编号'});
+        var ans=await confirmDialog({title:'閫夋嫨鐢ㄦ埛',message:'鎵惧埌澶氫釜鐢ㄦ埛锛岃杈撳叆缂栧彿锛?-'+d.users.length+'锛夛細\n'+msg,prompt:true,placeholder:'杈撳叆缂栧彿'});
         if(ans===null)return;
         var idx=parseInt(ans);
         if(idx>0&&idx<=d.users.length) setAdmin(d.users[idx-1].id,1);
@@ -113,7 +114,7 @@
     async function setAdmin(username,isAdmin) {
       try {
         await apiFetch('/admin/users/'+username+'/role',{method:'PUT',body:{is_admin:isAdmin,admin_role:isAdmin?'admin':''}});
-        showToast(isAdmin?'已设为管理员':'已取消管理员');
+        showToast(isAdmin?'宸茶涓虹鐞嗗憳':'宸插彇娑堢鐞嗗憳');
         loadAdminUsers();
       } catch(e){showToast(e.message,'error');}
     }
@@ -122,7 +123,7 @@
 
     ready(function() {
       updateNavAuth();
-      if (!getToken()) { document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:3rem;">请以管理员身份登录</div>'; return; }
+      if (!getToken()) { document.getElementById('adminContent').innerHTML = '<div style="text-align:center;padding:3rem;">璇蜂互绠＄悊鍛樿韩浠界櫥褰?/div>'; return; }
       loadStats();
       loadPending();
     });
@@ -137,6 +138,7 @@
       else if (b.dataset.tab === 'messages') loadPendingMessages();
       else if (b.dataset.tab === 'admins') loadAdminUsers();
       else if (b.dataset.tab === 'contributions') loadContributions();
+      else if (b.dataset.tab === 'info') loadPendingInfo();
       else if (b.dataset.tab === 'logs') loadOperationLogs();
       else if (b.dataset.tab === 'claims') loadPendingClaims();
       else if (b.dataset.tab === 'images') loadPendingImages();
@@ -157,13 +159,13 @@
 
     function loadPending() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       apiFetch('/admin/activities?status=pending').then(function(d) {
-        if (d.activities.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);font-size:0.9rem;">暂无待审核活动</div>'; return; }
+        if (d.activities.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);font-size:0.9rem;">鏆傛棤寰呭鏍告椿鍔?/div>'; return; }
         var h = '';
         d.activities.forEach(function(a) {
-          var _at = a.time ? ' ⏰' + a.time : '';
-          h += '<div class="review-item"><div class="info"><div class="title">' + (a.emoji||'📅') + ' ' + a.title + '</div><div class="meta">' + (a.creator_name||'') + ' | ' + (a.date||'') + _at + '</div></div><button class="btn btn-primary btn-sm" onclick="reviewActivity(' + a.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewActivity(' + a.id + ',\'reject\')">拒绝</button></div>';
+          var _at = a.time ? ' ' + a.time : '';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (a.emoji||'馃搮') + ' ' + a.title + '</div><div class="meta">' + (a.creator_name||'') + ' | ' + (a.date||'') + _at + '</div></div><button class="btn btn-primary btn-sm" onclick="reviewActivity(' + a.id + ',\'approve\')">閫氳繃</button><button class="btn btn-ghost btn-sm" onclick="reviewActivity(' + a.id + ',\'reject\')">鎷掔粷</button></div>';
         });
         el.innerHTML = h;
       }).catch(function(e) { el.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--text-tertiary);">' + e.message + '</div>'; });
@@ -171,32 +173,32 @@
 
     function loadAllActivities() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       apiFetch('/admin/activities?status=approved').then(function(d) {
-        if (d.activities.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无活动</div>'; return; }
+        if (d.activities.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤娲诲姩</div>'; return; }
         var h = '';
         d.activities.forEach(function(a) {
-          var _at = a.time ? ' ⏰' + a.time : '';
-          h += '<div class="review-item"><div class="info"><div class="title">' + (a.emoji||'📅') + ' ' + a.title + '</div><div class="meta">' + (a.creator_name||'') + ' | ' + (a.date||'') + _at + '</div></div><button class="btn btn-ghost btn-sm" onclick="reviewActivity(' + a.id + ',\'reject\')">驳回</button><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteActivity(' + a.id + ')">删除</button></div>';
+          var _at = a.time ? ' ' + a.time : '';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (a.emoji||'馃搮') + ' ' + a.title + '</div><div class="meta">' + (a.creator_name||'') + ' | ' + (a.date||'') + _at + '</div></div><button class="btn btn-ghost btn-sm" onclick="reviewActivity(' + a.id + ',\'reject\')">椹冲洖</button><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteActivity(' + a.id + ')">鍒犻櫎</button></div>';
         });
         el.innerHTML = h;
       }).catch(function(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; });
     }
 
     function clubTypeLabel(type) {
-      if (type === 'interest_group') return '💡 兴趣组';
-      if (type === 'department') return '🏛️ 部门';
-      return '🎪 社团';
+      if (type === 'interest_group') return '兴趣组';
+      if (type === 'department') return '部门';
+      return '社团';
     }
 
     function loadAllClubsAdmin() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       apiFetch('/admin/clubs').then(function(d) {
-        if (d.clubs.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无组织</div>'; return; }
+        if (d.clubs.length === 0) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤缁勭粐</div>'; return; }
         var h = '';
         d.clubs.forEach(function(c) {
-          h += '<div class="review-item"><div class="info"><div class="title">' + c.emoji + ' ' + c.name + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | ' + (c.tag||'') + ' | ' + c.members + '人</div></div><a href="club-manage.html?id=' + c.id + '" class="btn btn-ghost btn-sm">编辑</a><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteAdminClub(' + c.id + ')">删除</button></div>';
+          h += '<div class="review-item"><div class="info"><div class="title">' + c.emoji + ' ' + c.name + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | ' + (c.tag||'') + ' | ' + c.members + '浜?/div></div><a href="club-manage.html?id=' + c.id + '" class="btn btn-ghost btn-sm">缂栬緫</a><button class="btn btn-ghost btn-sm" style="color:var(--color-danger);" onclick="deleteAdminClub(' + c.id + ')">鍒犻櫎</button></div>';
         });
         el.innerHTML = h;
       }).catch(function(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; });
@@ -204,23 +206,23 @@
 
     async function loadPendingMessages() {
       var el=document.getElementById('adminContent');
-      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       try {
         var d=await apiFetch('/messages/pending');
-        if(!d.messages||!d.messages.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无待审核留言</div>';return;}
+        if(!d.messages||!d.messages.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤寰呭鏍哥暀瑷€</div>';return;}
         var h='';
         d.messages.forEach(function(m){
-          h+='<div class="review-item"><div class="info"><div class="title">'+m.nickname+'</div><div class="meta">'+m.content+'</div></div><button class="btn btn-primary btn-sm" onclick="reviewMessage('+m.id+',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewMessage('+m.id+',\'reject\')">拒绝</button></div>';
+          h+='<div class="review-item"><div class="info"><div class="title">'+m.nickname+'</div><div class="meta">'+m.content+'</div></div><button class="btn btn-primary btn-sm" onclick="reviewMessage('+m.id+',\'approve\')">閫氳繃</button><button class="btn btn-ghost btn-sm" onclick="reviewMessage('+m.id+',\'reject\')">鎷掔粷</button></div>';
         });
         el.innerHTML=h;
       } catch(e){el.innerHTML='<div style="text-align:center;padding:2rem;">'+e.message+'</div>';}
     }
     async function loadPendingImages() {
       var el=document.getElementById('adminContent');
-      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       try {
         var d=await apiFetch('/upload/pending');
-        if(!d.images||!d.images.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无待审核图片</div>';return;}
+        if(!d.images||!d.images.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤寰呭鏍稿浘鐗?/div>';return;}
         var h='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;">';
         d.images.forEach(function(img){
           h+='<div style="background:var(--bg-card);border:1px solid var(--border-color);border-radius:var(--radius-lg);overflow:hidden;">';
@@ -229,7 +231,7 @@
           h+='</div><div style="padding:0.5rem;">';
           h+='<div style="font-size:0.78rem;color:var(--text-tertiary);">'+(img.nickname||img.username||'')+'</div>';
           h+='<div style="font-size:0.7rem;color:var(--text-muted);margin-bottom:0.4rem;">'+img.type+' | '+img.created_at+'</div>';
-          h+='<div style="display:flex;gap:0.3rem;"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="reviewImage('+img.id+',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" style="flex:1;" onclick="reviewImage('+img.id+',\'reject\')">拒绝</button></div>';
+          h+='<div style="display:flex;gap:0.3rem;"><button class="btn btn-primary btn-sm" style="flex:1;" onclick="reviewImage('+img.id+',\'approve\')">閫氳繃</button><button class="btn btn-ghost btn-sm" style="flex:1;" onclick="reviewImage('+img.id+',\'reject\')">鎷掔粷</button></div>';
           h+='</div></div>';
         });
         h+='</div>';
@@ -241,6 +243,34 @@
         await apiFetch('/upload/'+id+'/review',{method:'POST',body:{action:action}});
         showToast(action==='approve'?'已通过':'已拒绝');
         loadPendingImages();
+      } catch(e){showToast(e.message,'error');}
+    }
+    function infoCategoryName(cat) {
+      var map = { clothing:'Clothing', food:'Food', housing:'Housing', travel:'Travel', weather:'Weather', calendar:'Calendar', study:'Study', life:'Life', notice:'Notice', other:'Other' };
+      return map[cat] || 'Other';
+    }
+    async function loadPendingInfo() {
+      var el=document.getElementById('adminContent');
+      el.innerHTML='<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
+      try {
+        var d=await apiFetch('/info/pending?status=pending');
+        if(!d.cards||!d.cards.length){el.innerHTML='<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤寰呭鏍告牎鍥俊鎭?/div>';return;}
+        var h='';
+        d.cards.forEach(function(card){
+          h+='<div class="review-item"><div class="info"><div class="title">馃搶 '+(card.title||'')+'</div>';
+          h+='<div class="meta">'+infoCategoryName(card.category)+' | '+(card.nickname||card.username||'鍖垮悕')+' | '+(card.created_at||'')+'</div>';
+          h+='<div class="meta" style="margin-top:.35rem;padding:.45rem .6rem;background:var(--color-gray-50);border-radius:8px;white-space:pre-wrap;">'+((card.summary||card.content||'').substring(0,180))+'</div>';
+          if(card.location) h+='<div class="meta">馃搷 '+card.location+'</div>';
+          h+='</div><button class="btn btn-primary btn-sm" onclick="reviewInfoCard('+card.id+',&quot;approve&quot;)">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewInfoCard('+card.id+',&quot;reject&quot;)">拒绝</button></div>';
+        });
+        el.innerHTML=h;
+      } catch(e){el.innerHTML='<div style="text-align:center;padding:2rem;">'+e.message+'</div>';}
+    }
+    async function reviewInfoCard(id, action) {
+      try {
+        await apiFetch('/info/'+id+'/review',{method:'POST',body:{action:action}});
+        showToast(action==='approve'?'已通过':'已拒绝');
+        loadPendingInfo();
       } catch(e){showToast(e.message,'error');}
     }
     async function reviewMessage(id,action) {
@@ -264,29 +294,29 @@
     }
     async function loadPendingClaims() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
-      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-primary" onclick="loadPendingClaims()">待处理</button><button class="btn btn-sm btn-ghost" onclick="loadAllClaims()">全部</button></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-primary" onclick="loadPendingClaims()">寰呭鐞?/button><button class="btn btn-sm btn-ghost" onclick="loadAllClaims()">鍏ㄩ儴</button></div>';
       try {
         var d = await apiFetch('/clubs/claims/pending?status=pending');
-        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无待处理的认领申请</div>'; return; }
+        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤寰呭鐞嗙殑璁ら鐢宠</div>'; return; }
         var h = tabs;
         d.claims.forEach(function(cl){
-          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'🎪') + ' ' + (cl.club_name||'') + '</div><div class="meta">🏷️ 认领人：' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div>' + (cl.message ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">📝 ' + cl.message + '</div>' : '') + (cl.images && cl.images !== 'null' ? '<div class="meta" style="margin-top:.3rem;display:flex;gap:.3rem;flex-wrap:wrap;">' + function(){try{return JSON.parse(cl.images).map(function(im){return '<img src="'+im+'" style="width:60px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);cursor:pointer;" onclick="window.open(\''+im+'\')" />';}).join('');}catch(e){return'';}}() + '</div>' : '') + '</div><button class="btn btn-primary btn-sm" onclick="reviewClaim(' + cl.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewClaim(' + cl.id + ',\'reject\')">拒绝</button></div>';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'馃帾') + ' ' + (cl.club_name||'') + '</div><div class="meta">馃彿锔?璁ら浜猴細' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div>' + (cl.message ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">馃摑 ' + cl.message + '</div>' : '') + (cl.images && cl.images !== 'null' ? '<div class="meta" style="margin-top:.3rem;display:flex;gap:.3rem;flex-wrap:wrap;">' + function(){try{return JSON.parse(cl.images).map(function(im){return '<img src="'+im+'" style="width:60px;height:60px;border-radius:6px;object-fit:cover;border:1px solid var(--border-color);cursor:pointer;" onclick="window.open(\''+im+'\')" />';}).join('');}catch(e){return'';}}() + '</div>' : '') + '</div><button class="btn btn-primary btn-sm" onclick="reviewClaim(' + cl.id + ',\'approve\')">閫氳繃</button><button class="btn btn-ghost btn-sm" onclick="reviewClaim(' + cl.id + ',\'reject\')">鎷掔粷</button></div>';
         });
         el.innerHTML = h;
       } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
     }
     async function loadAllClaims() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
-      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-ghost" onclick="loadPendingClaims()">待处理</button><button class="btn btn-sm btn-primary" onclick="loadAllClaims()">全部</button></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm btn-ghost" onclick="loadPendingClaims()">寰呭鐞?/button><button class="btn btn-sm btn-primary" onclick="loadAllClaims()">鍏ㄩ儴</button></div>';
       try {
         var d = await apiFetch('/clubs/claims/pending?status=all');
-        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无认领记录</div>'; return; }
+        if (!d.claims || !d.claims.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤璁ら璁板綍</div>'; return; }
         var h = tabs;
         d.claims.forEach(function(cl){
-          var st = cl.status === 'approved' ? '✅ 已通过' : cl.status === 'rejected' ? '❌ 已拒绝' : '⏳ 待处理';
-          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'🎪') + ' ' + (cl.club_name||'') + ' ' + st + '</div><div class="meta">🏷️ ' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div></div></div>';
+          var st = cl.status === 'approved' ? '已通过' : cl.status === 'rejected' ? '已拒绝' : '待处理';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (cl.club_emoji||'馃帾') + ' ' + (cl.club_name||'') + ' ' + st + '</div><div class="meta">馃彿锔?' + (cl.nickname||cl.username||'') + ' | ' + cl.created_at + '</div></div></div>';
         });
         el.innerHTML = h;
       } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
@@ -298,9 +328,9 @@
         loadPendingClaims();
       } catch(e) { showToast(e.message, 'error'); }
     }
-    
+
     async function deleteActivity(id) {
-      if (!await confirmDialog({icon:'🗑️',title:'删除活动',message:'确定删除该活动吗？此操作不可撤销。',confirmText:'删除',danger:true})) return;
+      if (!await confirmDialog({icon:'删除',title:'删除活动',message:'确定删除该活动吗？此操作不可撤销。',confirmText:'删除',danger:true})) return;
       try {
         await apiFetch('/admin/activities/' + id, { method: 'DELETE' });
         showToast('已删除');
@@ -312,18 +342,18 @@
     var contribStatus = 'pending';
     function loadContributions() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
-      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (contribStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'pending\';loadContributions()">待处理</button><button class="btn btn-sm ' + (contribStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'approved\';loadContributions()">已采纳</button><button class="btn btn-sm ' + (contribStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'rejected\';loadContributions()">已拒绝</button><button class="btn btn-sm ' + (contribStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'all\';loadContributions()">全部</button></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
+      var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (contribStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'pending\';loadContributions()">寰呭鐞?/button><button class="btn btn-sm ' + (contribStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'approved\';loadContributions()">宸查噰绾?/button><button class="btn btn-sm ' + (contribStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'rejected\';loadContributions()">宸叉嫆缁?/button><button class="btn btn-sm ' + (contribStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="contribStatus=\'all\';loadContributions()">鍏ㄩ儴</button></div>';
       apiFetch('/clubs/contributions/all?status=' + contribStatus).then(function(d) {
-        if (!d.contributions || !d.contributions.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无贡献记录</div>'; return; }
+        if (!d.contributions || !d.contributions.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤璐＄尞璁板綍</div>'; return; }
         var h = tabs;
         d.contributions.forEach(function(c){
-          var typeLabel = c.type === 'question' ? '❓ 疑问' : '📝 补充';
-          var statusLabel = c.status === 'approved' ? '<span style="color:var(--color-accent);">✅ 已采纳</span>' : c.status === 'rejected' ? '<span style="color:var(--color-danger);">❌ 已拒绝</span>' : '<span style="color:var(--color-warning);">⏳ 待处理</span>';
+          var typeLabel = c.type === 'question' ? '鉂?鐤戦棶' : '馃摑 琛ュ厖';
+          var statusLabel = c.status === 'approved' ? '已通过' : c.status === 'rejected' ? '已拒绝' : '待处理';
           var actions = '';
-          if (c.status === 'pending') actions = '<button class="btn btn-primary btn-sm" onclick="reviewContribution(' + c.id + ',\'approve\')">采纳</button><button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'reject\')">拒绝</button>';
-          else actions = '<button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'' + (c.status==='approved'?'reject':'approve') + '\')">' + (c.status==='approved'?'撤销采纳':'重新采纳') + '</button>';
-          h += '<div class="review-item"><div class="info"><div class="title">' + (c.club_emoji||'🎪') + ' ' + (c.club_name||'') + ' ' + statusLabel + '</div><div class="meta">' + typeLabel + ' | ' + (c.nickname||'匿名') + ' | ' + (c.field||'综合') + '</div><div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;">' + (c.content||'') + '</div></div>' + actions + '</div>';
+          if (c.status === 'pending') actions = '<button class="btn btn-primary btn-sm" onclick="reviewContribution(' + c.id + ',\'approve\')">閲囩撼</button><button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'reject\')">鎷掔粷</button>';
+          else actions = '<button class="btn btn-ghost btn-sm" onclick="reviewContribution(' + c.id + ',\'' + (c.status==='approved'?'reject':'approve') + '\')">' + (c.status==='approved'?'鎾ら攢閲囩撼':'閲嶆柊閲囩撼') + '</button>';
+          h += '<div class="review-item"><div class="info"><div class="title">' + (c.club_emoji||'馃帾') + ' ' + (c.club_name||'') + ' ' + statusLabel + '</div><div class="meta">' + typeLabel + ' | ' + (c.nickname||'鍖垮悕') + ' | ' + (c.field||'缁煎悎') + '</div><div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;">' + (c.content||'') + '</div></div>' + actions + '</div>';
         });
         el.innerHTML = h;
       }).catch(function(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; });
@@ -338,19 +368,19 @@
     var clubPendingStatus = 'pending';
 async function loadClubPendingReview() {
   var el = document.getElementById('adminContent');
-  el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
-  var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (clubPendingStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'pending\';loadClubPendingReview()">待审核</button><button class="btn btn-sm ' + (clubPendingStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'approved\';loadClubPendingReview()">已通过</button><button class="btn btn-sm ' + (clubPendingStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'rejected\';loadClubPendingReview()">已拒绝</button><button class="btn btn-sm ' + (clubPendingStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'all\';loadClubPendingReview()">全部</button></div>';
+  el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
+  var tabs = '<div style="display:flex;gap:.3rem;margin-bottom:.8rem;"><button class="btn btn-sm ' + (clubPendingStatus==='pending'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'pending\';loadClubPendingReview()">寰呭鏍?/button><button class="btn btn-sm ' + (clubPendingStatus==='approved'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'approved\';loadClubPendingReview()">宸查€氳繃</button><button class="btn btn-sm ' + (clubPendingStatus==='rejected'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'rejected\';loadClubPendingReview()">宸叉嫆缁?/button><button class="btn btn-sm ' + (clubPendingStatus==='all'?'btn-primary':'btn-ghost') + '" onclick="clubPendingStatus=\'all\';loadClubPendingReview()">鍏ㄩ儴</button></div>';
   try {
     var d = await apiFetch('/admin/clubs/pending?status=' + clubPendingStatus);
-    if (!d.clubs || !d.clubs.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无入驻申请</div>'; return; }
+    if (!d.clubs || !d.clubs.length) { el.innerHTML = tabs + '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤鍏ラ┗鐢宠</div>'; return; }
     var h = tabs;
     d.clubs.forEach(function(c){
-      var statusLabel = c.status === 'approved' ? '✅ 已通过' : c.status === 'rejected' ? '❌ 已拒绝' : '⏳ 待审核';
+          var statusLabel = c.status === 'approved' ? '已通过' : c.status === 'rejected' ? '已拒绝' : '待处理';
       var actions = '';
       if (c.status === 'pending') {
-        actions = '<button class="btn btn-primary btn-sm" onclick="reviewClubPending(' + c.id + ',\'approve\')">通过</button><button class="btn btn-ghost btn-sm" onclick="reviewClubPending(' + c.id + ',\'reject\')">拒绝</button>';
+        actions = '<button class="btn btn-primary btn-sm" onclick="reviewClubPending(' + c.id + ',\'approve\')">閫氳繃</button><button class="btn btn-ghost btn-sm" onclick="reviewClubPending(' + c.id + ',\'reject\')">鎷掔粷</button>';
       }
-      h += '<div class="review-item"><div class="info"><div class="title">' + (c.emoji||'🎪') + ' ' + c.name + ' ' + statusLabel + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | 🏷️ 创建人：' + (c.creator_nickname||c.creator_name||'') + ' | ' + (c.created_at||'') + '</div>' + (c.description ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">' + c.description.substring(0,100) + '</div>' : '') + '</div>' + actions + '</div>';
+      h += '<div class="review-item"><div class="info"><div class="title">' + (c.emoji||'馃帾') + ' ' + c.name + ' ' + statusLabel + '</div><div class="meta">' + clubTypeLabel(c.type) + ' | 馃彿锔?鍒涘缓浜猴細' + (c.creator_nickname||c.creator_name||'') + ' | ' + (c.created_at||'') + '</div>' + (c.description ? '<div class="meta" style="margin-top:.2rem;padding:.3rem .5rem;background:var(--color-gray-50);border-radius:4px;font-size:.8rem;">' + c.description.substring(0,100) + '</div>' : '') + '</div>' + actions + '</div>';
     });
     el.innerHTML = h;
   } catch(e) { el.innerHTML = tabs + '<div style="padding:2rem;">' + e.message + '</div>'; }
@@ -359,20 +389,20 @@ async function reviewClubPending(id, action) {
   try {
     var reason = '';
     if (action === 'reject') {
-      reason = (await confirmDialog({icon:'❌',title:'拒绝理由',message:'请输入拒绝原因（可选）：',prompt:true,placeholder:'理由',confirmText:'确认拒绝'})) || '';
+      reason = (await confirmDialog({icon:'拒绝',title:'拒绝理由',message:'请输入拒绝原因（可选）：',prompt:true,placeholder:'理由',confirmText:'确认拒绝'})) || '';
     }
     await apiFetch('/admin/clubs/' + id + '/review', { method: 'POST', body: { action: action, reject_reason: reason } });
-    showToast(action === 'approve' ? '已通过' : '已拒绝');
+        showToast(action === 'approve' ? '已通过' : '已拒绝');
     loadClubPendingReview();
   } catch(e) { showToast(e.message, 'error'); }
 }
 async function loadOperationLogs() {
       var el = document.getElementById('adminContent');
-      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>加载中...</p></div>';
+      el.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><p>鍔犺浇涓?..</p></div>';
       try {
         var d = await apiFetch('/clubs/logs');
-        if (!d.logs || !d.logs.length) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">暂无操作日志</div>'; return; }
-        var h = '<div style="font-size:.8rem;color:var(--text-tertiary);margin-bottom:.5rem;">共 ' + d.logs.length + ' 条记录</div>';
+        if (!d.logs || !d.logs.length) { el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--text-tertiary);">鏆傛棤鎿嶄綔鏃ュ織</div>'; return; }
+        var h = '<div style="font-size:.8rem;color:var(--text-tertiary);margin-bottom:.5rem;">鍏?' + d.logs.length + ' 鏉¤褰?/div>';
         d.logs.forEach(function(l){
           var time = l.created_at ? l.created_at.substring(0,19).replace('T',' ') : '';
           h += '<div class="review-item"><div class="info"><div class="meta" style="font-size:.75rem;"><span style="font-weight:600;">' + (l.username||'') + '</span> <span style="color:var(--text-tertiary);">' + time + '</span></div><div class="title" style="font-size:.82rem;font-weight:500;">' + l.action + '</div></div></div>';
@@ -380,7 +410,7 @@ async function loadOperationLogs() {
         el.innerHTML = h;
       } catch(e) { el.innerHTML = '<div style="padding:2rem;">' + e.message + '</div>'; }
     }
-    
+
 </script>
 </body>
 </html>

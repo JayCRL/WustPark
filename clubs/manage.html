@@ -32,6 +32,9 @@
         <a href="../index.html">首页</a>
         <a href="../clubs/index.html">社团</a>
         <a href="../activities/index.html">活动</a>
+        <a href="../market/index.html">二手市场</a>
+        <a href="../teams/index.html">竞赛组队</a>
+        <a href="../info/index.html">校园信息</a>
         <a href="../cats/index.html">🐱 校园猫</a><a href="../messages/index.html">寄语</a>
         <a href="../about.html">关于</a>
         <span id="navAuth"><a href="../login.html" class="btn btn-outline btn-sm">登录</a></span>
@@ -146,7 +149,7 @@
     <a href="../index.html"><span class="nav-icon">🏠</span>首页</a>
     <a href="../clubs/index.html"><span class="nav-icon">🎪</span>社团</a>
     <a href="../activities/index.html"><span class="nav-icon">📅</span>活动</a>
-    <a href="../cats/index.html"><span class="nav-icon">🐱</span>校园猫</a><a href="../messages/index.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="../info/index.html"><span class="nav-icon">📌</span>信息</a><a href="../messages/index.html"><span class="nav-icon">💬</span>寄语</a>
     <a href="../admin/index.html" id="adminNavBottom" style="display:none;"><span class="nav-icon">⚙️</span>管理</a>
     <a href="../profile/index.html"><span class="nav-icon">👤</span>我的</a>
   </nav>
@@ -203,7 +206,28 @@
     };
 
   
-    var editingId = null, sections = [], sectionIdCounter = 0;
+    var editingId = null, sections = [], sectionIdCounter = 0, currentLogoUrl = '', pendingLogoUrl = '';
+    function setLogoPreview(url, pending) {
+      var img = document.getElementById('logoImg');
+      var ph = document.getElementById('logoPlaceholder');
+      var status = document.getElementById('logoStatus');
+      currentLogoUrl = pending ? currentLogoUrl : (url || '');
+      pendingLogoUrl = pending ? (url || '') : '';
+      if (img && url) {
+        img.src = url;
+        img.setAttribute('data-url', url);
+        img.setAttribute('data-pending', pending ? '1' : '0');
+        img.style.display = 'block';
+        if (ph) ph.style.display = 'none';
+      } else if (img) {
+        img.removeAttribute('src');
+        img.removeAttribute('data-url');
+        img.setAttribute('data-pending', '0');
+        img.style.display = 'none';
+        if (ph) ph.style.display = 'inline';
+      }
+      if (status) status.textContent = pending ? '待审核' : '';
+    }
     async function saveHistory(clubId) {
       for (var i = 0; i < historyItems.length; i++) {
         try {
@@ -220,7 +244,7 @@
     function getManagedRoleName(c){if(c.role==='president')return c.type==='interest_group'?'组长':(c.type==='department'?'负责人':'社长');if(c.role==='vice_president')return c.type==='interest_group'?'副组长':(c.type==='department'?'副负责人':'副社长');return '成员';}
     function getDefaultEmoji(type){return type==='interest_group'?'💡':(type==='department'?'🏛️':'🎪');}
     function loadMyClubs(){apiFetch('/clubs/manage').then(function(d){var sel=document.getElementById('clubSelector');sel.innerHTML='';if(d.clubs.length===0){sel.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">你还没有管理的组织</p>';return;}d.clubs.forEach(function(c){var a=document.createElement('a');a.href='#';a.textContent=(c.emoji||getDefaultEmoji(c.type))+' '+c.name+' · '+getManagedTypeName(c.type)+' ('+getManagedRoleName(c)+')';a.onclick=function(e){e.preventDefault();editClub(c.id);};sel.appendChild(a);});}).catch(function(e){document.getElementById('clubSelectCard').innerHTML='<p style="color:var(--text-tertiary);">'+e.message+'</p>';});}
-    function showCreateForm(){editingId=null;document.getElementById('formTitle').textContent='创建 / 入驻';['cName','cEmoji','cDesc','cPhi','cContact','cJoin','cMembers'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('cType').value='club';document.getElementById('cEmoji').value='🎪';switchTagOptions();document.getElementById('cLevel').value='college';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';sections=[];sectionIdCounter=0;document.getElementById('sectionList').innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块，点击上方按钮添加</p>';setTimeout(toggleCollegeSelect,50);}
+    function showCreateForm(){editingId=null;currentLogoUrl='';pendingLogoUrl='';setLogoPreview('',false);document.getElementById('formTitle').textContent='创建 / 入驻';['cName','cEmoji','cDesc','cPhi','cContact','cJoin','cMembers'].forEach(function(id){document.getElementById(id).value='';});document.getElementById('cType').value='club';document.getElementById('cEmoji').value='🎪';switchTagOptions();document.getElementById('cLevel').value='college';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';sections=[];sectionIdCounter=0;document.getElementById('sectionList').innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块，点击上方按钮添加</p>';setTimeout(toggleCollegeSelect,50);}
     function editClub(id){editingId=id;document.getElementById('formTitle').textContent='编辑信息';document.getElementById('editForm').style.display='block';document.getElementById('editError').textContent='';loadClubCollege(id);loadJoinRequests(id);}
     function cancelEdit(){document.getElementById('editForm').style.display='none';editingId=null;}
     function escapeHtml(s){return String(s||'').replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
@@ -261,19 +285,17 @@
       var file=input.files[0];if(!file)return;
       if(file.size>5*1024*1024){showToast('图片不能超过5MB','error');return;}
       document.getElementById('logoStatus').textContent='上传中...';
-      var fd=new FormData();fd.append('file',file);fd.append('type','club');
+      var fd=new FormData();fd.append('file',file);fd.append('type',editingId?'club_logo':'club');if(editingId){fd.append('target_type','club_logo');fd.append('target_id',editingId);}
       uploadFile('/upload', fd).then(function(d){
-        document.getElementById('logoImg').src=d.url;
-        document.getElementById('logoImg').style.display='block';
-        document.getElementById('logoPlaceholder').style.display='none';
-        document.getElementById('logoStatus').textContent='✅';
-        showToast('Logo已上传');
+        setLogoPreview(d.url, !!editingId);
+        document.getElementById('logoStatus').textContent=editingId?'待审核':'已上传';
+        showToast(editingId?'Logo已上传，审核通过后自动显示':'Logo已上传，保存创建后等待审核');
       }).catch(function(e){document.getElementById('logoStatus').textContent='❌';showToast(e.message,'error');});
     }
     function uploadSectionImage(input,sectionId){
       var file=input.files[0];if(!file)return;
       if(file.size>5*1024*1024){showToast('图片不能超过5MB','error');return;}
-      var fd=new FormData();fd.append('file',file);fd.append('type','club');
+      var fd=new FormData();fd.append('file',file);fd.append('type','club_section');if(editingId){fd.append('target_type','club_section');fd.append('target_id',editingId);}
       uploadFile('/upload', fd).then(function(d){
         var s=sections.find(function(x){return x.id===sectionId;});
         if(s){s.content=d.url;renderSections();}
@@ -284,12 +306,12 @@
     function removeSection(id){sections=sections.filter(function(s){return s.id!==id;});renderSections();}
     function updateSection(id,f,v){for(var i=0;i<sections.length;i++){if(sections[i].id===id){sections[i][f]=v;break;}}}
     function renderSections(){var el=document.getElementById('sectionList');if(!el)return;if(!sections.length){el.innerHTML='<p style="color:var(--text-tertiary);font-size:0.85rem;">暂无板块</p>';return;}var h='';for(var i=0;i<sections.length;i++){var s=sections[i];h+='<div style="background:var(--color-gray-50);border-radius:8px;padding:0.6rem 0.8rem;margin-bottom:0.4rem;border:1px solid var(--border-color);">';if(s.type==='divider'){h+='<div style="display:flex;justify-content:space-between;align-items:center;"><span style="font-size:0.8rem;color:var(--text-tertiary);">分割线</span><button class="btn btn-ghost btn-sm" onclick="removeSection('+s.id+')">删除</button></div>';}else{h+='<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;"><input value="'+s.title.replace(/"/g,'&quot;')+'" placeholder="板块标题" style="flex:1;border:none;background:transparent;font-weight:600;font-size:0.85rem;padding:0.2rem 0;" onchange="updateSection('+s.id+',\'title\',this.value)" /><button class="btn btn-ghost btn-sm" onclick="removeSection('+s.id+')">✕</button></div>';if(s.type==='image'){var imgSrc=s.content||'';h+='<div style="display:flex;gap:0.3rem;flex-wrap:wrap;">';if(imgSrc){h+='<img src="'+imgSrc+'" style="max-width:120px;max-height:80px;border-radius:4px;object-fit:cover;border:1px solid var(--border-color);" />';}h+='<input type="file" accept="image/*" style="font-size:0.75rem;flex:1;" onchange="uploadSectionImage(this,'+s.id+')" />';h+='<input value="'+s.content.replace(/"/g,'&quot;')+'" placeholder="或粘贴图片链接" style="width:100%;border:1px solid var(--border-color);border-radius:4px;padding:0.3rem 0.5rem;font-size:0.78rem;margin-top:0.3rem;" onchange="updateSection('+s.id+',\'content\',this.value)" />';h+='</div>';}else{h+='<textarea rows="2" placeholder="输入内容..." style="width:100%;border:1px solid var(--border-color);border-radius:4px;padding:0.3rem 0.5rem;font-size:0.82rem;" onchange="updateSection('+s.id+',\'content\',this.value)">'+s.content+'</textarea>';}}h+='</div>';}el.innerHTML=h;}
-    function loadClubCollege(id){apiFetch('/clubs/'+id).then(function(d){var c=d.club;document.getElementById('cName').value=c.name||'';document.getElementById('cEmoji').value=c.emoji||'';document.getElementById('cType').value=c.type||'club';switchTagOptions();document.getElementById('cDesc').value=c.description||'';document.getElementById('cPhi').value=c.philosophy||'';document.getElementById('cContact').value=c.contact||'';document.getElementById('cJoin').value=c.join_info||'';document.getElementById('cMembers').value=c.members||0;document.getElementById('cTag').value=c.tag||'兴趣';document.getElementById('cLevel').value=c.level||'college';toggleCollegeSelect();if(c.college_id)setTimeout(function(){document.getElementById('cCollege').value=c.college_id;},500);}).catch(function(e){document.getElementById('editError').textContent=e.message;});apiFetch('/clubs/'+id+'/sections').then(function(d){sections=(d.sections||[]).map(function(s){return{id:++sectionIdCounter,type:'text',title:s.title,content:s.content};});renderSections();}).catch(function(){});}
+    function loadClubCollege(id){apiFetch('/clubs/'+id).then(function(d){var c=d.club;document.getElementById('cName').value=c.name||'';document.getElementById('cEmoji').value=c.emoji||'';document.getElementById('cType').value=c.type||'club';switchTagOptions();document.getElementById('cDesc').value=c.description||'';document.getElementById('cPhi').value=c.philosophy||'';document.getElementById('cContact').value=c.contact||'';document.getElementById('cJoin').value=c.join_info||'';document.getElementById('cMembers').value=c.members||0;document.getElementById('cTag').value=c.tag||'兴趣';document.getElementById('cLevel').value=c.level||'college';setLogoPreview(c.cover_image||'',false);toggleCollegeSelect();if(c.college_id)setTimeout(function(){document.getElementById('cCollege').value=c.college_id;},500);}).catch(function(e){document.getElementById('editError').textContent=e.message;});apiFetch('/clubs/'+id+'/sections').then(function(d){sectionIdCounter=0;sections=(d.sections||[]).map(function(s){return{id:++sectionIdCounter,type:'text',title:s.title,content:s.content};});renderSections();}).catch(function(){});}
     var clubTags=['兴趣','学术','体育','公益','科技'];var deptTags=['服务','组织','志愿','宣传','文艺','爱国','管理','行政','文体','实践','理论'];var interestTags=['学习','运动','文艺','游戏','生活','技术','公益','其他'];
     function switchTagOptions(){var type=document.getElementById('cType').value;var opts=type==='department'?deptTags:(type==='interest_group'?interestTags:clubTags);var sel=document.getElementById('cTag');sel.innerHTML='';opts.forEach(function(t){sel.innerHTML+='<option value="'+t+'">'+t+'</option>';});var emoji=document.getElementById('cEmoji');if(emoji&&(!emoji.value||['🎪','🏛️','💡'].indexOf(emoji.value)>=0))emoji.value=getDefaultEmoji(type);}switchTagOptions();
     function toggleCollegeSelect(){var show=document.getElementById('cLevel').value==='college';document.getElementById('cCollegeSection').style.display=show?'block':'none';if(show)loadCollegeList();}
     function loadCollegeList(){var sel=document.getElementById('cCollege');if(sel.options.length>1)return;fetch('/club-api/categories?level=1').then(function(r){return r.json()}).then(function(d){(d.flat||d).forEach(function(c){if(c.level===1)sel.innerHTML+='<option value="'+c.id+'">'+c.name+'</option>';});}).catch(function(){});}
-    async function saveClub(){var btn=event.target;btn.disabled=true;document.getElementById('editError').textContent='';var logoUrl='';var logoImg=document.getElementById('logoImg');if(logoImg.style.display!=='none'&&logoImg.src)logoUrl=logoImg.src;
+    async function saveClub(){var btn=event&&event.target?event.target:document.querySelector('#editForm .btn-primary');btn.disabled=true;document.getElementById('editError').textContent='';var logoUrl=currentLogoUrl||'';var logoImg=document.getElementById('logoImg');if(!editingId&&pendingLogoUrl)logoUrl=pendingLogoUrl;else if(logoImg&&logoImg.style.display!=='none'&&logoImg.getAttribute('data-pending')!=='1')logoUrl=logoImg.getAttribute('data-url')||logoImg.src||logoUrl;
 var body={name:document.getElementById('cName').value,type:document.getElementById('cType').value,tag:document.getElementById('cTag').value,description:document.getElementById('cDesc').value,philosophy:document.getElementById('cPhi').value,contact:document.getElementById('cContact').value,join_info:document.getElementById('cJoin').value,members:parseInt(document.getElementById('cMembers').value)||0,level:document.getElementById('cLevel').value,college_id:document.getElementById('cCollege').value||null,cover_image:logoUrl};body.emoji=document.getElementById('cEmoji').value||getDefaultEmoji(body.type);if(!body.name){document.getElementById('editError').textContent='请填写名称';btn.disabled=false;return;}try{if(editingId){await apiFetch('/clubs/manage/'+editingId,{method:'PUT',body:body});showToast('已更新');await saveSections(editingId);}else{var r=await apiFetch('/clubs',{method:'POST',body:body});showToast(r.pending?'创建申请已提交，请等待管理员审核':'创建成功');editingId=r.id;await saveSections(r.id);}setTimeout(function(){location.reload();},500);}catch(e){document.getElementById('editError').textContent=e.message;btn.disabled=false;}}
     async function saveSections(clubId){if(!sections.length)return;for(var i=0;i<sections.length;i++){try{await apiFetch('/clubs/'+clubId+'/sections',{method:'POST',body:{title:sections[i].title,content:sections[i].content}});}catch(e){}}}
   </script>

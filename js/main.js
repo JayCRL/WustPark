@@ -31,27 +31,50 @@ var ICONS = {
 };
 // 统一注入顶部导航 + 移动底部导航；按当前页高亮
 function renderChrome() {
-  var path = location.pathname.split('/').pop() || 'index.html';
-  if (!path) path = 'index.html';
-  var topItems = [['index.html','首页'],['clubs.html','社团'],['activities.html','活动'],['market.html','二手市场'],['teams.html','竞赛组队'],['cats.html','🐱 校园猫'],['messages.html','寄语'],['about.html','关于']];
+  var parts = location.pathname.split('/').filter(Boolean);
+  var file = parts[parts.length - 1] || 'index.html';
+  var nestedSections = ['clubs','activities','market','teams','info','cats','messages','profile','admin','friends'];
+  var section = file === 'index.html' && parts.length > 1 ? parts[parts.length - 2] : file.replace(/\.html$/, '');
+  if (file === 'index.html' && !nestedSections.includes(section)) section = 'home';
+  if (!file.includes('.') && !nestedSections.includes(file)) section = 'home';
+  var prefix = nestedSections.includes(section) ? '../' : '';
+  var topItems = [
+    ['home', prefix + 'index.html','首页'],
+    ['clubs', prefix + 'clubs/index.html','社团'],
+    ['activities', prefix + 'activities/index.html','活动'],
+    ['market', prefix + 'market/index.html','二手市场'],
+    ['teams', prefix + 'teams/index.html','竞赛组队'],
+    ['info', prefix + 'info/index.html','校园信息'],
+    ['cats', prefix + 'cats/index.html','🐱 校园猫'],
+    ['messages', prefix + 'messages/index.html','寄语'],
+    ['about', prefix + 'about.html','关于']
+  ];
+  var activeKey = section === 'index' ? 'home' : section;
   var navbar = document.getElementById('navbar');
   if (navbar) {
-    var links = topItems.map(function(it){ return '<a href="'+it[0]+'"'+(path===it[0]?' class="active"':'')+'>'+it[1]+'</a>'; }).join('');
+    var links = topItems.map(function(it){ return '<a href="'+it[1]+'"'+(activeKey===it[0]?' class="active"':'')+'>'+it[2]+'</a>'; }).join('');
     navbar.classList.add('navbar');
     navbar.innerHTML =
       '<div class="container">' +
-        '<a href="index.html" class="navbar-logo"><span class="logo-icon">'+ICONS.spark+'</span>Wust Spark</a>' +
+        '<a href="'+prefix+'index.html" class="navbar-logo"><span class="logo-icon">'+ICONS.spark+'</span>Wust Spark</a>' +
         '<div class="navbar-links" id="navLinks">' + links +
-          '<span class="nav-auth" id="navAuth"><a href="login.html" class="btn btn-outline btn-sm">登录</a></span>' +
+          '<span class="nav-auth" id="navAuth"><a href="'+prefix+'login.html" class="btn btn-outline btn-sm">登录</a></span>' +
         '</div>' +
         '<button class="navbar-toggle" id="navToggle" aria-label="菜单"><span></span><span></span><span></span></button>' +
       '</div>';
   }
-  var botItems = [['index.html','首页',ICONS.home],['clubs.html','社团',ICONS.clubs],['activities.html','活动',ICONS.activities],['cats.html','校园猫','🐱'],['messages.html','寄语',ICONS.messages],['profile.html','我的',ICONS.user]];
+  var botItems = [
+    ['home', prefix + 'index.html','首页',ICONS.home],
+    ['clubs', prefix + 'clubs/index.html','社团',ICONS.clubs],
+    ['activities', prefix + 'activities/index.html','活动',ICONS.activities],
+    ['info', prefix + 'info/index.html','信息','📌'],
+    ['messages', prefix + 'messages/index.html','寄语',ICONS.messages],
+    ['profile', prefix + 'profile/index.html','我的',ICONS.user]
+  ];
   var bn = document.getElementById('bottomNav');
   if (bn) {
-    var b = botItems.map(function(it){ return '<a href="'+it[0]+'"'+(path===it[0]?' class="active"':'')+'><span class="nav-icon">'+it[2]+'</span>'+it[1]+'</a>'; }).join('');
-    b += '<a href="admin.html" id="adminNavBottom"'+(path==='admin.html'?' class="active"':'')+' style="display:none;"><span class="nav-icon">'+ICONS.admin+'</span>管理</a>';
+    var b = botItems.map(function(it){ return '<a href="'+it[1]+'"'+(activeKey===it[0]?' class="active"':'')+'><span class="nav-icon">'+it[3]+'</span>'+it[2]+'</a>'; }).join('');
+    b += '<a href="'+prefix+'admin/index.html" id="adminNavBottom"'+(activeKey==='admin'?' class="active"':'')+' style="display:none;"><span class="nav-icon">'+ICONS.admin+'</span>管理</a>';
     bn.classList.add('mobile-bottom-nav');
     bn.innerHTML = b;
     document.body.classList.add('has-bottom-nav');
@@ -351,13 +374,21 @@ function getClubTypeMeta(type) {
   };
   return map[type] || map.club;
 }
+function escapeAttr(value) {
+  return String(value || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+function renderClubLogo(club, style) {
+  var fallback = escapeAttr(club.emoji || '🎪');
+  if (!club.cover_image) return fallback;
+  return '<img src="' + escapeAttr(club.cover_image) + '" style="' + style + '" onerror="this.outerHTML=\'' + fallback + '\'" />';
+}
 function renderClubCard(club) {
   var typeMeta = getClubTypeMeta(club.type);
   var lv = club.level === 'school' ? '<span style="margin-left:0.3rem;font-size:0.65rem;padding:0.1rem 0.4rem;background:rgba(107,76,230,0.08);color:var(--color-secondary);border-radius:4px;font-weight:600;">校级</span>' : '<span style="margin-left:0.3rem;font-size:0.65rem;padding:0.1rem 0.4rem;background:var(--color-gray-100);color:var(--text-tertiary);border-radius:4px;font-weight:600;">院级</span>';
   return `
     <a href="club-detail.html?id=${club.id}" class="club-card-link">
       <div class="club-card animate-on-scroll">
-        <span class="card-emoji">${club.emoji}</span>
+        <span class="card-emoji">${renderClubLogo(club, 'width:100%;height:100%;object-fit:cover;border-radius:8px;')}</span>
         <span class="card-tag">${typeMeta.icon} ${typeMeta.name}${club.tag ? ' · ' + club.tag : ''}${lv}</span>
         <h3>${club.name}</h3>
         <p>${club.desc}</p>
@@ -558,7 +589,7 @@ function renderAllClubs() {
   fetch('/club-api/clubs' + (p.length ? '?' + p.join('&') : '')).then(function(r){return r.json()}).then(function(data) {
     var list = data.clubs || [];
     if (list.length === 0) { grid.innerHTML = ''; if (empty) empty.style.display = 'block'; if (loading) loading.style.display = 'none'; return; }
-    grid.innerHTML = list.map(function(c){return renderClubCard({id:c.id,name:c.name,emoji:c.emoji,tag:c.tag,desc:c.description,members:c.members,level:c.level,college_id:c.college_id,type:c.type});}).join('');
+    grid.innerHTML = list.map(function(c){return renderClubCard({id:c.id,name:c.name,emoji:c.emoji,cover_image:c.cover_image,tag:c.tag,desc:c.description,members:c.members,level:c.level,college_id:c.college_id,type:c.type});}).join('');
     if (loading) loading.style.display = 'none';
     observeAnimatedElements();
   }).catch(function() {
@@ -1147,7 +1178,7 @@ async function renderClubDetail() {
         <div class="container">
           <div class="cd-hero-content">
             <a href="clubs.html" class="cd-back-link">← 返回列表</a>
-            <div class="cd-hero-emoji">${club.emoji || '🎪'}</div>
+            <div class="cd-hero-emoji">${renderClubLogo(club, 'width:64px;height:64px;border-radius:12px;object-fit:cover;')}</div>
             <span class="cd-hero-tag">${typeMeta.icon} ${typeMeta.name}${club.tag ? ' · ' + club.tag : ''}</span>
             <h1 class="cd-hero-title">${club.name}</h1>
             <p class="cd-hero-desc" style="white-space:pre-wrap;">${(club.description || club.desc || '暂无介绍，欢迎认领完善').replace(/\n/g, '<br>')}</p>

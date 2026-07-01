@@ -23,6 +23,7 @@ app.use(express.static(path.join(__dirname, '..')));
 
 // 静态文件服务 - 上传目录
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // API 路由
 app.use('/api/auth', require('./routes/auth'));
@@ -39,6 +40,7 @@ app.use('/api/notifications', require('./routes/notifications').router);
 app.use('/api/messages', require('./routes/messages'));
 app.use('/api/cats', require('./routes/cats'));
 app.use('/api/friends', require('./routes/friends'));
+app.use('/api/info', require('./routes/info'));
 app.use('/api/market', require('./routes/market'));
 app.use('/api/teams', require('./routes/teams'));
 app.use('/api', require('./routes/social'));

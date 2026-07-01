@@ -1,6 +1,7 @@
 const express = require('express');
 const pool = require('../config/db');
 const { authMiddleware } = require('../middleware/auth');
+const { clearCache } = require('../cache');
 
 const router = express.Router();
 const CLUB_TYPES = ['club', 'department', 'interest_group'];
@@ -52,6 +53,8 @@ router.put('/manage/:id', authMiddleware, async (req, res) => {
       [name, clubType, level || 'college', college_id || null, emoji, tag, description, philosophy, contact, join_info,
        cover_image || '', members || 0, color || 'primary', html_content || '', req.params.id]
     );
+    await clearCache('clubs:*');
+    await clearCache('club:*');
     res.json({ message: '社团信息已更新' });
   } catch (err) {
     console.error(err);
@@ -67,6 +70,7 @@ router.post('/manage/:id/history', authMiddleware, async (req, res) => {
     }
     const { year, event } = req.body;
     await pool.query('INSERT INTO club_history (club_id, year, event) VALUES (?,?,?)', [req.params.id, year, event]);
+    await clearCache('club:*');
     res.json({ message: '添加成功' });
   } catch (err) {
     console.error(err);
@@ -79,6 +83,7 @@ router.delete('/manage/:id/history/:hid', authMiddleware, async (req, res) => {
   try {
     if (!(await isClubAdmin(req.params.id, req.user.id))) return res.status(403).json({ error: '无权限' });
     await pool.query('DELETE FROM club_history WHERE id=? AND club_id=?', [req.params.hid, req.params.id]);
+    await clearCache('club:*');
     res.json({ message: '已删除' });
   } catch (err) {
     console.error(err);
@@ -92,6 +97,7 @@ router.post('/manage/:id/images', authMiddleware, async (req, res) => {
     if (!(await isClubAdmin(req.params.id, req.user.id))) return res.status(403).json({ error: '无权限' });
     const { image_url, caption } = req.body;
     await pool.query('INSERT INTO club_images (club_id, image_url, caption) VALUES (?,?,?)', [req.params.id, image_url, caption || '']);
+    await clearCache('club:*');
     res.json({ message: '上传成功' });
   } catch (err) {
     console.error(err);
@@ -104,6 +110,7 @@ router.delete('/manage/:id/images/:iid', authMiddleware, async (req, res) => {
   try {
     if (!(await isClubAdmin(req.params.id, req.user.id))) return res.status(403).json({ error: '无权限' });
     await pool.query('DELETE FROM club_images WHERE id=? AND club_id=?', [req.params.iid, req.params.id]);
+    await clearCache('club:*');
     res.json({ message: '已删除' });
   } catch (err) {
     console.error(err);
@@ -120,6 +127,8 @@ router.post('/manage/:id/members', authMiddleware, async (req, res) => {
       'INSERT INTO club_members (club_id, user_id, role) VALUES (?,?,?) ON DUPLICATE KEY UPDATE role=?, status="active"',
       [req.params.id, user_id, role || 'member', role || 'member']
     );
+    await clearCache('clubs:*');
+    await clearCache('club:*');
     res.json({ message: '添加成功' });
   } catch (err) {
     console.error(err);

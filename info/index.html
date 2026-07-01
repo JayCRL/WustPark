@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="description" content="Wust Spark 校园信息">
+  <title>校园信息 · Wust Spark</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Noto+Sans+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.v92.css">
+  <style>
+    .info-wrap { padding-top: calc(var(--nav-height) + 2.4rem); padding-bottom: 5rem; }
+    .info-head { display:flex; justify-content:space-between; align-items:flex-end; gap:1rem; margin-bottom:1rem; }
+    .info-title { font-size:clamp(1.6rem, 3vw, 2.35rem); font-weight:900; letter-spacing:0; }
+    .info-subtitle { margin-top:.35rem; color:var(--text-secondary); line-height:1.7; max-width:680px; }
+    .info-panel { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:18px; box-shadow:var(--glass-shadow); backdrop-filter:blur(22px) saturate(140%); padding:1rem; margin-bottom:1rem; }
+    .info-filters { display:flex; gap:.55rem; flex-wrap:wrap; align-items:center; }
+    .info-chip { border:1px solid rgba(36,107,152,.16); background:rgba(255,255,255,.74); color:var(--text-secondary); border-radius:999px; padding:.48rem .82rem; font-weight:800; font-size:.82rem; cursor:pointer; transition:.18s ease; }
+    .info-chip:hover, .info-chip.active { color:var(--color-primary-dark); background:rgba(36,107,152,.1); border-color:rgba(36,107,152,.26); }
+    .info-search { min-width:220px; flex:1; max-width:360px; }
+    .info-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:1rem; }
+    .info-card { background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:18px; box-shadow:var(--glass-shadow); backdrop-filter:blur(22px) saturate(140%); padding:1rem; display:flex; flex-direction:column; gap:.75rem; min-height:210px; }
+    .info-card-top { display:flex; align-items:center; justify-content:space-between; gap:.7rem; }
+    .info-badge { display:inline-flex; align-items:center; gap:.3rem; border:1px solid rgba(36,107,152,.14); color:var(--color-primary-dark); background:rgba(255,255,255,.72); border-radius:999px; padding:.26rem .55rem; font-size:.74rem; font-weight:800; }
+    .info-card h3 { font-size:1.02rem; line-height:1.45; font-weight:900; color:var(--text-primary); }
+    .info-card p { color:var(--text-secondary); line-height:1.7; font-size:.88rem; }
+    .info-meta { display:flex; gap:.45rem; flex-wrap:wrap; color:var(--text-tertiary); font-size:.76rem; margin-top:auto; }
+    .info-meta span { background:rgba(255,255,255,.58); border:1px solid rgba(83,112,134,.12); border-radius:999px; padding:.22rem .48rem; }
+    .info-form { display:none; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+    .info-form.open { display:grid; }
+    .info-form .full { grid-column:1/-1; }
+    .info-form label { display:block; font-size:.78rem; font-weight:800; color:var(--text-secondary); margin-bottom:.25rem; }
+    .info-empty { text-align:center; color:var(--text-tertiary); padding:3rem 1rem; }
+    @media (max-width:640px) {
+      .info-wrap { padding-top:calc(var(--nav-height) + 1.6rem); }
+      .info-head { align-items:flex-start; flex-direction:column; }
+      .info-search { width:100%; max-width:none; }
+      .info-grid { grid-template-columns:1fr; }
+      .info-form { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar" id="navbar">
+    <div class="container">
+      <a href="../index.html" class="navbar-logo"><span class="logo-icon">✨</span>Wust Spark</a>
+      <div class="navbar-links" id="navLinks">
+        <a href="../index.html">首页</a>
+        <a href="../clubs/index.html">社团</a>
+        <a href="../activities/index.html">活动</a>
+        <a href="../market/index.html">二手市场</a>
+        <a href="../teams/index.html">竞赛组队</a>
+        <a href="../info/index.html" class="active">校园信息</a>
+        <a href="../cats/index.html">🐱 校园猫</a>
+        <a href="../messages/index.html">寄语</a>
+        <a href="../about.html">关于</a>
+        <span id="navAuth"><a href="../login.html" class="btn btn-outline btn-sm">登录</a></span>
+      </div>
+      <button class="navbar-toggle" id="navToggle" aria-label="菜单"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <main class="info-wrap">
+    <div class="container">
+      <div class="info-head">
+        <div>
+          <span class="section-tag">📌 校园信息</span>
+          <h1 class="info-title">衣食住行，一张卡片说清楚</h1>
+          <p class="info-subtitle">天气提醒、食堂观察、宿舍经验、出行攻略、校历安排，都可以用信息卡片分享给同学。</p>
+        </div>
+        <button class="btn btn-primary" onclick="toggleInfoForm()">＋ 分享信息</button>
+      </div>
+
+      <section class="info-panel">
+        <div class="info-filters" id="infoFilters"></div>
+      </section>
+
+      <section class="info-panel">
+        <div class="info-form" id="infoForm">
+          <div>
+            <label>分类</label>
+            <select id="infoCategory"></select>
+          </div>
+          <div>
+            <label>标题</label>
+            <input id="infoTitle" maxlength="120" placeholder="如：武汉近日天气提醒" />
+          </div>
+          <div class="full">
+            <label>摘要</label>
+            <input id="infoSummary" maxlength="255" placeholder="一句话说明重点，方便大家快速扫读" />
+          </div>
+          <div class="full">
+            <label>详情</label>
+            <textarea id="infoContent" rows="4" placeholder="补充时间、地点、注意事项、经验建议等"></textarea>
+          </div>
+          <div>
+            <label>地点/范围（选填）</label>
+            <input id="infoLocation" placeholder="如：黄家湖校区 / 武汉 / 南苑" />
+          </div>
+          <div>
+            <label>标签（选填）</label>
+            <input id="infoTags" placeholder="用逗号分隔，如 天气,提醒" />
+          </div>
+          <div>
+            <label>来源名称（选填）</label>
+            <input id="infoSourceName" placeholder="如：学校通知 / 个人经验" />
+          </div>
+          <div>
+            <label>来源链接（选填）</label>
+            <input id="infoSourceUrl" placeholder="https://..." />
+          </div>
+          <div class="full" style="display:flex;justify-content:flex-end;gap:.6rem;flex-wrap:wrap;">
+            <button class="btn btn-ghost" onclick="toggleInfoForm(false)">取消</button>
+            <button class="btn btn-primary" onclick="submitInfoCard()">提交审核</button>
+          </div>
+        </div>
+        <div id="loginHint" style="display:none;color:var(--text-secondary);font-size:.9rem;">登录后即可分享校园信息。</div>
+      </section>
+
+      <section class="info-grid" id="infoGrid"></section>
+    </div>
+  </main>
+
+  <nav class="mobile-bottom-nav" id="bottomNav">
+    <a href="../index.html"><span class="nav-icon">🏠</span>首页</a>
+    <a href="../clubs/index.html"><span class="nav-icon">🎪</span>社团</a>
+    <a href="../activities/index.html"><span class="nav-icon">📅</span>活动</a>
+    <a href="../info/index.html" class="active"><span class="nav-icon">📌</span>信息</a>
+    <a href="../messages/index.html"><span class="nav-icon">💬</span>寄语</a>
+    <a href="../profile/index.html"><span class="nav-icon">👤</span>我的</a>
+  </nav>
+
+  <script src="../js/main.js?v=88"></script>
+  <script>
+    var activeCategory = 'all';
+    var categoryMeta = {
+      all: ['全部', '🌐'],
+      clothing: ['衣', '👕'],
+      food: ['食', '🍜'],
+      housing: ['住', '🏠'],
+      travel: ['行', '🚌'],
+      weather: ['天气', '🌦️'],
+      calendar: ['校历', '📅'],
+      study: ['学习', '📚'],
+      life: ['生活', '✨'],
+      notice: ['通知', '📣'],
+      other: ['其他', '📌']
+    };
+
+    function esc(s) {
+      return String(s || '').replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+      });
+    }
+
+    function fmtTime(t) {
+      if (!t) return '';
+      var d = new Date(t);
+      if (isNaN(d.getTime())) return String(t).slice(0, 10);
+      return d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+    }
+
+    function renderFilters() {
+      var keys = ['all','clothing','food','housing','travel','weather','calendar','study','life','notice','other'];
+      var h = '<input class="info-search" id="infoKeyword" placeholder="搜索天气、校历、地点、关键词..." onkeydown="if(event.key===&quot;Enter&quot;)loadInfoCards()" />';
+      keys.forEach(function(k) {
+        var m = categoryMeta[k];
+        h += '<button class="info-chip ' + (activeCategory === k ? 'active' : '') + '" onclick="setInfoCategory(&quot;' + k + '&quot;)">' + m[1] + ' ' + m[0] + '</button>';
+      });
+      h += '<button class="btn btn-outline btn-sm" onclick="loadInfoCards()">搜索</button>';
+      document.getElementById('infoFilters').innerHTML = h;
+
+      var opts = keys.filter(function(k){ return k !== 'all'; }).map(function(k) {
+        var m = categoryMeta[k];
+        return '<option value="' + k + '">' + m[1] + ' ' + m[0] + '</option>';
+      }).join('');
+      document.getElementById('infoCategory').innerHTML = opts;
+    }
+
+    function setInfoCategory(cat) {
+      activeCategory = cat;
+      renderFilters();
+      loadInfoCards();
+    }
+
+    function toggleInfoForm(force) {
+      if (!getToken()) {
+        document.getElementById('loginHint').style.display = 'block';
+        showToast('请先登录后再分享信息', 'error');
+        return;
+      }
+      var form = document.getElementById('infoForm');
+      var open = typeof force === 'boolean' ? force : !form.classList.contains('open');
+      form.classList.toggle('open', open);
+      document.getElementById('loginHint').style.display = 'none';
+    }
+
+    async function loadInfoCards() {
+      var grid = document.getElementById('infoGrid');
+      grid.innerHTML = '<div class="info-empty" style="grid-column:1/-1;">加载中...</div>';
+      try {
+        var kw = document.getElementById('infoKeyword') ? document.getElementById('infoKeyword').value.trim() : '';
+        var d = await apiFetch('/info?category=' + encodeURIComponent(activeCategory) + '&keyword=' + encodeURIComponent(kw));
+        var rows = d.cards || [];
+        if (!rows.length) {
+          grid.innerHTML = '<div class="info-empty" style="grid-column:1/-1;">还没有信息卡片，来分享第一条校园经验吧。</div>';
+          return;
+        }
+        grid.innerHTML = rows.map(function(card) {
+          var m = categoryMeta[card.category] || categoryMeta.other;
+          var tags = (card.tags || []).slice(0, 3).map(function(t){ return '<span>#' + esc(t) + '</span>'; }).join('');
+          var source = card.source_url
+            ? '<a href="' + esc(card.source_url) + '" target="_blank" rel="noopener" class="card-link">查看来源 →</a>'
+            : '';
+          return '<article class="info-card">' +
+            '<div class="info-card-top"><span class="info-badge">' + m[1] + ' ' + m[0] + '</span><span style="font-size:.75rem;color:var(--text-tertiary);">' + fmtTime(card.updated_at || card.created_at) + '</span></div>' +
+            '<h3>' + esc(card.title) + '</h3>' +
+            '<p>' + esc(card.summary || card.content || '') + '</p>' +
+            (card.content && card.summary ? '<p style="font-size:.82rem;">' + esc(card.content).slice(0, 140) + (card.content.length > 140 ? '...' : '') + '</p>' : '') +
+            '<div class="info-meta">' +
+              (card.location ? '<span>📍 ' + esc(card.location) + '</span>' : '') +
+              (card.source_name ? '<span>来源：' + esc(card.source_name) + '</span>' : '') +
+              tags +
+            '</div>' + source +
+          '</article>';
+        }).join('');
+      } catch (e) {
+        grid.innerHTML = '<div class="info-empty" style="grid-column:1/-1;color:var(--color-danger);">' + esc(e.message) + '</div>';
+      }
+    }
+
+    async function submitInfoCard() {
+      try {
+        var body = {
+          category: document.getElementById('infoCategory').value,
+          title: document.getElementById('infoTitle').value.trim(),
+          summary: document.getElementById('infoSummary').value.trim(),
+          content: document.getElementById('infoContent').value.trim(),
+          location: document.getElementById('infoLocation').value.trim(),
+          source_name: document.getElementById('infoSourceName').value.trim(),
+          source_url: document.getElementById('infoSourceUrl').value.trim(),
+          tags: document.getElementById('infoTags').value.trim()
+        };
+        if (!body.title) { showToast('请填写标题', 'error'); return; }
+        if (!body.summary && !body.content) { showToast('请填写摘要或详情', 'error'); return; }
+        var d = await apiFetch('/info', { method: 'POST', body: body });
+        showToast(d.message || '已提交');
+        ['infoTitle','infoSummary','infoContent','infoLocation','infoSourceName','infoSourceUrl','infoTags'].forEach(function(id){ document.getElementById(id).value = ''; });
+        toggleInfoForm(false);
+        loadInfoCards();
+      } catch (e) {
+        showToast(e.message, 'error');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateNavAuth();
+      renderFilters();
+      loadInfoCards();
+    });
+  </script>
+</body>
+</html>
